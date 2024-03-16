@@ -1,0 +1,44 @@
+{
+    "formDetails": [
+      {
+        "type": "text",
+        "id": "name",
+        "name": "name",
+        "placeholder": "Name..."
+      },
+      {
+        "type": "text",
+        "id": "subject",
+        "name": "subject",
+        "placeholder": "Subject..."
+      },
+      {
+        "type": "text",
+        "id": "email",
+        "name": "email",
+        "placeholder": "Email..."
+      },
+      {
+        "type": "text",
+        "id": "message",
+        "name": "message",
+        "placeholder": "Message..."
+      }
+    ],
+  
+    "contactInfo": [
+      {
+        "icon": "../assets/icon/phone.png",
+        "text": "+8801405232258"
+      },
+      {
+        "icon": "../assets/icon/facebook.png",
+        "text": "mrzahidxy@gmail.com"
+      },
+      {
+        "icon": "../assets/icon/linkedin.png",
+        "text": "Dhaka, Bangladesh"
+      }
+    ]
+  }
+  

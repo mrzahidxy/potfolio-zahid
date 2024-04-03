@@ -20,6 +20,7 @@ const experiences: experienceProps[] = [
     workplace: "Intelier (Team)",
     duration: "2022-Present",
     image: "/image/intellier.png",
+
   },
 ];
 const About: React.FC = () => {

@@ -42,7 +42,7 @@ const About: React.FC = () => {
 
         <div className="col-span-2 px-10">
           <div className="space-y-8 text-justify">
-            <span>Test</span>
+            <span>Test Two</span>
             <h3 className="text-blue-500 text-2xl lg:text-4xl font-bold">
             &lt;a little about me&gt;
             </h3>

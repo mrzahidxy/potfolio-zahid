@@ -14,6 +14,10 @@ interface Project {
   _id?: string;
 }
 
+interface ProjectApiResponse {
+  data: Project[];
+}
+
 const Projects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState<Boolean>(true);
@@ -21,8 +25,10 @@ const Projects: React.FC = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get<Project[]>(`${apiUrl}/api/portfolio`);
-      setProjects(response.data);
+      const response = await axios.get<ProjectApiResponse>(
+        `${apiUrl}/projects`
+      );
+      setProjects(response.data.data);
     } catch (error) {
       console.error("Error fetching projects:", error);
     } finally {

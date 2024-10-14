@@ -23,12 +23,13 @@ const experiences: experienceProps[] = [
 
   },
 ];
-const About: React.FC = () => {
+const 
+About: React.FC = () => {
   return (
     <div className="container h-full flex items-center">
-      <div className="grid lg:grid-cols-3">
-        <div className="col-span-1">
-          <div className="bg-black rounded-md relative h-[420px] w-4/5">
+      <div className="grid grid-cols-1 lg:grid-cols-3">
+        <div className="lg:col-span-1">
+          <div className="lg:bg-black rounded-md relative h-[420px] w-4/5">
             <Image
               layout="responsive"
               width={250}
@@ -40,7 +41,7 @@ const About: React.FC = () => {
           </div>
         </div>
 
-        <div className="col-span-2 px-10">
+        <div className="lg:col-span-2 px-10">
           <div className="space-y-8 text-justify">
             <h3 className="text-blue-500 text-2xl lg:text-4xl font-bold">
             &lt;a little about me&gt;

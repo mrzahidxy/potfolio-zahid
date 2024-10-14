@@ -10,7 +10,7 @@ function Intro() {
           <div className="flex flex-col animate-move text-xl md:text-4xl font-bold text-blue-500">
             <div className="h-12">Software Developer</div>
             <div className="h-12">MERN Developer</div>
-            <div className="h-12"> Blogger</div>
+            <div className="h-12">Blogger</div>
             <div className="h-12">Videographer</div>
           </div>
         </div>

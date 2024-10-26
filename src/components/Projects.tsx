@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import FeatureCard from "./common/FeatureCard";
 import axios from "axios";
+import { AuthContext } from "@/context/AuthContext";
+import { useAxiosWithAuth } from "@/helper/request-method";
 
 interface Project {
   description: string;
@@ -21,13 +23,12 @@ interface ProjectApiResponse {
 const Projects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState<Boolean>(true);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const { currentUser } = useContext(AuthContext);
+  const api = useAxiosWithAuth();
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get<ProjectApiResponse>(
-        `${apiUrl}/projects`
-      );
+      const response = await api.get<ProjectApiResponse>(`/projects`);
       setProjects(response.data.data);
     } catch (error) {
       console.error("Error fetching projects:", error);

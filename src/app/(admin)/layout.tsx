@@ -1,19 +1,18 @@
-import type { Metadata } from "next";
+"use client";
+
 import { Inter } from "next/font/google";
 import "../globals.css";
+import { useContext } from "react";
+import { AuthContext } from "@/context/AuthContext";
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "Zahid",
-  description: "A software developer portfolio",
-};
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { currentUser } = useContext(AuthContext);
   return (
     <html lang="en">
       <body

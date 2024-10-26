@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, FormEvent, ChangeEvent } from "react";
+import React, { useState, FormEvent, ChangeEvent, use, useEffect } from "react";
 import { z } from "zod";
-import axios from "axios";
 import Link from "next/link";
+import { useAxiosWithAuth } from "@/helper/request-method";
 
 // Define the schema for form validation (excluding the file input)
 const schema = z.object({
@@ -20,7 +20,8 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function ProjectForm() {
+export default function ProjectForm({ slug }: { slug?: string }) {
+  const api = useAxiosWithAuth();
   const [formData, setFormData] = useState<FormData>({
     title: "",
     description: "",
@@ -35,6 +36,21 @@ export default function ProjectForm() {
     success: boolean;
     message: string;
   } | null>(null);
+
+  useEffect(() => {
+    if (slug) {
+      const getProject = async () => {
+        try {
+          const res = await api.get(`/projects/${slug}`);
+          setFormData(res.data.data);
+        } catch (error) {
+          console.error("Error fetching project:", error);
+        }
+      };
+
+      getProject();
+    }
+  }, [slug]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -67,15 +83,18 @@ export default function ProjectForm() {
       if (imageFile) {
         formDataToSend.append("img", imageFile);
       }
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/projects`,
-        formDataToSend,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+
+      slug
+        ? await api.put(`/projects/${slug}`, formDataToSend, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+        : await api.post(`/projects`, formDataToSend, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
 
       setSubmitResult({
         success: true,
@@ -99,7 +118,7 @@ export default function ProjectForm() {
     <div className="mt-32 max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <div className="flex justify-between">
         <h1 className="text-2xl font-bold mb-4">Add Project</h1>
-        <Link href="/admin" className="text-blue-500 hover:underline">
+        <Link href="/admin/projects" className="text-blue-500 hover:underline">
           Project List
         </Link>
       </div>

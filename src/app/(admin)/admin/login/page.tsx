@@ -26,7 +26,7 @@ export default function LoginForm() {
 
       if (response.data.success) {
         dispatch({ type: "LOGIN", payload: response.data.data });
-        await router.push("/admin");
+        await router.push("/admin/projects");
       }
     } catch (err) {
       setError("Invalid email or password");

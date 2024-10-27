@@ -2,8 +2,9 @@
 
 import { Inter } from "next/font/google";
 import "../globals.css";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,6 +14,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const { currentUser } = useContext(AuthContext);
+  const { push } = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && !currentUser?.accessToken) {
+      push("/admin/login");
+    }
+  }, [currentUser]);
+
   return (
     <html lang="en">
       <body

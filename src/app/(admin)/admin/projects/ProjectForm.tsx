@@ -4,6 +4,7 @@ import React, { useState, FormEvent, ChangeEvent, use, useEffect } from "react";
 import { z } from "zod";
 import Link from "next/link";
 import { useAxiosWithAuth } from "@/helper/request-method";
+import { set } from "mongoose";
 
 // Define the schema for form validation (excluding the file input)
 const schema = z.object({
@@ -16,6 +17,7 @@ const schema = z.object({
     .url("Invalid live link URL")
     .optional()
     .or(z.literal("")),
+  img: z.string().optional().or(z.literal("")),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -28,8 +30,10 @@ export default function ProjectForm({ slug }: { slug?: string }) {
     technology: "",
     githubLink: "",
     liveLink: "",
+    img: "",
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitResult, setSubmitResult] = useState<{
@@ -42,7 +46,14 @@ export default function ProjectForm({ slug }: { slug?: string }) {
       const getProject = async () => {
         try {
           const res = await api.get(`/projects/${slug}`);
-          setFormData(res.data.data);
+          setFormData({
+            title: res.data.data.title,
+            description: res.data.data.description,
+            technology: res.data.data.technology.join(", "),
+            githubLink: res.data.data.githubLink,
+            liveLink: res.data.data.liveLink,
+          });
+          setImagePreview(res.data.data.img);
         } catch (error) {
           console.error("Error fetching project:", error);
         }
@@ -113,6 +124,8 @@ export default function ProjectForm({ slug }: { slug?: string }) {
       setIsSubmitting(false);
     }
   };
+
+  console.log(imagePreview);
 
   return (
     <div className="mt-32 max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -244,6 +257,16 @@ export default function ProjectForm({ slug }: { slug?: string }) {
               file:bg-indigo-50 file:text-indigo-700
               hover:file:bg-indigo-100"
           />
+
+          {(imagePreview || imageFile) && (
+            <div className="mt-4">
+              <img
+                src={imageFile ? URL.createObjectURL(imageFile) : imagePreview!}
+                alt="Selected project preview"
+                className="max-w-full h-auto rounded-md shadow"
+              />
+            </div>
+          )}
         </div>
 
         <button

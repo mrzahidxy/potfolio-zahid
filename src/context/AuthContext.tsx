@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useEffect,
-  useReducer,
-  ReactNode,
-  useMemo,
-} from "react";
+import React, { createContext, useEffect, useReducer, ReactNode } from "react";
 
 // Define the type for the initial state
 interface State {
@@ -14,7 +8,9 @@ interface State {
 }
 
 // Define the action types
-type Action = { type: "LOGIN"; payload: { accessToken: string } } | { type: "LOGOUT" };
+type Action =
+  | { type: "LOGIN"; payload: { accessToken: string } }
+  | { type: "LOGOUT" };
 
 // Define the context type
 interface AuthContextType {
@@ -29,7 +25,9 @@ interface AuthProviderProps {
 
 // Define the initial state
 const initialState: State = {
-  currentUser: { accessToken: "" }, 
+  currentUser: typeof window !== 'undefined'
+    ? JSON.parse(localStorage.getItem("currentUser")!)
+    : null,
 };
 
 // Reducer function with state and action types
@@ -41,7 +39,7 @@ const authReducer = (state: State, action: Action): State => {
       };
     case "LOGOUT":
       return {
-        currentUser: { accessToken: "" }, 
+        currentUser: null,
       };
     default:
       return state;
@@ -58,25 +56,13 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  const contextValue = useMemo(
-    () => ({ currentUser: state.currentUser, dispatch }),
-    [state.currentUser, dispatch]
-  );
-
-  useEffect(() => {
-    // Load user data only on the client side
-    const storedUser = localStorage.getItem("currentUser");
-    if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      dispatch({ type: "LOGIN", payload: userData });
-    }
-  }, []); // Only runs once on mount
-
   useEffect(() => {
     localStorage.setItem("currentUser", JSON.stringify(state.currentUser));
-  }, [state.currentUser]);
+  }, [state]);
 
   return (
-    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ currentUser: state.currentUser, dispatch }}>
+      {children}
+    </AuthContext.Provider>
   );
 };

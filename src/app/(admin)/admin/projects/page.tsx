@@ -5,6 +5,7 @@ import ProjectTable from "./projectTable";
 import Link from "next/link";
 import { useAxiosWithAuth } from "@/helper/request-method";
 import { useRouter } from "next/navigation";
+import DefaultLoader from "@/components/common/DefaultLoader";
 
 
 interface Project {
@@ -58,11 +59,7 @@ export default function ProjectManagement() {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
-      </div>
-    );
+    return <DefaultLoader/>;
   }
 
   if (error) {
@@ -81,6 +78,7 @@ export default function ProjectManagement() {
 
   return (
     <div className="container mx-auto mt-20">
+      <Link href="/admin" className="text-blue-500 text-2xl">Dashboard</Link>
       <div className="flex justify-between py-2">
         <h1 className="text-2xl font-bold mb-4">Projects</h1>
         <Link

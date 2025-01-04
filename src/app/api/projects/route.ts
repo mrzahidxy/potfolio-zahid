@@ -8,20 +8,10 @@ import { uploadToCloudinary } from "@/helper/common-method";
 dbConnect();
 
 export async function GET(req: NextRequest) {
+
+  console.log("Fetching projects...");
   try {
-    // Verify the token first
-    // const tokenResponse = await verifyTokenAndAdmin(
-    //   req,
-    //   NextResponse.next(),
-    //   () => {}
-    // );
-
-    // If token verification fails, return the response directly
-    // if (tokenResponse instanceof NextResponse) {
-    //   return tokenResponse; // Token is either invalid or missing
-    // }
-
-    // Fetch the projects
+    
     const projects = await Project.find<IProject>({});
     return NextResponse.json({ success: true, data: projects });
   } catch (error) {
@@ -34,8 +24,20 @@ export async function GET(req: NextRequest) {
 }
 
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
+    // Verify the token first
+    const tokenResponse = await verifyTokenAndAdmin(
+      req,
+      NextResponse.next(),
+      () => {}
+    );
+
+    // If token verification fails, return the response directly
+    if (tokenResponse instanceof NextResponse) {
+      return tokenResponse; // Token is either invalid or missing
+    }
+
     const formData = await req.formData();
     const file = formData.get("img") as File | null;
     const title = formData.get("title") as string | null;
@@ -56,7 +58,10 @@ export async function POST(req: Request) {
       const uploadRes = await uploadToCloudinary(fileUri, file.name);
 
       if (!uploadRes.success) {
-        return NextResponse.json({ message: "Image upload failed" }, { status: 500 });
+        return NextResponse.json(
+          { message: "Image upload failed" },
+          { status: 500 }
+        );
       }
 
       img = (uploadRes as any).result.secure_url; // Get the new Cloudinary image URL
@@ -76,7 +81,10 @@ export async function POST(req: Request) {
     const project = await Project.create(newProject);
 
     if (!project) {
-      return NextResponse.json({ success: false, message: "Project creation failed" }, { status: 500 });
+      return NextResponse.json(
+        { success: false, message: "Project creation failed" },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({ success: true, data: project }, { status: 201 });

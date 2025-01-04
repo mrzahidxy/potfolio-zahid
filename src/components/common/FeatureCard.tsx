@@ -47,12 +47,12 @@ const FeatureCard: React.FC<Props> = ({ project }) => {
             </Link>
           </div>
         </div>
-        <ul className="flex gap-3">
-          {/* {project?.technology && project?.technology[0]?.map((tech:string) => (
-            <li className="bg-white text-blue-500 font-semibold px-4 py-1 rounded-xl">
+        <ul className="flex gap-3 flex-wrap">
+          { project?.technology?.map((tech:string) => (
+            <li key={tech} className="bg-white text-blue-500 text-xs px-2 rounded-xl">
               {tech}
             </li>
-          ))} */}
+          ))}
         </ul>
         <p className="text-sm text-gray-500">{project.description}</p>
       </div>

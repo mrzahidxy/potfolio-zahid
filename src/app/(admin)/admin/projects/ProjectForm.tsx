@@ -1,17 +1,17 @@
 "use client";
 
-import React, { useState, FormEvent, ChangeEvent, use, useEffect } from "react";
+import React, { useState, FormEvent, ChangeEvent, useEffect } from "react";
 import { z } from "zod";
 import Link from "next/link";
 import { useAxiosWithAuth } from "@/helper/request-method";
-import { set } from "mongoose";
+import { useRouter } from "next/navigation";
 
 // Define the schema for form validation (excluding the file input)
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   technology: z.string().min(1, "At least one technology is required"),
-  githubLink: z.string().url("Invalid GitHub URL"),
+  githubLink: z.string().url("GitHub URL is required"),
   liveLink: z
     .string()
     .url("Invalid live link URL")
@@ -22,7 +22,12 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function ProjectForm({ slug }: { slug?: string }) {
+type props = {
+  slug?: string;
+};
+
+export default function ProjectForm({ slug }: props) {
+ const {push} = useRouter()
   const api = useAxiosWithAuth();
   const [formData, setFormData] = useState<FormData>({
     title: "",
@@ -41,6 +46,7 @@ export default function ProjectForm({ slug }: { slug?: string }) {
     message: string;
   } | null>(null);
 
+  // Fetch project details if slug is provided
   useEffect(() => {
     if (slug) {
       const getProject = async () => {
@@ -90,6 +96,7 @@ export default function ProjectForm({ slug }: { slug?: string }) {
         formDataToSend.append(key, value);
       });
 
+
       // Append the image file if it exists
       if (imageFile) {
         formDataToSend.append("img", imageFile);
@@ -111,13 +118,17 @@ export default function ProjectForm({ slug }: { slug?: string }) {
         success: true,
         message: "Project added successfully!",
       });
+
+      setTimeout(() => {
+        push("/admin/projects");
+      }, 2000);
     } catch (error) {
       if (error instanceof z.ZodError) {
         setErrors(error.flatten().fieldErrors as Partial<FormData>);
       } else {
         setSubmitResult({
           success: false,
-          message: "Failed to add project. Please try again.",
+          message: (error as any)?.response?.data?.message,
         });
       }
     } finally {
@@ -125,7 +136,6 @@ export default function ProjectForm({ slug }: { slug?: string }) {
     }
   };
 
-  console.log(imagePreview);
 
   return (
     <div className="mt-32 max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">

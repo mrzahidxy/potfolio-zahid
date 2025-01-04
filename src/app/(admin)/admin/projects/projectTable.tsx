@@ -26,7 +26,7 @@ export default function ProjectTable({ projects, onDelete, onUpdate }: ProjectTa
             <th className="px-4 py-2 text-left">Description</th>
             <th className="px-4 py-2 text-left">Technologies</th>
             <th className="px-4 py-2 text-left">GitHub</th>
-            <th className="px-4 py-2 text-left">Live Link</th>
+            <th className="px-4 py-2 text-left">Live</th>
             <th className="px-4 py-2 text-left">Image</th>
             <th className="px-4 py-2 text-left">Actions</th>
           </tr>

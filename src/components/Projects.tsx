@@ -5,6 +5,7 @@ import FeatureCard from "./common/FeatureCard";
 import axios from "axios";
 import { AuthContext } from "@/context/AuthContext";
 import { useAxiosWithAuth } from "@/helper/request-method";
+import DefaultLoader from "./common/DefaultLoader";
 
 interface Project {
   description: string;
@@ -22,8 +23,7 @@ interface ProjectApiResponse {
 
 const Projects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState<Boolean>(true);
-  const { currentUser } = useContext(AuthContext);
+  const [loading, setLoading] = useState<boolean>(true);
   const api = useAxiosWithAuth();
 
   const fetchProjects = async () => {
@@ -44,6 +44,12 @@ const Projects: React.FC = () => {
   // Calculate how many blank boxes are needed to make 6 total
   const blankBoxes = Array.from({ length: Math.max(0, 6 - projects.length) });
 
+  if(loading){
+    return <DefaultLoader/>
+  }
+
+
+
   return (
     <div className="container space-y-8 p-4 lg:p-0">
       <div className="flex flex-col space-y-2">
@@ -54,12 +60,6 @@ const Projects: React.FC = () => {
       </div>
 
       <div className="grid md:grid-cols-3 lg:grid-cols-3 gap-8">
-        {loading ? (
-          <div className="col-span-full flex justify-center items-center font-bold text-gray-800 text-2xl">
-            Loading...
-          </div>
-        ) : (
-          <>
             {/* Render project cards */}
             {projects.map((project: Project) => (
               <FeatureCard key={project._id} project={project} />
@@ -74,8 +74,6 @@ const Projects: React.FC = () => {
                 <span className="text-gray-400">No Project</span>
               </div>
             ))}
-          </>
-        )}
       </div>
 
       <div className="self-end">

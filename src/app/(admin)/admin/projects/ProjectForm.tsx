@@ -51,7 +51,7 @@ export default function ProjectForm({ slug }: props) {
     if (slug) {
       const getProject = async () => {
         try {
-          const res = await api.get(`/projects/${slug}`);
+          const res = await api.get(`/admin/projects/${slug}`);
           setFormData({
             title: res.data.data.title,
             description: res.data.data.description,
@@ -103,12 +103,12 @@ export default function ProjectForm({ slug }: props) {
       }
 
       slug
-        ? await api.put(`/projects/${slug}`, formDataToSend, {
+        ? await api.put(`/admin/projects/${slug}`, formDataToSend, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
           })
-        : await api.post(`/projects`, formDataToSend, {
+        : await api.post(`/admin/projects`, formDataToSend, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
@@ -116,7 +116,7 @@ export default function ProjectForm({ slug }: props) {
 
       setSubmitResult({
         success: true,
-        message: "Project added successfully!",
+        message: "Project added successfully! Redirecting...",
       });
 
       setTimeout(() => {

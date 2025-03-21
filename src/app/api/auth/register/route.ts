@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     // Encrypt password
     const encryptedPassword = CryptoJS.AES.encrypt(
       password,
-      process.env.PASS_SEC!
+      process.env.NEXT_PUBLIC_PASS_SEC!
     ).toString();
     // Create and save new user
     const newUser = new User({ email, password: encryptedPassword, isAdmin });

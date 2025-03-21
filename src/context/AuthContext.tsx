@@ -1,4 +1,10 @@
-import React, { createContext, useEffect, useReducer, ReactNode } from "react";
+import React, {
+  createContext,
+  useEffect,
+  useReducer,
+  ReactNode,
+  useMemo,
+} from "react";
 
 // Define the type for the initial state
 interface State {
@@ -23,14 +29,23 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Define the initial state
-const initialState: State = {
-  currentUser: typeof window !== 'undefined'
-    ? JSON.parse(localStorage.getItem("currentUser")!)
-    : null,
+// Safely get initial user from localStorage
+const getInitialUser = (): State["currentUser"] => {
+  if (typeof window === "undefined") return null;
+  const storedUser = localStorage.getItem("currentUser");
+  try {
+    return storedUser ? JSON.parse(storedUser) : null;
+  } catch {
+    return null;
+  }
 };
 
-// Reducer function with state and action types
+// Initial state
+const initialState: State = {
+  currentUser: getInitialUser(),
+}; 
+
+// Reducer function
 const authReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "LOGIN":
@@ -46,10 +61,10 @@ const authReducer = (state: State, action: Action): State => {
   }
 };
 
-// Create context with the initial state type
+// Create context
 export const AuthContext = createContext<AuthContextType>({
-  currentUser: initialState.currentUser,
-  dispatch: () => null,
+  currentUser: null,
+  dispatch: () => {},
 });
 
 // AuthProvider component
@@ -57,12 +72,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
-    localStorage.setItem("currentUser", JSON.stringify(state.currentUser));
-  }, [state]);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("currentUser", JSON.stringify(state.currentUser));
+    }
+  }, [state.currentUser]);
 
-  return (
-    <AuthContext.Provider value={{ currentUser: state.currentUser, dispatch }}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({ currentUser: state.currentUser, dispatch }),
+    [state.currentUser, dispatch]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

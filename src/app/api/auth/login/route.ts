@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     // Decrypt stored password
     const decryptedPassword = CryptoJS.AES.decrypt(
       user.password,
-      process.env.PASS_SEC as string
+      process.env.NEXT_PUBLIC_PASS_SEC as string
     );
 
     const originalPassword = decryptedPassword.toString(CryptoJS.enc.Utf8);
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     // Create JWT token
     const accessToken = jwt.sign(
       { id: user._id, isAdmin: user.isAdmin },
-      process.env.JWT_SEC as string,
+      process.env.NEXT_PUBLIC_JWT_SEC as string,
       { expiresIn: "3d" }
     );
 

@@ -8,18 +8,14 @@ function Intro() {
         <h1 className="text-4xl md:text-6xl font-bold">Zahid Hasan</h1>
         <div className="h-12 overflow-hidden">
           <div className="flex flex-col animate-move text-xl md:text-4xl font-bold text-blue-500">
-            <div className="h-12">Software Developer</div>
-            <div className="h-12">MERN Developer</div>
-            <div className="h-12">Blogger</div>
+            <div className="h-12">Software Engineer</div>
+            <div className="h-12">Full-Stack Developer</div>
+            <div className="h-12">Tech Blogger</div>
             <div className="h-12">Videographer</div>
           </div>
         </div>
         <p className="w-5/6 text-lg text-justify">
-          I&apos;m a dedicated software developer passionate about JavaScript
-          and its frameworks 🧔. With expertise in Typescript, React.js,
-          Next.js, Node.js, and more, I excel in full-stack development,
-          crafting seamless solutions that tackle real-life problems with
-          innovation 💻.
+        Software Engineer with 3 years of experience in full-stack development, specializing in React.js, Next.js, and Node.js. Passionate about building fast, user-centric applications with seamless API integration and optimized performance.
         </p>
       </div>
 

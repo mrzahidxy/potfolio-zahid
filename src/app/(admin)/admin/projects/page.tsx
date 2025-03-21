@@ -47,10 +47,10 @@ export default function ProjectManagement() {
 
   const handleDelete = async (id: string) => {
     try {
-      await api.delete(`/projects/${id}`);
+      await api.delete(`/admin/projects/${id}`);
       setProjects(projects.filter((project) => project._id !== id));
     } catch (err) {
-      setError("Failed to delete project. Please try again.");
+      setError((err as any)?.response.data.message);
     }
   };
 
@@ -70,7 +70,7 @@ export default function ProjectManagement() {
           onClick={fetchProjects}
           className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
-          Retry
+          Refresh
         </button>
       </div>
     );

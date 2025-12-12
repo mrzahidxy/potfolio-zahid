@@ -4,9 +4,10 @@ import { AuthContext } from "@/context/AuthContext";
 import axios from "axios";
 import { useContext } from "react";
 
-// Create an axios instance with base URL from environment variables
+// Create an axios instance with base URL from environment variables.
+// Default to relative `/api` so it works across hosts (dev/staging/prod).
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: "/api",
 });
 
 // Hook to attach the token from context to the axios instance

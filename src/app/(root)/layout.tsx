@@ -1,13 +1,24 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "../globals.css";
 import Navbar from "@/components/Navbar/Navbar";
+import profile from "@/data/profile.json";
 
-const inter = Inter({ subsets: ["latin"] });
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const profileSite = profile.metadata.site_url || "https://mrzahidxy.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || profileSite;
 
 export const metadata: Metadata = {
-  title: "Zahid",
-  description: "A software developer portfolio",
+  metadataBase: new URL(siteUrl),
+  title: `${profile.personal_details.name} | ${profile.personal_details.title}`,
+  description: profile.personal_details.bio,
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export default function RootLayout({
@@ -18,10 +29,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} h-screen  dark:bg-gray-800 dark:text-white`}
+        className={`${jakarta.className} bg-slate-50 text-slate-900 antialiased transition-colors duration-300 dark:bg-slate-900 dark:text-slate-50`}
       >
         <Navbar />
-        <div className="container lg:h-[calc(100vh-5rem)]">{children}</div>
+        <main className="pt-6 md:pt-16">{children}</main>
       </body>
     </html>
   );

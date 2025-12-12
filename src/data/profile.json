@@ -1,0 +1,165 @@
+{
+  "personal_details": {
+    "name": "Md. Zahid Hasan",
+    "title": "Software Engineer",
+    "location": "Dhaka, Bangladesh",
+    "bio": "Software engineer with 3+ years of experience delivering responsive, user-centric interfaces using React.js, Next.js, JavaScript, and TypeScript. Comfortable with backend development (Node.js, Express.js) and cross-functional collaboration to ship reliable features.",
+    "about_paragraphs": [
+      "I’ve spent over three years building scalable, maintainable interfaces for platforms like CartUp and Foodi, often owning features end-to-end from UI to integratons.",
+      "I focus on clean JavaScript/TypeScript, API integrations, and performance optimizations (SSR, code splitting, lazy loading) to keep experiences fast.",
+      "Beyond coding, I enjoy filmmaking and partnering with design, QA, and backend teams to ensure dependable releases."
+    ],
+    "contact": {
+      "email": "mrzahidxy@gmail.com",
+      "phone": "+8801405232258",
+      "address": "Dhaka, Bangladesh"
+    },
+    "links": {
+      "website": "https://mrzahidxy.vercel.app",
+      "github": "https://github.com/mrzahidxy",
+      "linkedin": "https://www.linkedin.com/in/mrzahidxy"
+    }
+  },
+  "preferences": {
+    "available_for_opportunities": true,
+    "interests": [
+      "Full-stack development",
+      "Performance optimization",
+      "User-centric design",
+      "Filmmaking"
+    ],
+    "tech_stack": {
+      "frontend": [
+        "React.js",
+        "Next.js",
+        "TypeScript",
+        "JavaScript",
+        "Tailwind CSS",
+        "Redux Toolkit",
+        "React Query"
+      ],
+      "backend": ["Node.js", "Express.js", "Python", "FastAPI", "REST API"],
+      "databases": ["PostgreSQL", "MongoDB", "Prisma", "Mongoose"],
+      "tools": [
+        "Git/GitHub Actions",
+        "CI/CD",
+        "Vercel",
+        "Docker",
+        "Figma",
+        "Supabase",
+        "Cloudinary",
+        "Postman"
+      ]
+    }
+  },
+  "history": {
+    "experiences": [
+      {
+        "role": "Intermediate Software Engineer",
+        "company": "JB Connect Ltd.",
+        "period": "Jul 2025 – Present",
+        "location": "On-site",
+        "summary": "Building a Japanese restaurant console and ordering system with SvelteKit—owning UI, order flow, and admin features.",
+        "highlights": [
+          "SvelteKit dashboards for order intake and kitchen routing.",
+          "Refined admin workflows for menu, inventory, and fulfillment.",
+          "Improved responsiveness and load times."
+        ]
+      },
+      {
+        "role": "Software Engineer",
+        "company": "TechnoNext",
+        "period": "Jan 2025 – Jul 2025",
+        "location": "Dhaka, Bangladesh",
+        "summary": "Delivered React/Next.js interfaces for Seller, Admin, and CS platforms with real-time chat and secure gateways.",
+        "highlights": [
+          "WebSocket chat/notifications with secure gateway integrations.",
+          "Hardened image upload and Excel workflows.",
+          "Collaborated across teams for high-quality delivery."
+        ]
+      },
+      {
+        "role": "Junior Software Engineer",
+        "company": "TechnoNext",
+        "period": "Nov 2022 – Dec 2024",
+        "location": "Dhaka, Bangladesh",
+        "summary": "Built Seller, Admin, and CS platforms using ReactJS, NextJS, and Tailwind CSS with focus on maintainability.",
+        "highlights": [
+          "Enhanced performance via SSR, code splitting, and lazy loading.",
+          "Implemented chat features with WebSockets and secure gateways.",
+          "Managed API integrations and bulk data handling."
+        ]
+      },
+      {
+        "role": "Jr Frontend Developer",
+        "company": "Intelier Limited",
+        "period": "Jun 2022 – Oct 2022",
+        "location": "Dhaka, Bangladesh",
+        "summary": "Improved Swisscontact BD site's responsiveness and built UI/APIs for Payra Port Water Management.",
+        "highlights": [
+          "Improved responsiveness and cross-browser compatibility.",
+          "Developed frontend components and integrated REST APIs."
+        ]
+      }
+    ],
+    "education": [
+      {
+        "degree": "Bachelor of Science, Computer Science and Engineering",
+        "institution": "University of Information Technology & Sciences",
+        "period": "2017 – 2020",
+        "location": "Baridhara, Dhaka",
+        "notes": [
+          "GPA 3.9/4.0",
+          "President, UITS Computer Club",
+          "Senior Executive, BASIS Student Forum"
+        ]
+      },
+      {
+        "degree": "Science (Higher Secondary)",
+        "institution": "BAF Shaheen College",
+        "period": "2012 – 2014",
+        "location": "Kurumtola, Dhaka",
+        "notes": ["GPA 5.0/5.0"]
+      }
+    ],
+    "featured_projects": [
+      {
+        "title": "Ecommerce Site",
+        "description": "Full-stack e-commerce platform using Next.js, Express, PostgreSQL, JWT auth, Stripe integration, and Cloudinary for media.",
+        "links": {
+          "live": "https://procharok-ecommerce.vercel.app/",
+          "github": "https://github.com/mrzahidxy/ecommerce-client-react"
+        },
+        "technologies": [
+          "Next.js",
+          "Express.js",
+          "PostgreSQL",
+          "JWT",
+          "Stripe",
+          "Cloudinary"
+        ]
+      },
+      {
+        "title": "Booking Site",
+        "description": "Full-featured booking system using Next.js, Express, PostgreSQL, JWT auth, Stripe for payments, and React Query for data fetching.",
+        "links": {
+          "live": "https://bookinn-client.vercel.app/",
+          "github": "https://github.com/mrzahidxy"
+        },
+        "technologies": [
+          "Next.js",
+          "Express.js",
+          "PostgreSQL",
+          "JWT",
+          "Stripe",
+          "React Query"
+        ]
+      }
+    ]
+  },
+  "metadata": {
+    "site_url": "https://mrzahidxy.vercel.app",
+    "last_updated": "2025-03-07",
+    "generated_from": "Next.js portfolio project"
+  }
+}

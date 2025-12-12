@@ -1,9 +1,7 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import FeatureCard from "./common/FeatureCard";
-import axios from "axios";
-import { AuthContext } from "@/context/AuthContext";
 import { useAxiosWithAuth } from "@/helper/request-method";
 import DefaultLoader from "./common/DefaultLoader";
 
@@ -44,44 +42,59 @@ const Projects: React.FC = () => {
   // Calculate how many blank boxes are needed to make 6 total
   const blankBoxes = Array.from({ length: Math.max(0, 6 - projects.length) });
 
-  if(loading){
-    return <DefaultLoader/>
+  if (loading) {
+    return (
+      <section
+        id="projects"
+        className="bg-slate-50 px-4 py-20 md:px-6 lg:px-8"
+      >
+        <div className="container flex items-center justify-center">
+          <DefaultLoader />
+        </div>
+      </section>
+    );
   }
 
 
 
   return (
-    <div className="container space-y-8 p-4 lg:p-0">
-      <div className="flex flex-col space-y-2">
-        <h3 className="text-blue-500 text-2xl lg:text-4xl font-bold">
-          &lt;imagine and create&gt;
-        </h3>
-        <p className="lg:text-xl">Here are some of my works.</p>
-      </div>
+    <section
+      id="projects"
+      className="bg-slate-50 px-4 py-14 md:px-6 lg:px-8 dark:bg-slate-900"
+    >
+      <div className="container max-w-6xl space-y-6">
+        <div className="text-center space-y-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500">
+            Portfolio
+          </p>
+          <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-50 sm:text-3xl">
+            Featured Projects
+          </h2>
+          <p className="mx-auto max-w-3xl text-[15px] leading-7 text-slate-600 dark:text-slate-200">
+            Recent work showcasing modern web development, thoughtful
+            architecture, and polished UI experiences.
+          </p>
+        </div>
 
-      <div className="grid md:grid-cols-3 lg:grid-cols-3 gap-8">
-            {/* Render project cards */}
-            {projects.map((project: Project) => (
-              <FeatureCard key={project._id} project={project} />
-            ))}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {projects.map((project: Project) => (
+            <FeatureCard key={project._id} project={project} />
+          ))}
 
-            {/* Render blank boxes to fill up to 8 total */}
-            {blankBoxes.map((_, index) => (
-              <div
-                key={`blank-${index}`}
-                className="h-40 flex justify-center items-center border-2 border-dashed border-gray-300 rounded-lg"
-              >
-                <span className="text-gray-400">No Project</span>
+          {blankBoxes.slice(0, 1).map((_, index) => (
+            <div
+              key={`blank-${index}`}
+              className="flex h-full min-h-[200px] flex-col justify-between rounded-xl border border-dashed border-slate-200 bg-white/60 p-4 text-slate-400 shadow-sm dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300"
+            >
+              <div className="space-y-2">
+                <div className="h-28 rounded-lg bg-slate-100 dark:bg-slate-700" />
+                <p className="text-sm text-slate-500 dark:text-slate-200">More coming soon</p>
               </div>
-            ))}
+            </div>
+          ))}
+        </div>
       </div>
-
-      <div className="self-end">
-        <h3 className="text-blue-500 text-2xl font-bold">
-          &lt;imagine and create&gt;
-        </h3>
-      </div>
-    </div>
+    </section>
   );
 };
 

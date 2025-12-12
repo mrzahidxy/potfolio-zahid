@@ -4,52 +4,57 @@ import React, { useEffect, useState } from "react";
 import NavbarLink from "./NavbarLink";
 import { DarkModeToggle } from "./DarkModeToggle.component";
 import PortfolioView from "./PortfolioView";
+import profile from "@/data/profile.json";
 
 const Navbar: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [mounted, setMounted] = useState(false);
 
-  // Load the dark mode preference from localStorage when the component mounts
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const darkModeValue = localStorage.getItem("darkMode");
-      const isDarkMode = darkModeValue === "true";
-      setIsDarkMode(isDarkMode);
-    }
+    if (typeof window === "undefined") return;
+    const darkModeValue = localStorage.getItem("darkMode");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const initial = darkModeValue === null ? prefersDark : darkModeValue === "true";
+    setIsDarkMode(initial);
+    setMounted(true);
   }, []);
 
-  // Toggle the dark mode class on the <html> element when the state changes
   useEffect(() => {
+    if (!mounted) return;
     document.documentElement.classList.toggle("dark", isDarkMode);
-  }, [isDarkMode]);
+    document.documentElement.setAttribute("data-theme", isDarkMode ? "dark" : "light");
+  }, [isDarkMode, mounted]);
 
-  // Function to toggle dark mode and store the value in localStorage
   const toggleDarkMode = () => {
-    const updatedDarkMode = !isDarkMode;
-    setIsDarkMode(updatedDarkMode);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("darkMode", JSON.stringify(updatedDarkMode));
-    }
+    setIsDarkMode((prev) => {
+      const next = !prev;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("darkMode", JSON.stringify(next));
+      }
+      return next;
+    });
   };
 
   return (
     <div className="relative">
       <nav
-        className={`hidden md:block fixed top-0 left-0 w-full bg-blue-100 dark:bg-gray-800 dark:text-white shadow-lg py-4 z-50 transition-colors duration-300`}
+        className={`hidden md:block fixed top-0 left-0 z-50 w-full border-b border-white/70 bg-white/85 py-3 text-slate-900 shadow-sm backdrop-blur-lg transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900/90 dark:text-white`}
       >
-        <div className="container mx-auto flex justify-between items-center px-6">
+        <div className="container mx-auto flex items-center justify-between px-6">
           {/* Logo */}
           <div>
-            <h1 className="hidden md:block text-xl lg:text-3xl font-bold">
-              Zahid
+            <h1 className="hidden md:block text-lg lg:text-xl font-semibold tracking-tight">
+              {profile.personal_details.name}
             </h1>
           </div>
 
           {/* Navbar Links */}
-          <ul className="flex items-center gap-6">
+          <ul className="flex items-center gap-4">
             {[
               { name: "Intro", url: "#intro" },
               { name: "About", url: "#about" },
               { name: "Projects", url: "#projects" },
+              { name: "Experience", url: "#experience" },
               { name: "Contact", url: "#contact" },
             ].map((item, i) => (
               <NavbarLink key={i} to={item.url} label={item.name} />

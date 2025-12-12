@@ -15,14 +15,14 @@ export async function POST(req: NextRequest) {
     const user = await User.findOne({ email });
     if (!user)
       return NextResponse.json(
-        { success: true, message: "Invalid email or password" },
-        { status: 201 }
+        { success: false, message: "Invalid email or password" },
+        { status: 401 }
       );
 
     // Decrypt stored password
     const decryptedPassword = CryptoJS.AES.decrypt(
       user.password,
-      process.env.NEXT_PUBLIC_PASS_SEC as string
+      (process.env.PASS_SEC || process.env.NEXT_PUBLIC_PASS_SEC) as string
     );
 
     const originalPassword = decryptedPassword.toString(CryptoJS.enc.Utf8);
@@ -30,13 +30,13 @@ export async function POST(req: NextRequest) {
     if (originalPassword !== password)
       return NextResponse.json(
         { success: false, message: "Invalid email or password" },
-        { status: 201 }
+        { status: 401 }
       );
 
     // Create JWT token
     const accessToken = jwt.sign(
       { id: user._id, isAdmin: user.isAdmin },
-      process.env.NEXT_PUBLIC_JWT_SEC as string,
+      (process.env.JWT_SEC || process.env.NEXT_PUBLIC_JWT_SEC) as string,
       { expiresIn: "3d" }
     );
 
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       { success: true, data: { ...others, accessToken } },
-      { status: 201 }
+      { status: 200 }
     );
   } catch (error) {
     console.error("Error creating user:", error);

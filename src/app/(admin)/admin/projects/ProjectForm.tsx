@@ -138,38 +138,36 @@ export default function ProjectForm({ slug }: props) {
 
 
   return (
-    <div className="mt-32 max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <div className="flex justify-between">
-        <h1 className="text-2xl font-bold mb-4">Add Project</h1>
-        <Link href="/admin/projects" className="text-blue-500 hover:underline">
-          Project List
+    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg dark:border-slate-800 dark:bg-slate-900/60">
+      <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
+        <div>
+          <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+            Project
+          </p>
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-white">
+            {slug ? "Edit Project" : "Add Project"}
+          </h1>
+        </div>
+        <Link
+          href="/admin/projects"
+          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:text-white"
+        >
+          Back to list
         </Link>
       </div>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label
-            htmlFor="title"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Title
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            className="border p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          />
-          {errors.title && (
-            <p className="text-red-500 text-sm mt-1">{errors.title}</p>
-          )}
-        </div>
+      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <FormField
+          label="Title"
+          id="title"
+          value={formData.title}
+          onChange={handleChange}
+          error={errors.title}
+        />
 
         <div>
           <label
             htmlFor="description"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
           >
             Description
           </label>
@@ -179,78 +177,44 @@ export default function ProjectForm({ slug }: props) {
             value={formData.description}
             onChange={handleChange}
             rows={3}
-            className="border p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 shadow-inner focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-500/30 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
           ></textarea>
           {errors.description && (
-            <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+            <p className="mt-1 text-sm text-red-300">
+              {errors.description[0]}
+            </p>
           )}
         </div>
 
-        <div>
-          <label
-            htmlFor="technology"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Technologies (comma-separated)
-          </label>
-          <input
-            type="text"
+        <FormField
+            label="Technologies (comma-separated)"
             id="technology"
-            name="technology"
             value={formData.technology}
             onChange={handleChange}
+            error={errors.technology}
             placeholder="React, Node.js, MongoDB"
-            className="border p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           />
-          {errors.technology && (
-            <p className="text-red-500 text-sm mt-1">{errors.technology}</p>
-          )}
-        </div>
 
-        <div>
-          <label
-            htmlFor="githubLink"
-            className="block text-sm font-medium text-gray-700"
-          >
-            GitHub Link
-          </label>
-          <input
-            type="url"
-            id="githubLink"
-            name="githubLink"
-            value={formData.githubLink}
-            onChange={handleChange}
-            className="border p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          />
-          {errors.githubLink && (
-            <p className="text-red-500 text-sm mt-1">{errors.githubLink}</p>
-          )}
-        </div>
+        <FormField
+          label="GitHub Link"
+          id="githubLink"
+          value={formData.githubLink}
+          onChange={handleChange}
+          error={errors.githubLink}
+        />
 
-        <div>
-          <label
-            htmlFor="liveLink"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Live Link (optional)
-          </label>
-          <input
-            type="url"
-            id="liveLink"
-            name="liveLink"
-            value={formData.liveLink}
-            onChange={handleChange}
-            className="border p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          />
-          {errors.liveLink && (
-            <p className="text-red-500 text-sm mt-1">{errors.liveLink}</p>
-          )}
-        </div>
+        <FormField
+          label="Live Link (optional)"
+          id="liveLink"
+          value={formData.liveLink}
+          onChange={handleChange}
+          error={errors.liveLink}
+        />
 
         <div>
           <label
             htmlFor="img"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-slate-300"
           >
             Project Image
           </label>
@@ -260,12 +224,7 @@ export default function ProjectForm({ slug }: props) {
             name="img"
             onChange={handleImageChange}
             accept="image/*"
-            className="mt-1 block w-full text-sm text-gray-500
-              file:mr-4 file:py-2 file:px-4
-              file:rounded-full file:border-0
-              file:text-sm file:font-semibold
-              file:bg-indigo-50 file:text-indigo-700
-              hover:file:bg-indigo-100"
+            className="mt-2 block w-full text-sm text-slate-700 file:mr-4 file:rounded-full file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-700 hover:file:bg-slate-200 dark:text-slate-300 dark:file:bg-slate-800 dark:file:text-slate-200 dark:hover:file:bg-slate-700"
           />
 
           {(imagePreview || imageFile) && (
@@ -273,35 +232,72 @@ export default function ProjectForm({ slug }: props) {
               <img
                 src={imageFile ? URL.createObjectURL(imageFile) : imagePreview!}
                 alt="Selected project preview"
-                className="max-w-full h-auto rounded-md shadow"
-              />
-            </div>
-          )}
+            className="h-auto max-h-60 w-full rounded-lg object-cover ring-1 ring-slate-200 dark:ring-slate-800"
+          />
+        </div>
+      )}
         </div>
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+          className="w-full rounded-lg bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-500/30 transition hover:-translate-y-[1px] hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSubmitting ? "Submitting..." : "Add Project"}
+          {isSubmitting ? "Submitting..." : slug ? "Update Project" : "Add Project"}
         </button>
       </form>
 
       {submitResult && (
         <div
-          className={`mt-4 p-4 rounded-md ${
+          className={`mt-4 rounded-lg p-4 text-sm ${
             submitResult.success
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
+              ? "border border-emerald-500/40 bg-emerald-500/10 text-emerald-100"
+              : "border border-red-500/40 bg-red-500/10 text-red-200"
           }`}
         >
-          <p className="font-bold">
+          <p className="font-semibold">
             {submitResult.success ? "Success" : "Error"}
           </p>
           <p>{submitResult.message}</p>
         </div>
       )}
+    </div>
+  );
+}
+
+function FormField({
+  label,
+  id,
+  value,
+  onChange,
+  error,
+  placeholder,
+}: {
+  label: string;
+  id: string;
+  value: string;
+  onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  error?: string[];
+  placeholder?: string;
+}) {
+  return (
+    <div>
+      <label
+        htmlFor={id}
+        className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+      >
+        {label}
+      </label>
+      <input
+        type="text"
+        id={id}
+        name={id}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 shadow-inner focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-500/30 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+      />
+      {error && <p className="mt-1 text-sm text-red-300">{error[0]}</p>}
     </div>
   );
 }

@@ -64,11 +64,11 @@ export default function ProjectManagement() {
 
   if (error) {
     return (
-      <div className="text-center text-red-600 p-4">
-        <p>{error}</p>
+      <div className="text-center text-red-200 p-6 rounded-xl border border-red-500/40 bg-red-500/10">
+        <p className="font-semibold">{error}</p>
         <button
           onClick={fetchProjects}
-          className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="mt-4 rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-sky-400"
         >
           Refresh
         </button>
@@ -77,22 +77,37 @@ export default function ProjectManagement() {
   }
 
   return (
-    <div className="container mx-auto mt-20">
-      <Link href="/admin" className="text-blue-500 text-2xl">Dashboard</Link>
-      <div className="flex justify-between py-2">
-        <h1 className="text-2xl font-bold mb-4">Projects</h1>
-        <Link
-          href="/admin/projects/add"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Add Project
-        </Link>
+    <div className="space-y-4">
+      <div className="flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-lg md:flex-row md:items-center dark:border-slate-800 dark:bg-slate-900/60">
+        <div>
+          <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+            Projects
+          </p>
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Manage Projects</h1>
+        </div>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/projects/add"
+            className="inline-flex items-center gap-2 rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-500/30 transition hover:-translate-y-[1px] hover:bg-sky-400"
+          >
+            Add Project
+          </Link>
+          <Link
+            href="/admin"
+            className="rounded-full border border-slate-700 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white"
+          >
+            Dashboard
+          </Link>
+        </div>
       </div>
-      <ProjectTable
-        projects={projects}
-        onDelete={handleDelete}
-        onUpdate={handleUpdate}
-      />
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-lg dark:border-slate-800 dark:bg-slate-900/60">
+        <ProjectTable
+          projects={projects}
+          onDelete={handleDelete}
+          onUpdate={handleUpdate}
+        />
+      </div>
     </div>
   );
 }

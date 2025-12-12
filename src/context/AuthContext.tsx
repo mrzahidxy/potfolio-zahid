@@ -10,12 +10,14 @@ import React, {
 interface State {
   currentUser: {
     accessToken: string;
+    email?: string;
+    isAdmin?: boolean;
   } | null;
 }
 
 // Define the action types
 type Action =
-  | { type: "LOGIN"; payload: { accessToken: string } }
+  | { type: "LOGIN"; payload: { accessToken: string; email?: string; isAdmin?: boolean } }
   | { type: "LOGOUT" };
 
 // Define the context type

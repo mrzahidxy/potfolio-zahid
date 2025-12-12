@@ -6,11 +6,11 @@ interface ContactInfoProps {
 }
 
 const ContactInfo: React.FC<ContactInfoProps> = ({ icon, text }) => (
-  <div className="flex flex-row items-center gap-4">
-    <div className="w-6 h-6">
+  <div className="flex flex-row items-center gap-3">
+    <div className="w-5 h-5">
       <Image width={100} height={100} src={icon} alt="icon" />
     </div>
-    <span>{text}</span>
+    <span className="text-sm text-slate-100">{text}</span>
   </div>
 );
 

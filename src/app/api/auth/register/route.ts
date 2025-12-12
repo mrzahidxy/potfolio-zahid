@@ -5,7 +5,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Register handler
 export async function POST(req: NextRequest) {
-  await dbConnect();
+  const connection = await dbConnect();
+  if (!connection) {
+    return NextResponse.json(
+      { success: false, message: "Database is not configured." },
+      { status: 500 }
+    );
+  }
 
   const { email, password, isAdmin = false } = await req.json();
 

@@ -3,11 +3,16 @@ import Project from "@/models/Project";
 import dbConnect from "@/lib/dbConnect";
 import { uploadToCloudinary } from "@/helper/common-method";
 
-// Connect to the database before handling requests
-dbConnect();
-
 export async function POST(req: NextRequest) {
   try {
+    const connection = await dbConnect();
+    if (!connection) {
+      return NextResponse.json(
+        { success: false, message: "Database is not configured." },
+        { status: 500 }
+      );
+    }
+
     const formData = await req.formData();
     const file = formData.get("img") as File | null;
     const title = formData.get("title") as string | null;

@@ -1,117 +1,71 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Image from "next/image";
+import profile from "@/data/profile.json";
 
-interface experienceProps {
-  title: string;
-  workplace: string;
-  duration: string;
-  image: string;
-}
+const aboutParagraphs = profile.personal_details.about_paragraphs;
+const techStack = profile.preferences.tech_stack;
 
-const experiences: experienceProps[] = [
-  {
-    title: "Software Engineer",
-    workplace: "Technonext (US-Bangla)",
-    duration: "2022-2022",
-    image: "/image/technonext.jpeg",
-  },
-  {
-    title: "Frontend Engineer",
-    workplace: "Intelier (Team)",
-    duration: "2022-Present",
-    image: "/image/intellier.png",
+const formatTitle = (key: string) =>
+  key
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 
-  },
-];
-const 
-About: React.FC = () => {
+const About: React.FC = () => {
   return (
-    <div className="container h-full flex items-center">
-      <div className="grid grid-cols-1 lg:grid-cols-3">
-        <div className="lg:col-span-1">
-          <div className="lg:bg-black rounded-md relative h-[420px] w-4/5">
-            <Image
-              layout="responsive"
-              width={250}
-              height={250}
-              alt=""
+    <section
+      id="about"
+      className="bg-white px-4 py-14 md:px-6 lg:px-8 dark:bg-slate-900"
+    >
+      <div className="container max-w-5xl space-y-8">
+        <div className="text-center space-y-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400">
+            About
+          </p>
+          <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-50 sm:text-3xl">
+            Passionate Developer &amp; Problem Solver
+          </h2>
+          <p className="mx-auto max-w-3xl text-[15px] leading-7 text-slate-600 dark:text-slate-200">
+            {profile.personal_details.bio}
+          </p>
+        </div>
+
+        <div className="grid items-center gap-6 lg:grid-cols-[200px,1fr]">
+          <div className="mx-auto h-44 w-44 overflow-hidden rounded-2xl shadow-md ring-1 ring-slate-200 dark:ring-slate-700">
+            <img
               src="/image/about.png"
-              className="object-cover rounded-md absolute left-6 top-8"
+              alt={profile.personal_details.name}
+              className="h-full w-full object-cover"
             />
           </div>
-        </div>
 
-        <div className="lg:col-span-2 px-10">
-          <div className="space-y-8 text-justify">
-            <h3 className="text-blue-500 text-2xl lg:text-4xl font-bold">
-            &lt;a little about me&gt;
-            </h3>
-            <div className="space-y-4">
-              <p className="lg:text-lg text-justify">
-                I have been in web development for more than 3 years since my
-                student life. I&apos;ve built all kinds of things, from regular
-                websites to ERP systems. What makes me unique? I write clean,
-                up-to-date code in JavaScript and TypeScript, and I do it
-                quickly.
-              </p>
-              <p className="lg:text-lg text-justify">
-                In my professional journey, I prioritize continuous learning and
-                immerse myself in cutting-edge software practices. This enabled
-                me to create a seamless user experience with integrated APIs.
-              </p>
-
-              <p className="lg:text-lg  text-justify">
-                Beyond coding, I enjoy filmmaking using my smartphone to capture
-                life&apos;s precious moments, creating captivating visual
-                stories.
-              </p>
-            </div>
-
-            <div className="flex flex-col space-y-4">
-              <h3 className="text-xl font-semibold text-blue-500">
-                Work Experinces
-              </h3>
-
-              <div className="space-y-4">
-                {experiences.map((experience, index) => (
-                  <div key={index} className="flex items-center gap-8">
-                    <Image
-                      src={experience.image}
-                      alt=""
-                      className="w-12 h-12 object-contain"
-                      width={100}
-                      height={100}
-                    />
-
-                    <div className="flex flex-col">
-                      <span className="text-xl font-medium">
-                        {experience.title}
-                      </span>
-                      <span className="text-l font-medium">
-                        at {experience.workplace}
-                      </span>
-                      <span className="text-sm">{experience.duration}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="float-right">
-              <h3 className="text-blue-500 text-2xl font-bold">
-                <FontAwesomeIcon
-                  icon={"greater-than"}
-                  className="text-white pl-1"
-                /> &lt;a little about me&gt;
-                <FontAwesomeIcon
-                  icon={"less-than"}
-                  className="text-white pl-1"
-                />
-              </h3>
-            </div>
+          <div className="space-y-4 text-[15px] leading-7 text-slate-600 dark:text-slate-200">
+            {aboutParagraphs.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
           </div>
         </div>
+
+        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+          {Object.entries(techStack).map(([key, items]) => (
+            <div
+              key={key}
+              className="rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-800/70"
+            >
+              <h4 className="text-base font-semibold text-slate-900 dark:text-slate-50">
+                {formatTitle(key)}
+              </h4>
+              <ul className="mt-2.5 space-y-2 text-sm text-slate-600 dark:text-slate-200">
+                {(items as string[]).map((item) => (
+                  <li key={item} className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -277,9 +277,10 @@ function FormField({
   id: string;
   value: string;
   onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  error?: string[];
+  error?: string | string[];
   placeholder?: string;
 }) {
+  const errorText = Array.isArray(error) ? error[0] : error;
   return (
     <div>
       <label
@@ -297,7 +298,7 @@ function FormField({
         placeholder={placeholder}
         className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 shadow-inner focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-500/30 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
       />
-      {error && <p className="mt-1 text-sm text-red-300">{error[0]}</p>}
+      {errorText && <p className="mt-1 text-sm text-red-300">{errorText}</p>}
     </div>
   );
 }

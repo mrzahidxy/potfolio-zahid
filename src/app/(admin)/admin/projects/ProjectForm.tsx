@@ -206,7 +206,7 @@ export default function ProjectForm({ slug }: props) {
         <FormField
           label="Live Link (optional)"
           id="liveLink"
-          value={formData.liveLink}
+          value={formData.liveLink ?? ""}
           onChange={handleChange}
           error={errors.liveLink}
         />

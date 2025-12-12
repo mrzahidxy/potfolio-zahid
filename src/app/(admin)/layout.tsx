@@ -9,7 +9,7 @@ import Link from "next/link";
 import {
   faGauge,
   faDiagramProject,
-  faRightFromStart,
+  faArrowRightFromBracket,
   faSun,
   faMoon,
 } from "@fortawesome/free-solid-svg-icons";
@@ -124,7 +124,7 @@ export default function RootLayout({
             }`}
           >
             <span>Logout</span>
-            <FontAwesomeIcon icon={faRightFromStart} className="h-4 w-4" />
+            <FontAwesomeIcon icon={faArrowRightFromBracket} className="h-4 w-4" />
           </button>
         </div>
       </aside>

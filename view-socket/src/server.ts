@@ -29,6 +29,13 @@ const PORT = process.env.PORT ?? 8010;
 
 app.use(cors());
 
+app.get("/health", (_req: Request, res: Response) => {
+  const state = mongoose.connection.readyState;
+  const dbStatus =
+    state === 1 ? "connected" : state === 2 ? "connecting" : "disconnected";
+  res.json({ status: "ok", db: dbStatus });
+});
+
 // REST endpoint that is the single source of truth for increments
 app.post("/api/visit", async (_req: Request, res: Response) => {
   try {

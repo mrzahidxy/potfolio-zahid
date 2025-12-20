@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ProjectTable from "./projectTable";
 import Link from "next/link";
 import { useAxiosWithAuth } from "@/helper/request-method";
@@ -26,29 +26,29 @@ export default function ProjectManagement() {
 
   const api = useAxiosWithAuth();
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        setLoading(true);
-        const response = await api.get<{ success: boolean; data: Project[] }>(
-          `/projects`
-        );
-        setProjects(response.data.data);
-        setError(null);
-      } catch (err) {
-        setError("Failed to fetch projects. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProjects();
+  const fetchProjects = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await api.get<{ success: boolean; data: Project[] }>(
+        `/projects`
+      );
+      setProjects(response.data.data);
+      setError(null);
+    } catch (err) {
+      setError("Failed to fetch projects. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   }, [api]);
+
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]);
 
   const handleDelete = async (id: string) => {
     try {
       await api.delete(`/admin/projects/${id}`);
-      setProjects(projects.filter((project) => project._id !== id));
+      setProjects((prev) => prev.filter((project) => project._id !== id));
     } catch (err) {
       setError((err as any)?.response.data.message);
     }

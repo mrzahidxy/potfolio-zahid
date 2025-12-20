@@ -1,3 +1,4 @@
+import Image from "next/image";
 import profile from "@/data/profile.json";
 
 const aboutParagraphs = profile.personal_details.about_paragraphs;
@@ -30,9 +31,11 @@ const About: React.FC = () => {
 
         <div className="grid items-center gap-6 lg:grid-cols-[200px,1fr]">
           <div className="mx-auto h-44 w-44 overflow-hidden rounded-2xl shadow-md ring-1 ring-slate-200 dark:ring-slate-700">
-            <img
+            <Image
               src="/image/about.png"
               alt={profile.personal_details.name}
+              width={176}
+              height={176}
               className="h-full w-full object-cover"
             />
           </div>

@@ -6,7 +6,6 @@ import { Formik, Form, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import emailjs from "emailjs-com";
 import FormInput from "./common/FormInput";
-import formData from "../JSON/data.json";
 import ContactInfo from "./common/ContatcInfo";
 import SocialLink from "./common/SocialLink";
 import profile from "@/data/profile.json";
@@ -17,6 +16,13 @@ interface FormValues {
   email: string;
   message: string;
 }
+
+const formFields = [
+  { type: "text", id: "name", name: "name", placeholder: "Name..." },
+  { type: "text", id: "subject", name: "subject", placeholder: "Subject..." },
+  { type: "text", id: "email", name: "email", placeholder: "Email..." },
+  { type: "text", id: "message", name: "message", placeholder: "Message..." },
+];
 
 const Contact: React.FC = () => {
   const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
@@ -146,7 +152,7 @@ const Contact: React.FC = () => {
             >
               <Form id="email-form" className="space-y-5">
                 <div className="grid gap-4 md:grid-cols-2">
-                  {formData.formDetails.map((data, index) => {
+                  {formFields.map((data, index) => {
                     const isMessage = data.id === "message";
                     return (
                       <div key={index} className={isMessage ? "md:col-span-2" : ""}>

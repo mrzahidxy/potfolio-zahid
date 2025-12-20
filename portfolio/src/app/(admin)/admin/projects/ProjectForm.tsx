@@ -3,6 +3,7 @@
 import React, { useState, FormEvent, ChangeEvent, useEffect } from "react";
 import { z } from "zod";
 import Link from "next/link";
+import Image from "next/image";
 import { useAxiosWithAuth } from "@/helper/request-method";
 import { useRouter } from "next/navigation";
 
@@ -48,26 +49,26 @@ export default function ProjectForm({ slug }: props) {
 
   // Fetch project details if slug is provided
   useEffect(() => {
-    if (slug) {
-      const getProject = async () => {
-        try {
-          const res = await api.get(`/admin/projects/${slug}`);
-          setFormData({
-            title: res.data.data.title,
-            description: res.data.data.description,
-            technology: res.data.data.technology.join(", "),
-            githubLink: res.data.data.githubLink,
-            liveLink: res.data.data.liveLink,
-          });
-          setImagePreview(res.data.data.img);
-        } catch (error) {
-          console.error("Error fetching project:", error);
-        }
-      };
+    if (!slug) return;
 
-      getProject();
-    }
-  }, [slug]);
+    const getProject = async () => {
+      try {
+        const res = await api.get(`/admin/projects/${slug}`);
+        setFormData({
+          title: res.data.data.title,
+          description: res.data.data.description,
+          technology: res.data.data.technology.join(", "),
+          githubLink: res.data.data.githubLink,
+          liveLink: res.data.data.liveLink,
+        });
+        setImagePreview(res.data.data.img);
+      } catch (error) {
+        console.error("Error fetching project:", error);
+      }
+    };
+
+    getProject();
+  }, [api, slug]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -229,13 +230,16 @@ export default function ProjectForm({ slug }: props) {
 
           {(imagePreview || imageFile) && (
             <div className="mt-4">
-              <img
+              <Image
                 src={imageFile ? URL.createObjectURL(imageFile) : imagePreview!}
                 alt="Selected project preview"
-            className="h-auto max-h-60 w-full rounded-lg object-cover ring-1 ring-slate-200 dark:ring-slate-800"
-          />
-        </div>
-      )}
+                width={800}
+                height={400}
+                className="h-auto max-h-60 w-full rounded-lg object-cover ring-1 ring-slate-200 dark:ring-slate-800"
+                unoptimized
+              />
+            </div>
+          )}
         </div>
 
         <button

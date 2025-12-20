@@ -1,0 +1,22 @@
+# Node modules
+node_modules/
+
+# Output
+dist/
+
+# Env
+.env
+
+# Logs
+*.log
+logs/
+
+# TypeScript
+*.tsbuildinfo
+
+# Coverage
+coverage/
+
+# IDE/editor settings
+.vscode/
+.idea/

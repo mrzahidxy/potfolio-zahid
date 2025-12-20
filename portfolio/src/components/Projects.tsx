@@ -24,23 +24,20 @@ const Projects: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const api = useAxiosWithAuth();
 
-  const fetchProjects = async () => {
-    try {
-      const response = await api.get<ProjectApiResponse>(`/projects`);
-      setProjects(response.data.data);
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    const fetchProjects = async () => {
+      try {
+        const response = await api.get<ProjectApiResponse>(`/projects`);
+        setProjects(response.data.data);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Calculate how many blank boxes are needed to make 6 total
-  const blankBoxes = Array.from({ length: Math.max(0, 6 - projects.length) });
+    fetchProjects();
+  }, [api]);
 
   if (loading) {
     return (
@@ -76,23 +73,17 @@ const Projects: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project: Project) => (
-            <FeatureCard key={project._id} project={project} />
-          ))}
-
-          {blankBoxes.slice(0, 1).map((_, index) => (
-            <div
-              key={`blank-${index}`}
-              className="flex h-full min-h-[200px] flex-col justify-between rounded-xl border border-dashed border-slate-200 bg-white/60 p-4 text-slate-400 shadow-sm dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300"
-            >
-              <div className="space-y-2">
-                <div className="h-28 rounded-lg bg-slate-100 dark:bg-slate-700" />
-                <p className="text-sm text-slate-500 dark:text-slate-200">More coming soon</p>
-              </div>
-            </div>
-          ))}
-        </div>
+        {projects.length > 0 ? (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {projects.map((project: Project) => (
+              <FeatureCard key={project._id} project={project} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-xl border border-dashed border-slate-200 bg-white/60 p-6 text-center text-slate-500 shadow-sm dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300">
+            Projects will appear here once they are published.
+          </div>
+        )}
       </div>
     </section>
   );

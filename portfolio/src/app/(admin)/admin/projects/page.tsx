@@ -26,24 +26,24 @@ export default function ProjectManagement() {
 
   const api = useAxiosWithAuth();
 
-  const fetchProjects = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get<{ success: boolean; data: Project[] }>(
-        `/projects`
-      );
-      setProjects(response.data.data);
-      setError(null);
-    } catch (err) {
-      setError("Failed to fetch projects. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get<{ success: boolean; data: Project[] }>(
+          `/projects`
+        );
+        setProjects(response.data.data);
+        setError(null);
+      } catch (err) {
+        setError("Failed to fetch projects. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchProjects();
-  }, []);
+  }, [api]);
 
   const handleDelete = async (id: string) => {
     try {

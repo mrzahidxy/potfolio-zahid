@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from 'react'
 
 interface Project {
@@ -48,7 +49,13 @@ export default function ProjectTable({ projects, onDelete, onUpdate }: ProjectTa
                 </a>
               </td>
               <td className="px-4 py-3">
-                <img src={project.img} alt={project.title} className="h-14 w-14 rounded-lg object-cover ring-1 ring-slate-200 dark:ring-slate-800" />
+                <Image
+                  src={project.img}
+                  alt={project.title}
+                  width={56}
+                  height={56}
+                  className="h-14 w-14 rounded-lg object-cover ring-1 ring-slate-200 dark:ring-slate-800"
+                />
               </td>
               <td className="px-4 py-3">
                 <div className="flex gap-2">

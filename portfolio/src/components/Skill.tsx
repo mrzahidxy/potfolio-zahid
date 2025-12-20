@@ -14,7 +14,7 @@ const frontendSkills: SkillSet[] = [
     image: "/icon/tailwindcss.png",
   },
   {
-    title: "RACET JS",
+    title: "React JS",
     image: "/icon/reactjs.png",
   },
   {
@@ -68,7 +68,7 @@ const otherSKills: SkillSet[] = [
   },
   {
     title: "Figma",
-    image: "/icon/git.png",
+    image: "/icon/figma.png",
   },
 ];
 

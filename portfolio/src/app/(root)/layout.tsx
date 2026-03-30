@@ -29,10 +29,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${jakarta.className} bg-slate-50 text-slate-900 antialiased transition-colors duration-300 dark:bg-slate-900 dark:text-slate-50`}
+        className={`${jakarta.className} bg-transparent text-slate-900 antialiased transition-colors duration-300 dark:text-slate-50`}
       >
         <Navbar />
-        <main className="pt-6 md:pt-16">{children}</main>
+        <main className="pt-28 md:pt-24">{children}</main>
       </body>
     </html>
   );

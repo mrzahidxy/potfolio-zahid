@@ -64,7 +64,7 @@ const projects = [
   {
     title: "Ecommerce Site",
     description:
-      "Full-stack eCommerce platform built with Next.js, Express.js, and PostgreSQL, featuring secure authentication (JWT), API development, and Cloudinary integration for media management",
+      "Full-stack commerce platform built for real catalog, checkout, payment, and media workflows rather than a static storefront.",
     technology: ["NextJS", "ExpressJS", "Postgres"],
     githubLink: "https://github.com/mrzahidxy/ecommerce-client-react",
     liveLink: "https://procharok-ecommerce.vercel.app/",
@@ -73,7 +73,7 @@ const projects = [
   {
     title: "Food Ordering Site",
     description:
-      "Online food ordering application developed with Next.js, Tailwind CSS, and Prisma, featuring secure APIs and admin management.",
+      "Food ordering platform focused on smooth customer ordering, secure APIs, and practical admin workflows for daily operations.",
     technology: ["Next.js", "Tailwind CSS", "Prisma"],
     githubLink: "https://github.com/mrzahidxy",
     liveLink: "https://resturant-order-app.vercel.app/",
@@ -82,7 +82,7 @@ const projects = [
   {
     title: "Chat App",
     description:
-      "Chat application using React, Firebase, and Tailwind CSS, supporting real-time messaging and authentication.",
+      "Real-time messaging product built around authentication, instant communication, and a clean interface for ongoing conversations.",
     technology: ["ReactJS", "Firebase"],
     githubLink: "https://github.com/mrzahidxy/ecommerce-client-react",
     liveLink: "https://lipy.vercel.app/",
@@ -91,7 +91,7 @@ const projects = [
   {
     title: "Book Inn.",
     description:
-      "A full-stack booking platform for hotels and restaurants. Features include user authentication, role-based access, room management, cloud image upload, and real-time booking with calendar.",
+      "Booking platform for hotels and restaurants with authentication, role-based access, inventory handling, and payment-ready reservation flows.",
     technology: ["ReactJS", "NextJS", "NodeJS", "ExpressJS", "Postgres", "Prisma"],
     githubLink: "https://github.com/mrzahidxy",
     liveLink: "https://bookinn-client.vercel.app/",

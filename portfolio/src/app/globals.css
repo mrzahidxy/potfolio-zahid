@@ -2,8 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
-html{
+html {
   scroll-behavior: smooth;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: #0f172a;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background-color: #f8fafc;
+  background-image:
+    radial-gradient(circle at top, rgba(14, 165, 233, 0.08), transparent 28%),
+    radial-gradient(circle at 85% 12%, rgba(15, 23, 42, 0.08), transparent 22%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 252, 1) 46%, rgba(241, 245, 249, 0.92) 100%);
+}
+
+html.dark body {
+  color: #f8fafc;
+  background-color: #020617;
+  background-image:
+    radial-gradient(circle at top, rgba(14, 165, 233, 0.16), transparent 30%),
+    radial-gradient(circle at 85% 10%, rgba(30, 41, 59, 0.75), transparent 26%),
+    linear-gradient(180deg, rgba(2, 6, 23, 0.98) 0%, rgba(2, 6, 23, 1) 44%, rgba(15, 23, 42, 0.98) 100%);
+}
+
+::selection {
+  background: rgba(14, 165, 233, 0.22);
+  color: #0f172a;
 }
 
 @keyframes move {
@@ -37,5 +78,57 @@ html{
   }
   100% {
     transform: translateY(120%);
+  }
+}
+
+@keyframes fadeUpIn {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.hero-entrance {
+  animation: fadeUpIn 720ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hero-entrance-delay-1 {
+  animation-delay: 90ms;
+}
+
+.hero-entrance-delay-2 {
+  animation-delay: 180ms;
+}
+
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 78px 78px;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 4%,
+    rgba(0, 0, 0, 0.75) 28%,
+    transparent 92%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 4%,
+    rgba(0, 0, 0, 0.75) 28%,
+    transparent 92%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-move {
+    animation: none;
   }
 }

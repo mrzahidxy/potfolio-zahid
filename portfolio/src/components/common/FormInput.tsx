@@ -25,12 +25,16 @@ const FormInput: React.FC<FormInputProps> = ({
       id={id}
       name={name}
       placeholder={placeholder}
-      className={`w-full rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2.5 text-sm leading-6 text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-50 dark:placeholder:text-slate-400 ${className ?? ""}`}
+      className={`w-full rounded-[18px] border border-slate-200/80 bg-white px-4 py-3.5 text-[15px] leading-6 text-slate-900 placeholder:text-slate-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_1px_2px_rgba(15,23,42,0.04)] outline-none transition duration-200 focus:border-sky-400 focus:ring-4 focus:ring-sky-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-50 dark:placeholder:text-slate-400 dark:focus:ring-sky-950 ${className ?? ""}`}
       as={as}
       rows={rows}
     />
 
-    <ErrorMessage name={name} component="div" className="text-red-600" />
+    <ErrorMessage
+      name={name}
+      component="div"
+      className="mt-2 text-[13px] font-medium text-red-600 dark:text-red-400"
+    />
   </div>
 );
 

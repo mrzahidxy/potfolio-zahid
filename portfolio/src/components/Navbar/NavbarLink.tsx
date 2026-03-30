@@ -1,22 +1,29 @@
-"use client"
-import { useRouter } from 'next/navigation'
-
+"use client";
 
 interface NavbarLinkProps {
   to: string;
   label: string;
-  activeSection?: string | null;
+  isActive?: boolean;
+  onClick?: () => void;
 }
 
-// Navbar Component
-const NavbarLink: React.FC<NavbarLinkProps> = ({ to, label }) => {
-  const router  = useRouter()
-
+const NavbarLink: React.FC<NavbarLinkProps> = ({
+  to,
+  label,
+  isActive = false,
+  onClick,
+}) => {
   return (
-    <li>
+    <li className="shrink-0">
       <a
-        className={`cursor-pointer text-sm font-medium tracking-tight hover:text-sky-500 transition-colors`}
-        href={`${to}`}
+        className={`inline-flex h-10 items-center rounded-full px-3.5 text-[14px] font-medium tracking-tight transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-200/70 dark:focus-visible:ring-sky-900 ${
+          isActive
+            ? "bg-slate-100 text-slate-950 dark:bg-slate-800 dark:text-slate-50"
+            : "text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-slate-50"
+        }`}
+        href={to}
+        onClick={onClick}
+        aria-current={isActive ? "page" : undefined}
       >
         {label}
       </a>

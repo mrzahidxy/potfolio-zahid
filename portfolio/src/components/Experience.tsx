@@ -1,4 +1,5 @@
 import profile from "@/data/profile.json";
+import Reveal from "./common/Reveal";
 
 const experiences = profile.history.experiences;
 
@@ -6,55 +7,79 @@ const Experience: React.FC = () => {
   return (
     <section
       id="experience"
-      className="bg-slate-50 px-4 py-14 md:px-6 lg:px-8 dark:bg-slate-900"
+      className="relative scroll-mt-28 px-4 py-20 md:px-6 md:py-24 lg:px-8"
     >
-      <div className="container max-w-5xl space-y-8">
-        <div className="text-center space-y-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500">
+      <div className="container max-w-6xl space-y-10 md:space-y-12">
+        <Reveal className="space-y-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
             Experience
           </p>
-          <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-50 sm:text-3xl">
-            Work Experience
+          <h2 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50 sm:text-4xl">
+            Professional Experience
           </h2>
-          <p className="mx-auto max-w-3xl text-[15px] leading-7 text-slate-600 dark:text-slate-200">
-            Building innovative solutions and growing with amazing teams across
-            product-led environments.
+          <p className="max-w-3xl text-[15px] leading-7 text-slate-600 dark:text-slate-300 sm:text-base sm:leading-8">
+            Teams where I shipped customer-facing features, internal workflows,
+            and operational tooling.
           </p>
-        </div>
+        </Reveal>
 
-        <div className="relative">
-          <div className="absolute left-4 top-0 bottom-0 w-px -translate-x-1/2 bg-gradient-to-b from-sky-200 via-slate-200 to-slate-200 dark:from-slate-700 dark:via-slate-800 dark:to-slate-800" />
-          <div className="space-y-8">
-            {experiences.map((experience) => (
-              <div key={experience.role} className="relative pl-12">
-                <div className="absolute left-4 top-6 h-3 w-3 -translate-x-1/2 rounded-full bg-sky-400 ring-4 ring-white shadow-[0_0_0_6px_rgba(56,189,248,0.12)] dark:ring-slate-800" />
-                <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">
-                      {experience.period}
-                    </span>
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
-                      {experience.role}
-                    </h3>
-                    <p className="text-sm font-medium text-sky-400">
-                      {experience.company}
-                    </p>
+        <div className="space-y-6">
+          {experiences.map((experience, index) => (
+            <Reveal
+              key={`${experience.company}-${experience.period}`}
+              delayMs={Math.min(index * 70, 210)}
+              durationMs={560}
+            >
+              <article className="grid gap-4 md:gap-5 lg:grid-cols-[190px,1fr]">
+                <div className="pt-2 lg:pt-3">
+                  <span className="inline-flex rounded-full border border-slate-200/80 bg-white/85 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700 shadow-[0_12px_30px_rgba(15,23,42,0.08)] backdrop-blur dark:border-slate-700/80 dark:bg-slate-900/80 dark:text-slate-200">
+                    {experience.period}
+                  </span>
+                </div>
+
+                <div className="rounded-[30px] border border-slate-200/70 bg-white/85 p-5 shadow-[0_24px_60px_rgba(15,23,42,0.06)] backdrop-blur sm:p-6 md:p-7 dark:border-slate-800/80 dark:bg-slate-900/75">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="space-y-3">
+                      <h3 className="text-[20px] font-semibold tracking-tight text-slate-950 dark:text-slate-50 sm:text-[22px]">
+                        {experience.role}
+                      </h3>
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <p className="text-[15px] font-semibold text-sky-700 dark:text-sky-300">
+                          {experience.company}
+                        </p>
+                        {experience.location && (
+                          <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[12px] font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                            {experience.location}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {experience.period.includes("Present") && (
+                      <span className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-700 dark:border-emerald-900/80 dark:bg-emerald-950/40 dark:text-emerald-300">
+                        Current
+                      </span>
+                    )}
                   </div>
-                  <p className="mt-3 text-[13px] leading-6 text-slate-600 dark:text-slate-200">
+
+                  <p className="mt-4 max-w-3xl text-[14px] leading-7 text-slate-600 dark:text-slate-300 sm:mt-5 sm:text-[15px] sm:leading-8">
                     {experience.summary}
                   </p>
-                  <ul className="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-200">
+
+                  <ul className="mt-6 space-y-3.5 border-t border-slate-200/70 pt-5 dark:border-slate-800/80">
                     {experience.highlights.map((highlight: string) => (
-                      <li key={highlight} className="flex items-start gap-2">
-                        <span className="mt-1 h-1.5 w-1.5 rounded-full bg-sky-400" />
+                      <li
+                        key={highlight}
+                        className="flex items-start gap-3 text-[14px] leading-7 text-slate-700 dark:text-slate-300 sm:text-[15px]"
+                      >
+                        <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500" />
                         <span>{highlight}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-              </div>
-            ))}
-          </div>
+              </article>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>

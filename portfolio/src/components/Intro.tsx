@@ -1,57 +1,78 @@
 import Link from "next/link";
 import profile from "@/data/profile.json";
+import HeroBackgroundAnimation, {
+  type HeroBackgroundColorScheme,
+} from "./common/HeroBackgroundAnimation";
 
 const { personal_details, preferences } = profile;
+const heroBackground = preferences.hero_background;
+const heroBackgroundScheme: HeroBackgroundColorScheme =
+  heroBackground?.scheme === "light" || heroBackground?.scheme === "dark"
+    ? heroBackground.scheme
+    : "dark";
 
 function Intro() {
   return (
     <section
       id="intro"
-      className="relative isolate overflow-hidden bg-slate-950 text-white"
+      className="relative isolate overflow-hidden scroll-mt-28 bg-slate-950 text-white"
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.35),transparent_45%),radial-gradient(circle_at_80%_0%,rgba(59,130,246,0.35),transparent_35%),radial-gradient(circle_at_50%_80%,rgba(14,165,233,0.25),transparent_40%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(15,23,42,0.4)_0%,rgba(15,23,42,0.9)_50%,rgba(8,47,73,0.7)_100%)]" />
+      <HeroBackgroundAnimation
+        elementCount={heroBackground?.element_count ?? 6}
+        colorScheme={heroBackgroundScheme}
+      />
 
-      <div className="container relative flex min-h-[calc(100vh-64px)] max-w-5xl flex-col items-center justify-center px-4 py-12 text-center md:py-14">
-        <div className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-medium text-sky-100 ring-1 ring-white/15 backdrop-blur">
-          <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_0_6px_rgba(16,185,129,0.25)] animate-pulse" />
-          {preferences.available_for_opportunities
-            ? "Available for new opportunities"
-            : "Heads down on current work"}
-        </div>
+      <div className="container relative flex min-h-[calc(100vh-6.5rem)] max-w-6xl items-center px-4 py-20 sm:py-24 md:min-h-[calc(100vh-7.5rem)] md:px-6 md:py-28 lg:py-24">
+        <div className="hero-entrance hero-entrance-delay-1 flex w-full justify-center lg:justify-start">
+          <div className="flex max-w-4xl flex-col items-center text-center lg:items-start lg:text-left">
+            <div className="inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-white/10 bg-white/10 px-3.5 py-2 text-[10px] font-medium text-sky-100 ring-1 ring-white/5 backdrop-blur sm:text-[11px]">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_0_6px_rgba(16,185,129,0.25)] animate-pulse" />
+              {preferences.available_for_opportunities
+                ? "Available for roles and select projects"
+                : "Currently focused on delivery"}
+            </div>
 
-        <p className="mt-6 text-[11px] tracking-[0.3em] uppercase text-sky-200/70">
-          Hello, I&apos;m
-        </p>
-        <h1 className="mt-3 text-[36px] font-semibold leading-tight sm:text-[40px] md:text-[42px] md:leading-[48px]">
-          {personal_details.name}
-        </h1>
-        <p className="mt-3 text-lg font-medium text-sky-200 sm:text-xl">
-          {personal_details.title}
-        </p>
-        <p className="mt-4 max-w-2xl text-[15px] leading-7 text-sky-100/80 sm:text-base">
-          {personal_details.bio}
-        </p>
+            <p className="mt-8 text-[11px] tracking-[0.32em] uppercase text-sky-200/75 sm:mt-10">
+              {personal_details.name} / {personal_details.title}
+            </p>
+            <h1 className="mt-5 max-w-3xl text-[38px] font-semibold leading-[1.03] tracking-tight text-white sm:mt-6 sm:text-[52px] lg:text-[68px]">
+              I build dependable web products for teams, products, and independent clients.
+            </h1>
+            <p className="mt-6 max-w-2xl text-[16px] leading-7 text-slate-200/90 sm:mt-7 sm:text-[18px] sm:leading-8">
+              {personal_details.bio}
+            </p>
 
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-          <Link
-            href="#projects"
-            className="rounded-full bg-sky-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-md shadow-sky-500/30 transition hover:translate-y-[-2px] hover:bg-sky-300 hover:shadow-sky-400/40"
-          >
-            View My Work
-          </Link>
-          <Link
-            href="#contact"
-            className="rounded-full border border-white/30 px-4 py-2.5 text-sm font-semibold text-white transition hover:border-sky-300 hover:text-sky-200 hover:shadow-[0_12px_40px_rgba(125,211,252,0.15)]"
-          >
-            Get in Touch
-          </Link>
-        </div>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+              <Link
+                href="#projects"
+                className="inline-flex h-11 items-center rounded-full bg-sky-400 px-5 text-sm font-semibold text-slate-950 shadow-[0_18px_40px_rgba(56,189,248,0.28)] transition duration-200 hover:-translate-y-[2px] hover:bg-sky-300"
+              >
+                See Selected Work
+              </Link>
+              <Link
+                href="#contact"
+                className="inline-flex h-11 items-center rounded-full border border-white/20 bg-white/5 px-5 text-sm font-semibold text-white transition duration-200 hover:border-sky-300/60 hover:bg-white/10 hover:text-sky-100"
+              >
+                Get In Touch
+              </Link>
+            </div>
 
-        <div className="mt-10 flex flex-col items-center gap-1.5 text-sky-200/70">
-          <span className="text-[11px] uppercase tracking-[0.4em]">Scroll</span>
-          <div className="relative h-10 w-px overflow-hidden rounded-full bg-white/20">
-            <span className="absolute inset-x-0 h-5 w-px animate-[scrollLine_1.8s_ease-in-out_infinite] bg-sky-200" />
+            <div className="mt-10 flex flex-wrap justify-center gap-2.5 lg:justify-start">
+              {[
+                "3+ years in production",
+                "Front end to backend",
+                "Product and delivery focused",
+              ].map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-[13px] text-slate-200/90 backdrop-blur transition duration-200 hover:border-white/20 hover:bg-white/[0.08] sm:text-sm"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </div>

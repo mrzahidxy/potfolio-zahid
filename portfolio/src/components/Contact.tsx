@@ -8,7 +8,11 @@ import emailjs from "emailjs-com";
 import FormInput from "./common/FormInput";
 import ContactInfo from "./common/ContatcInfo";
 import SocialLink from "./common/SocialLink";
-import profile from "@/data/profile.json";
+import type {
+  ProfileContactContent,
+  ProfileContactDetails,
+  ProfileLinks,
+} from "@/lib/profile-types";
 import Reveal from "./common/Reveal";
 
 interface FormValues {
@@ -49,17 +53,57 @@ const formFields = [
   },
 ];
 
-const Contact: React.FC = () => {
+interface ContactProps {
+  contactDetails: ProfileContactDetails;
+  links: ProfileLinks;
+  content: ProfileContactContent;
+}
+
+const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+const getEmailErrorMessage = (error: unknown): string => {
+  const errorText =
+    typeof error === "object" && error !== null && "text" in error
+      ? String((error as { text?: unknown }).text ?? "")
+      : typeof error === "object" && error !== null && "message" in error
+        ? String((error as { message?: unknown }).message ?? "")
+        : "";
+
+  const normalizedText = errorText.toLowerCase();
+
+  if (normalizedText.includes("service id not found")) {
+    return "Email service is misconfigured. Please update NEXT_PUBLIC_EMAILJS_SERVICE_ID with a valid EmailJS service ID.";
+  }
+  if (normalizedText.includes("template id not found")) {
+    return "Email template is misconfigured. Please update NEXT_PUBLIC_EMAILJS_TEMPLATE_ID with a valid EmailJS template ID.";
+  }
+  if (
+    normalizedText.includes("public key is invalid") ||
+    normalizedText.includes("user id is invalid")
+  ) {
+    return "Email public key is invalid. Please update NEXT_PUBLIC_EMAILJS_PUBLIC_KEY.";
+  }
+
+  return "Message could not be sent right now. Please try again in a moment.";
+};
+
+const Contact: React.FC<ContactProps> = ({
+  contactDetails,
+  links,
+  content,
+}) => {
   const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
-  const contactDetails = profile.personal_details.contact;
+  const [formError, setFormError] = useState<string | null>(null);
   const socialLinks = [
     {
-      href: profile.personal_details.links.linkedin,
+      href: links.linkedin,
       icon: "/icon/linkedin.png",
       alt: "linkedin-link",
     },
     {
-      href: profile.personal_details.links.github,
+      href: links.github,
       icon: "/icon/github.png",
       alt: "github-link",
     },
@@ -67,16 +111,16 @@ const Contact: React.FC = () => {
   const quickActions = [
     {
       href: `mailto:${contactDetails.email}`,
-      label: "Email Me",
+      label: content.email_action_label,
       primary: true,
     },
     {
-      href: profile.personal_details.links.linkedin,
-      label: "LinkedIn",
+      href: links.linkedin,
+      label: content.linkedin_action_label,
     },
     {
-      href: profile.personal_details.links.github,
-      label: "GitHub",
+      href: links.github,
+      label: content.github_action_label,
     },
   ];
   const initialValues: FormValues = {
@@ -100,20 +144,33 @@ const Contact: React.FC = () => {
   });
 
   const handleSubmit = async (
-    _values: FormValues,
-    { resetForm }: FormikHelpers<FormValues>
+    values: FormValues,
+    { resetForm, setSubmitting }: FormikHelpers<FormValues>,
   ) => {
     try {
-      await emailjs.sendForm(
-        "service_22y98hx",
-        "template_t42a7dm",
-        "email-form",
-        "IiyX8JA0nQvOYICjB"
+      setFormError(null);
+      setIsFormSubmitted(false);
+
+      if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+        setFormError(
+          "Email service is not configured. Set NEXT_PUBLIC_EMAILJS_SERVICE_ID, NEXT_PUBLIC_EMAILJS_TEMPLATE_ID, and NEXT_PUBLIC_EMAILJS_PUBLIC_KEY.",
+        );
+        return;
+      }
+
+      const templateParams: Record<string, unknown> = { ...values };
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        templateParams,
+        EMAILJS_PUBLIC_KEY,
       );
       setIsFormSubmitted(true);
       resetForm();
     } catch (error) {
-      alert(error);
+      setFormError(getEmailErrorMessage(error));
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -125,13 +182,13 @@ const Contact: React.FC = () => {
       <div className="container max-w-6xl space-y-8 md:space-y-10">
         <Reveal className="space-y-4">
           <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
-            Contact
+            {content.eyebrow_label}
           </p>
           <h2 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50 sm:text-4xl">
-            Start a conversation.
+            {content.heading}
           </h2>
           <p className="max-w-2xl text-[15px] leading-7 text-slate-600 dark:text-slate-300 sm:text-base sm:leading-8">
-            If you have a role, project, or collaboration in mind, send a short note.
+            {content.intro}
           </p>
         </Reveal>
 
@@ -141,27 +198,33 @@ const Contact: React.FC = () => {
             <div className="relative grid gap-6 md:gap-8 lg:grid-cols-[1.1fr,0.9fr] lg:items-stretch">
               <div className="space-y-4">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-sky-200/70">
-                  What I Can Help With
+                  {content.banner_eyebrow_label}
                 </p>
                 <h3 className="max-w-2xl text-2xl font-semibold tracking-tight text-white sm:text-3xl md:text-4xl">
-                  Open to product roles, freelance work, and focused builds that need thoughtful execution.
+                  {content.banner_heading}
                 </h3>
                 <p className="max-w-2xl text-[15px] leading-7 text-slate-200/84 sm:text-[16px] sm:leading-8">
-                  A short note on the role, product, timeline, or scope is enough to get started.
+                  {content.banner_intro}
                 </p>
               </div>
 
               <div className="rounded-[28px] border border-white/10 bg-white/[0.05] p-4 backdrop-blur sm:p-5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-sky-200/70">
-                  Quick Links
+                  {content.quick_links_label}
                 </p>
                 <div className="flex flex-wrap gap-3">
                   {quickActions.map((action) => (
                     <a
                       key={action.label}
                       href={action.href}
-                      target={action.href.startsWith("mailto:") ? undefined : "_blank"}
-                      rel={action.href.startsWith("mailto:") ? undefined : "noreferrer"}
+                      target={
+                        action.href.startsWith("mailto:") ? undefined : "_blank"
+                      }
+                      rel={
+                        action.href.startsWith("mailto:")
+                          ? undefined
+                          : "noreferrer"
+                      }
                       className={
                         action.primary
                           ? "inline-flex h-11 items-center rounded-full bg-sky-400 px-5 text-sm font-semibold text-slate-950 shadow-[0_18px_40px_rgba(56,189,248,0.28)] transition duration-200 hover:-translate-y-[1px] hover:bg-sky-300"
@@ -173,7 +236,7 @@ const Contact: React.FC = () => {
                   ))}
                 </div>
                 <p className="mt-4 text-[14px] leading-7 text-slate-300/82 sm:text-[15px]">
-                  Use whichever channel is easiest.
+                  {content.quick_links_note}
                 </p>
               </div>
             </div>
@@ -187,13 +250,13 @@ const Contact: React.FC = () => {
               <div className="relative flex h-full flex-col space-y-7">
                 <div className="space-y-3">
                   <p className="text-[11px] uppercase tracking-[0.28em] text-sky-200/70">
-                    Contact Details
+                    {content.details_eyebrow_label}
                   </p>
                   <h3 className="text-xl font-semibold">
-                    Reach me directly
+                    {content.details_heading}
                   </h3>
                   <p className="text-[14px] leading-7 text-slate-200/82 sm:text-[15px]">
-                    Email, phone, location, and profile links.
+                    {content.details_intro}
                   </p>
                 </div>
 
@@ -214,7 +277,7 @@ const Contact: React.FC = () => {
 
                 <div className="pt-1">
                   <h4 className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-200/70">
-                    Profiles
+                    {content.profiles_label}
                   </h4>
                   <div className="mt-3 flex items-center gap-3">
                     {socialLinks.map((social) => (
@@ -235,13 +298,13 @@ const Contact: React.FC = () => {
             <div className="rounded-[32px] border border-slate-200/70 bg-white/85 p-6 shadow-[0_24px_60px_rgba(15,23,42,0.06)] backdrop-blur sm:p-7 md:p-8 dark:border-slate-800/80 dark:bg-slate-900/75">
               <div className="mb-7 space-y-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
-                  Project Brief
+                  {content.form_eyebrow_label}
                 </p>
                 <h3 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
-                  Send a short brief
+                  {content.form_heading}
                 </h3>
                 <p className="text-[14px] leading-7 text-slate-600 dark:text-slate-300 sm:text-[15px]">
-                  Share the context and what you need help with so I can reply with the right next step.
+                  {content.form_intro}
                 </p>
               </div>
               <Formik
@@ -249,47 +312,63 @@ const Contact: React.FC = () => {
                 onSubmit={handleSubmit}
                 validationSchema={validationSchema}
               >
-                <Form id="email-form" className="space-y-6">
-                  <div className="grid gap-5 md:grid-cols-2">
-                    {formFields.map((data, index) => {
-                      const isMessage = data.id === "message";
-                      return (
-                        <div key={index} className={isMessage ? "md:col-span-2" : ""}>
-                          <label
-                            htmlFor={data.id}
-                            className="mb-2.5 block text-sm font-semibold text-slate-700 dark:text-slate-200"
+                {({ isSubmitting }) => (
+                  <Form id="email-form" className="space-y-6">
+                    <div className="grid gap-5 md:grid-cols-2">
+                      {formFields.map((data, index) => {
+                        const isMessage = data.id === "message";
+                        return (
+                          <div
+                            key={index}
+                            className={isMessage ? "md:col-span-2" : ""}
                           >
-                            {data.label}
-                          </label>
-                          <FormInput
-                            type={data.type}
-                            id={data.id}
-                            name={data.name}
-                            placeholder={data.placeholder}
-                            as={isMessage ? "textarea" : "input"}
-                            rows={isMessage ? 5 : undefined}
-                            className={isMessage ? "min-h-[140px] resize-none" : ""}
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <div className="w-full">
-                    <button
-                      type="submit"
-                      className="w-full rounded-full bg-sky-400 px-6 py-3.5 text-sm font-semibold text-slate-900 shadow-lg shadow-sky-500/30 transition duration-200 hover:-translate-y-[1px] hover:bg-sky-300"
-                    >
-                      Send Brief
-                    </button>
-                  </div>
-
-                  {isFormSubmitted && (
-                    <div className="rounded-[18px] border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-semibold text-sky-700 dark:border-sky-900/60 dark:bg-sky-950/30 dark:text-sky-300">
-                      Thanks. I&apos;ve received your message and will get back to you soon.
+                            <label
+                              htmlFor={data.id}
+                              className="mb-2.5 block text-sm font-semibold text-slate-700 dark:text-slate-200"
+                            >
+                              {data.label}
+                            </label>
+                            <FormInput
+                              type={data.type}
+                              id={data.id}
+                              name={data.name}
+                              placeholder={data.placeholder}
+                              as={isMessage ? "textarea" : "input"}
+                              rows={isMessage ? 5 : undefined}
+                              className={
+                                isMessage ? "min-h-[140px] resize-none" : ""
+                              }
+                            />
+                          </div>
+                        );
+                      })}
                     </div>
-                  )}
-                </Form>
+
+                    <div className="w-full">
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full rounded-full bg-sky-400 px-6 py-3.5 text-sm font-semibold text-slate-900 shadow-lg shadow-sky-500/30 transition duration-200 hover:-translate-y-[1px] hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:bg-sky-400"
+                      >
+                        {isSubmitting
+                          ? "Sending..."
+                          : content.submit_button_label}
+                      </button>
+                    </div>
+
+                    {formError && (
+                      <div className="rounded-[18px] border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+                        {formError}
+                      </div>
+                    )}
+
+                    {isFormSubmitted && !formError && (
+                      <div className="rounded-[18px] border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-semibold text-sky-700 dark:border-sky-900/60 dark:bg-sky-950/30 dark:text-sky-300">
+                        {content.success_message}
+                      </div>
+                    )}
+                  </Form>
+                )}
               </Formik>
             </div>
           </Reveal>

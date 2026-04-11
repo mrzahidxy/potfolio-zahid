@@ -1,22 +1,25 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { usePublicProfile } from "@/context/PublicProfileContext";
 import NavbarLink from "./NavbarLink";
 import { DarkModeToggle } from "./DarkModeToggle.component";
 import PortfolioView from "./PortfolioView";
-import profile from "@/data/profile.json";
 
 const NAV_ITEMS = [
   { name: "Intro", url: "#intro" },
   { name: "About", url: "#about" },
-  { name: "Projects", url: "#projects" },
   { name: "Experience", url: "#experience" },
+  { name: "Projects", url: "#projects" },
 ];
 
 const Navbar: React.FC = () => {
+  const { profile } = usePublicProfile();
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [mounted, setMounted] = useState(false);
   const [activeSection, setActiveSection] = useState<string>(NAV_ITEMS[0].url);
+  const name = profile.personal_details.name;
+  const title = profile.personal_details.title;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -97,10 +100,10 @@ const Navbar: React.FC = () => {
               <a href="#intro" className="min-w-0 transition-opacity hover:opacity-90">
                 <div className="flex flex-col space-y-0.5">
                   <span className="truncate text-[15px] font-semibold tracking-tight text-slate-900 dark:text-slate-50">
-                    {profile.personal_details.name}
+                    {name}
                   </span>
                   <span className="truncate text-[12px] text-slate-500 dark:text-slate-400">
-                    {profile.personal_details.title}
+                    {title}
                   </span>
                 </div>
               </a>

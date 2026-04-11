@@ -9,21 +9,29 @@ interface ProjectListResponse {
   data: Array<{ _id: string }>;
 }
 
+interface ExperienceListResponse {
+  success: boolean;
+  data: Array<{ id?: string }>;
+}
+
 export default function DashboardPage() {
   const api = useAxiosWithAuth();
   const [activeCount, setActiveCount] = useState<number>(0);
   const [archivedCount, setArchivedCount] = useState<number>(0);
+  const [experienceCount, setExperienceCount] = useState<number>(0);
 
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        const [activeResponse, archivedResponse] = await Promise.all([
+        const [activeResponse, archivedResponse, experienceResponse] = await Promise.all([
           api.get<ProjectListResponse>("/projects"),
           api.get<ProjectListResponse>("/projects/archived"),
+          api.get<ExperienceListResponse>("/admin/experiences"),
         ]);
 
         setActiveCount(activeResponse.data.data.length);
         setArchivedCount(archivedResponse.data.data.length);
+        setExperienceCount(experienceResponse.data.data.length);
       } catch (error) {
         console.error("Error loading dashboard stats:", error);
       }
@@ -41,24 +49,54 @@ export default function DashboardPage() {
               Admin
             </p>
             <h1 className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">
-              Project Dashboard
+              Admin Dashboard
             </h1>
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-              Manage project entries and archived items from one place.
+              Manage projects and the homepage copy that changes most often.
             </p>
           </div>
 
           <div className="flex flex-wrap gap-2">
             <LinkChip label="Projects" href="/admin/projects" primary />
+            <LinkChip label="Experience" href="/admin/experiences" />
+            <LinkChip label="Profile" href="/admin/profile" />
             <LinkChip label="Add Project" href="/admin/projects/add" />
             <LinkChip label="Back to Site" href="/" />
             <LinkChip label="Logout" href="/admin/login" />
           </div>
         </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard label="Active Projects" value={activeCount} />
           <StatCard label="Archived Projects" value={archivedCount} />
+          <Link
+            href="/admin/experiences"
+            className="rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-300 hover:bg-white dark:border-slate-800 dark:bg-slate-950/50 dark:hover:border-slate-700 dark:hover:bg-slate-900"
+          >
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+              Experience
+            </p>
+            <p className="mt-2 text-lg font-semibold text-slate-900 dark:text-white">
+              {experienceCount} entries
+            </p>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Manage your role history separately from profile copy.
+            </p>
+          </Link>
+          <Link
+            href="/admin/profile"
+            className="rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-300 hover:bg-white dark:border-slate-800 dark:bg-slate-950/50 dark:hover:border-slate-700 dark:hover:bg-slate-900"
+          >
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+              Profile Management
+            </p>
+            <p className="mt-2 text-lg font-semibold text-slate-900 dark:text-white">
+              Update homepage copy
+            </p>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Edit name, bio, contact details, and availability details.
+            </p>
+          </Link>
         </div>
       </div>
     </div>

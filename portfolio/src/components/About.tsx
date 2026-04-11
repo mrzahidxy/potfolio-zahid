@@ -1,9 +1,10 @@
 import Image from "next/image";
-import profile from "@/data/profile.json";
+import type {
+  ProfileAboutContent,
+  ProfilePersonalDetails,
+  ProfilePreferences,
+} from "@/lib/profile-types";
 import Reveal from "./common/Reveal";
-
-const aboutParagraphs = profile.personal_details.about_paragraphs;
-const techStack = profile.preferences.tech_stack;
 
 const formatTitle = (key: string) =>
   key
@@ -11,7 +12,20 @@ const formatTitle = (key: string) =>
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
-const About: React.FC = () => {
+interface AboutProps {
+  personalDetails: ProfilePersonalDetails;
+  preferences: ProfilePreferences;
+  content: ProfileAboutContent;
+}
+
+const About: React.FC<AboutProps> = ({
+  personalDetails,
+  preferences,
+  content,
+}) => {
+  const aboutParagraphs = personalDetails.about_paragraphs;
+  const techStack = preferences.tech_stack;
+
   return (
     <section
       id="about"
@@ -20,13 +34,13 @@ const About: React.FC = () => {
       <div className="container max-w-6xl space-y-12 md:space-y-14">
         <Reveal className="space-y-4">
           <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
-            About
+            {content.eyebrow_label}
           </p>
           <h2 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50 sm:text-4xl">
-            A Bit More Context
+            {content.heading}
           </h2>
           <p className="max-w-3xl text-[15px] leading-7 text-slate-600 dark:text-slate-300 sm:text-base sm:leading-8">
-            A clearer view of the work I take on and how I usually approach it.
+            {content.intro}
           </p>
         </Reveal>
 
@@ -38,7 +52,7 @@ const About: React.FC = () => {
             <div className="overflow-hidden rounded-[30px] border border-slate-200/70 bg-white/75 shadow-[0_24px_60px_rgba(15,23,42,0.06)] dark:border-slate-800/80 dark:bg-slate-900/70">
               <Image
                 src="/image/about.png"
-                alt={profile.personal_details.name}
+                alt={personalDetails.name}
                 width={280}
                 height={340}
                 className="h-full w-full object-cover"
@@ -46,10 +60,10 @@ const About: React.FC = () => {
             </div>
             <div className="rounded-[24px] border border-slate-200/70 bg-white/80 p-4 shadow-[0_18px_40px_rgba(15,23,42,0.05)] backdrop-blur dark:border-slate-800/80 dark:bg-slate-900/75">
               <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
-                Based In
+                {content.based_in_label}
               </p>
               <p className="mt-2 text-[15px] font-semibold text-slate-900 dark:text-slate-50">
-                {profile.personal_details.location}
+                {personalDetails.location}
               </p>
             </div>
           </div>
@@ -67,13 +81,13 @@ const About: React.FC = () => {
         >
           <div className="max-w-3xl space-y-2.5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
-              Skills & Tools
+              {content.skills_eyebrow_label}
             </p>
             <h3 className="text-[26px] font-semibold tracking-tight text-slate-950 dark:text-slate-50 sm:text-[28px]">
-              Core Technologies
+              {content.skills_heading}
             </h3>
             <p className="text-[14px] leading-7 text-slate-600 dark:text-slate-300 sm:text-[15px]">
-              Tools I use regularly across frontend, backend, data, and deployment.
+              {content.skills_intro}
             </p>
           </div>
 

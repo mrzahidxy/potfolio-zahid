@@ -1,66 +1,36 @@
-// Seed script for projects and an admin user.
-// Run with: npm run seed
-
-import dotenv from "dotenv";
-import mongoose, { Schema, Document, Model } from "mongoose";
 import CryptoJS from "crypto-js";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import { pathToFileURL } from "node:url";
 
-// Load env from .env.local first, then fallback to .env
+import profile from "../src/data/profile.json";
+import PortfolioContent from "../src/models/PortfolioContent";
+import Project from "../src/models/Project";
+import User from "../src/models/User";
+
 dotenv.config({ path: ".env.local" });
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGODB_URI || "";
-const PASS_KEY =
-  process.env.NEXT_PUBLIC_PASS_SEC || process.env.PASS_SEC || "";
-const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL || "admin@example.com";
-const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD || "admin123";
+const PORTFOLIO_CONTENT_KEY = "primary";
 
-if (!MONGODB_URI) {
-  throw new Error("MONGODB_URI is missing. Set it in .env.local or .env.");
-}
+type SeedConfig = {
+  mongodbUri: string;
+  passKey: string;
+  adminEmail: string;
+  adminPassword: string;
+};
 
-if (!PASS_KEY) {
-  throw new Error(
-    "PASS_SEC (or NEXT_PUBLIC_PASS_SEC) is missing for password encryption."
-  );
-}
-
-interface ProjectDoc extends Document {
+type ProjectSeedRecord = {
   title: string;
   description: string;
   technology: string[];
   githubLink: string;
-  liveLink?: string;
-  img?: string;
-}
+  liveLink: string;
+  img: string;
+  isArchived: boolean;
+};
 
-interface UserDoc extends Document {
-  email: string;
-  password: string;
-  isAdmin: boolean;
-}
-
-const projectSchema = new Schema<ProjectDoc>({
-  title: { type: String, required: true },
-  description: { type: String, required: true },
-  technology: { type: [String], required: true },
-  githubLink: { type: String, required: true },
-  liveLink: { type: String },
-  img: { type: String },
-});
-
-const userSchema = new Schema<UserDoc>({
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  isAdmin: { type: Boolean, required: true },
-});
-
-const Project: Model<ProjectDoc> =
-  mongoose.models.Project || mongoose.model<ProjectDoc>("Project", projectSchema);
-const User: Model<UserDoc> =
-  mongoose.models.User || mongoose.model<UserDoc>("User", userSchema);
-
-const projects = [
+const projectRecords: ProjectSeedRecord[] = [
   {
     title: "Ecommerce Site",
     description:
@@ -69,6 +39,7 @@ const projects = [
     githubLink: "https://github.com/mrzahidxy/ecommerce-client-react",
     liveLink: "https://procharok-ecommerce.vercel.app/",
     img: "https://res.cloudinary.com/mrzahidxy/image/upload/v1735912041/protfolio-images/ecommerce_vafk4u.png",
+    isArchived: false,
   },
   {
     title: "Food Ordering Site",
@@ -78,6 +49,7 @@ const projects = [
     githubLink: "https://github.com/mrzahidxy",
     liveLink: "https://resturant-order-app.vercel.app/",
     img: "https://res.cloudinary.com/mrzahidxy/image/upload/v1741019343/protfolio-images/Screenshot_2025-03-03_222136_oycz79.png",
+    isArchived: false,
   },
   {
     title: "Chat App",
@@ -87,46 +59,139 @@ const projects = [
     githubLink: "https://github.com/mrzahidxy/ecommerce-client-react",
     liveLink: "https://lipy.vercel.app/",
     img: "https://res.cloudinary.com/mrzahidxy/image/upload/v1741281497/protfolio-images/lippy_x0ygfl.png",
+    isArchived: false,
   },
   {
     title: "Book Inn.",
     description:
       "Booking platform for hotels and restaurants with authentication, role-based access, inventory handling, and payment-ready reservation flows.",
-    technology: ["ReactJS", "NextJS", "NodeJS", "ExpressJS", "Postgres", "Prisma"],
+    technology: [
+      "ReactJS",
+      "NextJS",
+      "NodeJS",
+      "ExpressJS",
+      "Postgres",
+      "Prisma",
+    ],
     githubLink: "https://github.com/mrzahidxy",
     liveLink: "https://bookinn-client.vercel.app/",
     img: "https://res.cloudinary.com/mrzahidxy/image/upload/v1742715967/protfolio-images/book-inn_xgiljq.png",
+    isArchived: false,
   },
 ];
 
-async function seed() {
-  await mongoose.connect(MONGODB_URI);
-  console.log("Connected to MongoDB");
-
-  for (const project of projects) {
-    const normalizedTech = project.technology.map((t) => t.trim());
-    await Project.findOneAndUpdate(
-      { title: project.title },
-      { ...project, technology: normalizedTech },
-      { upsert: true, new: true }
-    );
+function getRequiredEnv(value: string, message: string) {
+  if (!value) {
+    throw new Error(message);
   }
-  console.log(`Seeded/updated ${projects.length} projects.`);
 
-  const encryptedPassword = CryptoJS.AES.encrypt(ADMIN_PASSWORD, PASS_KEY).toString();
-  await User.findOneAndUpdate(
-    { email: ADMIN_EMAIL },
-    { email: ADMIN_EMAIL, password: encryptedPassword, isAdmin: true },
-    { upsert: true, new: true, setDefaultsOnInsert: true }
-  );
-  console.log(`Admin user upserted: ${ADMIN_EMAIL}`);
-
-  await mongoose.disconnect();
-  console.log("Seeding complete. Connection closed.");
+  return value;
 }
 
-seed().catch((err) => {
-  console.error("Seeding failed:", err);
-  mongoose.disconnect();
-  process.exit(1);
-});
+export function getSeedConfig(): SeedConfig {
+  return {
+    mongodbUri: getRequiredEnv(
+      process.env.MONGODB_URI || "",
+      "MONGODB_URI is missing. Set it in .env.local or .env."
+    ),
+    passKey: getRequiredEnv(
+      process.env.NEXT_PUBLIC_PASS_SEC || process.env.PASS_SEC || "",
+      "PASS_SEC (or NEXT_PUBLIC_PASS_SEC) is missing for password encryption."
+    ),
+    adminEmail: getRequiredEnv(
+      process.env.SEED_ADMIN_EMAIL || process.env.ADMIN_EMAIL || "",
+      "SEED_ADMIN_EMAIL (or ADMIN_EMAIL) is missing for admin seeding."
+    ),
+    adminPassword: getRequiredEnv(
+      process.env.SEED_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || "",
+      "SEED_ADMIN_PASSWORD (or ADMIN_PASSWORD) is missing for admin seeding."
+    ),
+  };
+}
+
+function encryptPassword(password: string, passKey: string) {
+  return CryptoJS.AES.encrypt(password, passKey).toString();
+}
+
+function normalizeProjectRecords(records: ProjectSeedRecord[]) {
+  return records.map((record) => ({
+    ...record,
+    technology: record.technology.map((item) => item.trim()),
+  }));
+}
+
+export async function syncAdminUser(config: SeedConfig) {
+  await User.findOneAndUpdate(
+    { email: config.adminEmail },
+    {
+      email: config.adminEmail,
+      password: encryptPassword(config.adminPassword, config.passKey),
+      isAdmin: true,
+    },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
+  );
+
+  return config.adminEmail;
+}
+
+export async function syncProjectsToDatabase(records = projectRecords) {
+  const normalizedRecords = normalizeProjectRecords(records);
+
+  await Project.deleteMany({});
+  await Project.insertMany(normalizedRecords);
+
+  return normalizedRecords.length;
+}
+
+export async function syncPortfolioContentToDatabase() {
+  await PortfolioContent.findOneAndReplace(
+    { key: PORTFOLIO_CONTENT_KEY },
+    {
+      key: PORTFOLIO_CONTENT_KEY,
+      personal_details: profile.personal_details,
+      preferences: profile.preferences,
+      history: profile.history,
+      metadata: profile.metadata,
+      content: profile.content,
+    },
+    { upsert: true }
+  );
+
+  return PORTFOLIO_CONTENT_KEY;
+}
+
+export async function seedDatabase() {
+  const config = getSeedConfig();
+
+  await mongoose.connect(config.mongodbUri);
+  console.log("Connected to MongoDB");
+
+  try {
+    const adminEmail = await syncAdminUser(config);
+    console.log(`Admin sync complete: ${adminEmail}`);
+
+    const projectCount = await syncProjectsToDatabase();
+    console.log(
+      `Project sync complete. Reset and inserted ${projectCount} records.`
+    );
+
+    const portfolioKey = await syncPortfolioContentToDatabase();
+    console.log(
+      `Portfolio content sync complete: ${portfolioKey} (profile info and experience included).`
+    );
+  } finally {
+    await mongoose.disconnect();
+    console.log("Connection closed.");
+  }
+}
+
+const isDirectRun =
+  typeof process.argv[1] === "string" &&
+  import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isDirectRun) {
+  seedDatabase().catch((error) => {
+    console.error("Database update failed:", error);
+    process.exit(1);
+  });
+}

@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import FeatureCard from "./common/FeatureCard";
 import { useAxiosWithAuth } from "@/helper/request-method";
 import DefaultLoader from "./common/DefaultLoader";
-import profile from "@/data/profile.json";
 import Reveal from "./common/Reveal";
 
 interface Project {
@@ -18,15 +17,9 @@ interface Project {
 }
 
 interface ProjectApiResponse {
+  success: boolean;
   data: Project[];
 }
-
-const projectDescriptionOverrides = new Map(
-  profile.history.featured_projects.map((project) => [
-    project.title.toLowerCase(),
-    project.description,
-  ])
-);
 
 const Projects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -37,14 +30,7 @@ const Projects: React.FC = () => {
     const fetchProjects = async () => {
       try {
         const response = await api.get<ProjectApiResponse>(`/projects`);
-        setProjects(
-          response.data.data.map((project) => ({
-            ...project,
-            description:
-              projectDescriptionOverrides.get(project.title.toLowerCase()) ??
-              project.description,
-          }))
-        );
+        setProjects(response.data.data);
       } catch (error) {
         console.error("Error fetching projects:", error);
       } finally {

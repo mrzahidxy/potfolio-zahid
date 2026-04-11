@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import Project, { IProject } from "@/models/Project";
 import dbConnect from "@/lib/dbConnect";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const connection = await dbConnect();
     if (!connection) {

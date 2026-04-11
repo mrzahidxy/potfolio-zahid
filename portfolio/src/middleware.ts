@@ -1,7 +1,6 @@
 // app/middleware.ts
 import { NextResponse } from "next/server";
-import { authMiddleware } from "./middleware/auth";
-import { adminMiddleware } from "./middleware/admin";
+import { adminMiddleware, authMiddleware } from "./middleware/auth";
 
 export async function middleware(req: Request) {
     const { pathname } = new URL(req.url);

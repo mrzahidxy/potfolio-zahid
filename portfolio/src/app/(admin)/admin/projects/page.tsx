@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ProjectTable from "./projectTable";
 import Link from "next/link";
 import { useAxiosWithAuth } from "@/helper/request-method";
@@ -25,7 +25,7 @@ export default function ProjectManagement() {
   const [showArchived, setShowArchived] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter()
+  const router = useRouter();
 
   const api = useAxiosWithAuth();
 
@@ -76,7 +76,7 @@ export default function ProjectManagement() {
   const visibleProjects = showArchived ? archivedProjects : activeProjects;
 
   if (loading) {
-    return <DefaultLoader/>;
+    return <DefaultLoader />;
   }
 
   if (error) {

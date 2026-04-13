@@ -139,7 +139,7 @@ export default function ProjectForm({ slug }: props) {
 
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg dark:border-slate-800 dark:bg-slate-900/60">
+    <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900/60">
       <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
         <div>
           <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
@@ -151,7 +151,7 @@ export default function ProjectForm({ slug }: props) {
         </div>
         <Link
           href="/admin/projects"
-          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:text-white"
+          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:text-white"
         >
           Back to list
         </Link>
@@ -245,7 +245,7 @@ export default function ProjectForm({ slug }: props) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-lg bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-500/30 transition hover:-translate-y-[1px] hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full rounded-lg bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
         >
           {isSubmitting ? "Submitting..." : slug ? "Update Project" : "Add Project"}
         </button>

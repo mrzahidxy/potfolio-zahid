@@ -3,7 +3,6 @@ import React, {
   useEffect,
   useReducer,
   ReactNode,
-  useMemo,
 } from "react";
 
 // Define the type for the initial state
@@ -79,10 +78,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   }, [state.currentUser]);
 
-  const value = useMemo(
-    () => ({ currentUser: state.currentUser, dispatch }),
-    [state.currentUser, dispatch]
+  return (
+    <AuthContext.Provider
+      value={{ currentUser: state.currentUser, dispatch }}
+    >
+      {children}
+    </AuthContext.Provider>
   );
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

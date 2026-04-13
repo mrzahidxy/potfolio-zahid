@@ -57,9 +57,18 @@ function PortfolioView() {
   }, []);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-full border border-slate-200 bg-white/90 px-3 py-1 text-xs font-semibold text-slate-800 shadow-md backdrop-blur dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-100">
-      <span role="img" aria-label="eyes">
-        👀
+    <div className="fixed bottom-5 right-5 z-50 flex items-center gap-2.5 rounded-full border border-slate-200/80 bg-white/85 px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-[0_16px_40px_rgba(15,23,42,0.12)] backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85 dark:text-slate-100">
+      <span
+        className={`h-2.5 w-2.5 rounded-full ${
+          status === "connected"
+            ? "bg-emerald-400 shadow-[0_0_0_6px_rgba(74,222,128,0.18)]"
+            : status === "connecting"
+              ? "bg-amber-400 shadow-[0_0_0_6px_rgba(251,191,36,0.16)]"
+              : "bg-slate-400"
+        }`}
+      />
+      <span className="text-[10px] uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+        Visits
       </span>
       {status === "connecting" && (
         <span
@@ -69,7 +78,11 @@ function PortfolioView() {
           <span className="h-3 w-3 rounded-full border-2 border-slate-400 border-t-transparent animate-spin" />
         </span>
       )}
-      {status === "connected" && <span>{visitCount}</span>}
+      {status === "connected" && (
+        <span className="text-sm font-semibold text-slate-900 dark:text-slate-50">
+          {visitCount}
+        </span>
+      )}
       {status === "disconnected" && (
         <span className="text-slate-500">Offline</span>
       )}

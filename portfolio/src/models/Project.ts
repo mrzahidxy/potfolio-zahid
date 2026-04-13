@@ -8,6 +8,7 @@ export interface IProject extends Document {
   githubLink: string;
   liveLink?: string;
   img?: string;
+  isArchived: boolean;
 }
 
 // Define the schema for the project
@@ -18,6 +19,7 @@ const ProjectSchema: Schema = new mongoose.Schema({
   githubLink: { type: String, required: true },
   liveLink: { type: String },
   img: { type: String },
+  isArchived: { type: Boolean, default: false, index: true },
 });
 
 // Export the model or use existing one to prevent multiple compilation errors

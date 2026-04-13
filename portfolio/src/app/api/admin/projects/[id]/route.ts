@@ -3,6 +3,8 @@ import dbConnect from "@/lib/dbConnect";
 import Project from "@/models/Project";
 import { uploadToCloudinary } from "@/helper/common-method";
 
+export const dynamic = "force-dynamic";
+
 // GET: Fetch a project by ID
 export async function GET(req: Request, { params }: { params: { id: string } }) {
   const { id } = params;

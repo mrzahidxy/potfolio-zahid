@@ -27,7 +27,15 @@ mongoose
 const app = express();
 const PORT = process.env.PORT ?? 8010;
 
-app.use(cors());
+const allowedOrigins =
+  process.env.ALLOWED_ORIGINS?.split(",").map((o) => o.trim()).filter(Boolean) ||
+  ["*"];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+  })
+);
 
 app.get("/health", (_req: Request, res: Response) => {
   const state = mongoose.connection.readyState;

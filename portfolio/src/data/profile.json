@@ -1,13 +1,13 @@
 {
   "personal_details": {
     "name": "Md. Zahid Hasan",
-    "title": "Software Engineer",
+    "title": "Full-Stack Software Engineer",
     "location": "Dhaka, Bangladesh",
-    "bio": "Software engineer with 3+ years of experience delivering responsive, user-centric interfaces using React.js, Next.js, JavaScript, and TypeScript. Comfortable with backend development (Node.js, Express.js) and cross-functional collaboration to ship reliable features.",
+    "bio": "I build thoughtful web products and internal tools with a focus on clear interfaces, dependable integrations, and maintainable implementation.",
     "about_paragraphs": [
-      "I’ve spent over three years building scalable, maintainable interfaces for platforms like CartUp and Foodi, often owning features end-to-end from UI to integratons.",
-      "I focus on clean JavaScript/TypeScript, API integrations, and performance optimizations (SSR, code splitting, lazy loading) to keep experiences fast.",
-      "Beyond coding, I enjoy filmmaking and partnering with design, QA, and backend teams to ensure dependable releases."
+      "I work across customer-facing products, admin panels, and internal tools that need to be clear, dependable, and useful in day-to-day work.",
+      "My role usually covers both product thinking and implementation, from interface decisions and API integration to the practical details required to ship responsibly.",
+      "Whether I am contributing to a team or handling a focused engagement independently, I aim for straightforward communication, sensible tradeoffs, and code that stays maintainable as the product grows."
     ],
     "contact": {
       "email": "mrzahidxy@gmail.com",
@@ -22,6 +22,10 @@
   },
   "preferences": {
     "available_for_opportunities": true,
+    "hero_background": {
+      "element_count": 7,
+      "scheme": "dark"
+    },
     "interests": [
       "Full-stack development",
       "Performance optimization",
@@ -38,8 +42,19 @@
         "Redux Toolkit",
         "React Query"
       ],
-      "backend": ["Node.js", "Express.js", "Python", "FastAPI", "REST API"],
-      "databases": ["PostgreSQL", "MongoDB", "Prisma", "Mongoose"],
+      "backend": [
+        "Node.js",
+        "Express.js",
+        "Python",
+        "FastAPI",
+        "REST API"
+      ],
+      "databases": [
+        "PostgreSQL",
+        "MongoDB",
+        "Prisma",
+        "Mongoose"
+      ],
       "tools": [
         "Git/GitHub Actions",
         "CI/CD",
@@ -58,48 +73,52 @@
         "role": "Intermediate Software Engineer",
         "company": "JB Connect Ltd.",
         "period": "Jul 2025 – Present",
-        "location": "On-site",
-        "summary": "Building a Japanese restaurant console and ordering system with SvelteKit—owning UI, order flow, and admin features.",
+        "location": "Dhaka, Bangladesh",
+        "summary": "Building the frontend for a restaurant operations and ordering platform, covering order flow, admin tooling, and everyday usability.",
         "highlights": [
-          "SvelteKit dashboards for order intake and kitchen routing.",
-          "Refined admin workflows for menu, inventory, and fulfillment.",
-          "Improved responsiveness and load times."
-        ]
+          "Built SvelteKit dashboards for order intake, kitchen routing, and operational visibility.",
+          "Improved menu, inventory, and fulfillment workflows for internal teams.",
+          "Improved responsiveness and load times across the product."
+        ],
+        "id": "intermediate-software-engineer-jb-connect-ltd-1"
       },
       {
         "role": "Software Engineer",
         "company": "TechnoNext",
         "period": "Jan 2025 – Jul 2025",
         "location": "Dhaka, Bangladesh",
-        "summary": "Delivered React/Next.js interfaces for Seller, Admin, and CS platforms with real-time chat and secure gateways.",
+        "summary": "Built seller, admin, and customer service interfaces, including live communication and workflow-heavy internal features.",
         "highlights": [
-          "WebSocket chat/notifications with secure gateway integrations.",
-          "Hardened image upload and Excel workflows.",
-          "Collaborated across teams for high-quality delivery."
-        ]
+          "Implemented WebSocket-based chat and notifications alongside secure gateway integrations.",
+          "Improved image upload handling and Excel-based workflows used by internal teams.",
+          "Worked with design, QA, and backend teams to ship production releases."
+        ],
+        "id": "software-engineer-technonext-2"
       },
       {
         "role": "Junior Software Engineer",
         "company": "TechnoNext",
         "period": "Nov 2022 – Dec 2024",
         "location": "Dhaka, Bangladesh",
-        "summary": "Built Seller, Admin, and CS platforms using ReactJS, NextJS, and Tailwind CSS with focus on maintainability.",
+        "summary": "Maintained core seller, admin, and support products with a focus on frontend structure, speed, and everyday usability.",
         "highlights": [
-          "Enhanced performance via SSR, code splitting, and lazy loading.",
-          "Implemented chat features with WebSockets and secure gateways.",
-          "Managed API integrations and bulk data handling."
-        ]
+          "Improved performance with SSR, code splitting, and lazy loading across core interfaces.",
+          "Built chat features with WebSockets and integrated secure service gateways.",
+          "Handled API integrations and bulk data workflows used in daily operations."
+        ],
+        "id": "junior-software-engineer-technonext-3"
       },
       {
         "role": "Jr Frontend Developer",
         "company": "Intelier Limited",
         "period": "Jun 2022 – Oct 2022",
         "location": "Dhaka, Bangladesh",
-        "summary": "Improved Swisscontact BD site's responsiveness and built UI/APIs for Payra Port Water Management.",
+        "summary": "Contributed frontend features and API integrations for production web platforms across different business domains.",
         "highlights": [
-          "Improved responsiveness and cross-browser compatibility.",
-          "Developed frontend components and integrated REST APIs."
-        ]
+          "Improved responsiveness and cross-browser behavior for the Swisscontact BD site.",
+          "Built frontend components and REST API integrations for the Payra Port Water Management project."
+        ],
+        "id": "jr-frontend-developer-intelier-limited-4"
       }
     ],
     "education": [
@@ -119,13 +138,15 @@
         "institution": "BAF Shaheen College",
         "period": "2012 – 2014",
         "location": "Kurumtola, Dhaka",
-        "notes": ["GPA 5.0/5.0"]
+        "notes": [
+          "GPA 5.0/5.0"
+        ]
       }
     ],
     "featured_projects": [
       {
         "title": "Ecommerce Site",
-        "description": "Full-stack e-commerce platform using Next.js, Express, PostgreSQL, JWT auth, Stripe integration, and Cloudinary for media.",
+        "description": "Built for online sellers who need smoother catalog browsing, checkout, payments, and order handling.",
         "links": {
           "live": "https://procharok-ecommerce.vercel.app/",
           "github": "https://github.com/mrzahidxy/ecommerce-client-react"
@@ -140,8 +161,34 @@
         ]
       },
       {
-        "title": "Booking Site",
-        "description": "Full-featured booking system using Next.js, Express, PostgreSQL, JWT auth, Stripe for payments, and React Query for data fetching.",
+        "title": "Food Ordering Site",
+        "description": "Made for restaurants that need faster customer ordering and simpler day-to-day operations.",
+        "links": {
+          "live": "https://resturant-order-app.vercel.app/",
+          "github": "https://github.com/mrzahidxy"
+        },
+        "technologies": [
+          "Next.js",
+          "Tailwind CSS",
+          "Prisma"
+        ]
+      },
+      {
+        "title": "Chat App",
+        "description": "Created for direct, real-time communication in teams, communities, or customer-facing conversations.",
+        "links": {
+          "live": "https://lipy.vercel.app/",
+          "github": "https://github.com/mrzahidxy/ecommerce-client-react"
+        },
+        "technologies": [
+          "React.js",
+          "Firebase",
+          "Tailwind CSS"
+        ]
+      },
+      {
+        "title": "Book Inn.",
+        "description": "Designed to manage reservations, availability, and booking flow for hospitality businesses.",
         "links": {
           "live": "https://bookinn-client.vercel.app/",
           "github": "https://github.com/mrzahidxy"
@@ -159,7 +206,65 @@
   },
   "metadata": {
     "site_url": "https://mrzahidxy.vercel.app",
-    "last_updated": "2025-03-07",
+    "last_updated": "2026-04-11",
     "generated_from": "Next.js portfolio project"
+  },
+  "content": {
+    "intro": {
+      "availability_available": "Available for roles and select projects",
+      "availability_unavailable": "Currently focused on delivery",
+      "headline": "I build dependable web products for teams, products, and independent clients.",
+      "primary_cta_label": "See Selected Work",
+      "secondary_cta_label": "Get In Touch",
+      "highlights": [
+        "4 years in production",
+        "Front end to backend",
+        "Product and delivery focused"
+      ]
+    },
+    "about": {
+      "eyebrow_label": "About",
+      "heading": "A Bit More Context",
+      "intro": "A clearer view of the work I take on and how I usually approach it.",
+      "based_in_label": "Based In",
+      "skills_eyebrow_label": "Skills & Tools",
+      "skills_heading": "Core Technologies",
+      "skills_intro": "Tools I use regularly across frontend, backend, data, and deployment."
+    },
+    "contact": {
+      "eyebrow_label": "Contact",
+      "heading": "Start a conversation.",
+      "intro": "If you have a role, project, or collaboration in mind, send a short note.",
+      "banner_eyebrow_label": "What I Can Help With",
+      "banner_heading": "Open to product roles, freelance work, and focused builds that need thoughtful execution.",
+      "banner_intro": "A short note on the role, product, timeline, or scope is enough to get started.",
+      "quick_links_label": "Quick Links",
+      "email_action_label": "Email Me",
+      "linkedin_action_label": "LinkedIn",
+      "github_action_label": "GitHub",
+      "quick_links_note": "Use whichever channel is easiest.",
+      "details_eyebrow_label": "Contact Details",
+      "details_heading": "Reach me directly",
+      "details_intro": "Email, phone, location, and profile links.",
+      "profiles_label": "Profiles",
+      "form_eyebrow_label": "Project Brief",
+      "form_heading": "Send a short brief",
+      "form_intro": "Share the context and what you need help with so I can reply with the right next step.",
+      "submit_button_label": "Send Brief",
+      "success_message": "I've received your message and will get back to you soon."
+    },
+    "product_focus": {
+      "eyebrow_label": "How I Work",
+      "heading": "Clear scope, practical tradeoffs, and delivery that fits both teams and focused client work.",
+      "intro": "I prefer straightforward execution: understand the problem, align on priorities, and ship without adding unnecessary complexity.",
+      "principles_label": "Working Principles",
+      "principles": [
+        "Clarify scope",
+        "Ship in stages",
+        "Keep systems simple",
+        "Leave clean handoff"
+      ],
+      "closing_note": "The goal is reliable delivery, useful collaboration, and a codebase that still makes sense when the next phase starts."
+    }
   }
 }

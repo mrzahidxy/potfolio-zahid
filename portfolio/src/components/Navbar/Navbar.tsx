@@ -138,18 +138,18 @@ const Navbar: React.FC = () => {
       <nav className="fixed inset-x-0 top-0 z-50 pt-3 text-slate-900 transition-colors duration-300 dark:text-white">
         <div className="container max-w-6xl px-4 md:px-6">
           <div className="relative overflow-visible">
-            <div className="overflow-hidden rounded-[20px] border border-slate-200/80 bg-white/95 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-colors duration-300 dark:border-slate-800/80 dark:bg-slate-950/94">
+            <div className="overflow-hidden rounded-[20px] border border-slate-200/80 bg-white/95 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-colors duration-300 dark:border-slate-700/80 dark:bg-slate-900/95 dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
               <div className="flex items-center justify-between gap-2 px-3 py-2.5 md:px-5 md:py-3.5">
-              <a href="#intro" className="min-w-0 transition-opacity hover:opacity-90" onClick={closeDrawer}>
-                <div className="flex flex-col space-y-0.5">
-                  <span className="truncate text-[14px] font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-[15px]">
-                    {name}
-                  </span>
-                  <span className="truncate text-[11px] text-slate-500 dark:text-slate-400 sm:text-[12px]">
-                    {title}
-                  </span>
-                </div>
-              </a>
+                <a href="#intro" className="min-w-0 transition-opacity hover:opacity-90" onClick={closeDrawer}>
+                  <div className="flex flex-col space-y-0.5">
+                    <span className="truncate text-[14px] font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-[15px]">
+                      {name}
+                    </span>
+                    <span className="truncate text-[11px] text-slate-500 dark:text-slate-400 sm:text-[12px]">
+                      {title}
+                    </span>
+                  </div>
+                </a>
 
               <ul className="hidden items-center gap-1 lg:flex">
                 {NAV_ITEMS.map((item) => (
@@ -166,7 +166,7 @@ const Navbar: React.FC = () => {
               <div className="flex items-center gap-2">
                 <a
                   href="#contact"
-                  className="hidden h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-slate-950 px-4 text-sm font-semibold text-white transition duration-200 hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-200/70 sm:inline-flex sm:min-w-[9rem] dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 dark:focus-visible:ring-sky-900"
+                  className="hidden h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-slate-950 px-4 text-sm font-semibold text-white transition duration-200 hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-200/70 sm:inline-flex sm:min-w-[9rem] dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-white dark:focus-visible:ring-sky-900"
                 >
                   Work With Me
                 </a>
@@ -180,7 +180,7 @@ const Navbar: React.FC = () => {
                   aria-expanded={isDrawerOpen}
                   aria-controls="mobile-nav-drawer"
                   aria-label={isDrawerOpen ? "Close navigation menu" : "Open navigation menu"}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/80 bg-white/80 text-slate-700 transition duration-200 hover:border-slate-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-200/70 lg:hidden dark:border-slate-700/80 dark:bg-slate-900/80 dark:text-slate-100 dark:hover:border-slate-600 dark:hover:bg-slate-900 dark:focus-visible:ring-sky-900"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/80 bg-white/80 text-slate-700 transition duration-200 hover:border-slate-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-200/70 lg:hidden dark:border-slate-700/80 dark:bg-slate-800/90 dark:text-slate-100 dark:hover:border-slate-600 dark:hover:bg-slate-700 dark:focus-visible:ring-sky-900"
                 >
                   <FontAwesomeIcon icon={isDrawerOpen ? faXmark : faBars} />
                 </button>
@@ -199,14 +199,14 @@ const Navbar: React.FC = () => {
               />
               <div
                 id="mobile-nav-drawer"
-                className={`absolute left-0 right-0 top-full z-50 border-t border-slate-200/70 bg-white/98 px-3 pb-4 pt-3 shadow-[0_24px_60px_rgba(15,23,42,0.14)] transition-all duration-300 dark:border-slate-800/80 dark:bg-slate-950/98 ${
+                className={`absolute left-0 right-0 top-full z-50 border-t border-slate-200/70 bg-white/98 px-3 pb-4 pt-3 shadow-[0_24px_60px_rgba(15,23,42,0.14)] transition-all duration-300 dark:border-slate-700/80 dark:bg-slate-900/98 dark:shadow-[0_24px_60px_rgba(0,0,0,0.35)] ${
                   isDrawerOpen
                     ? "translate-y-0 opacity-100"
                     : "-translate-y-3 opacity-0"
                 }`}
               >
                 <div className="space-y-3">
-                  <div className="rounded-[18px] border border-slate-200/70 bg-slate-50/80 p-2.5 dark:border-slate-800/80 dark:bg-slate-900/70">
+                  <div className="rounded-[18px] border border-slate-200/70 bg-slate-50/80 p-2.5 dark:border-slate-700/80 dark:bg-slate-950/50">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">
                       Navigation
                     </p>
@@ -232,7 +232,7 @@ const Navbar: React.FC = () => {
                     <a
                       href="#contact"
                       onClick={closeDrawer}
-                      className="inline-flex h-11 items-center justify-center rounded-full bg-slate-950 px-4 text-sm font-semibold text-white transition duration-200 hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
+                      className="inline-flex h-11 items-center justify-center rounded-full bg-slate-950 px-4 text-sm font-semibold text-white transition duration-200 hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-white"
                     >
                       Work With Me
                     </a>

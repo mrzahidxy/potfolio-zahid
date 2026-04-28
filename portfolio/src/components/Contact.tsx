@@ -177,7 +177,7 @@ const Contact: React.FC<ContactProps> = ({
   return (
     <section
       id="contact"
-      className="relative scroll-mt-28 px-4 py-20 md:px-6 md:py-24 lg:px-8"
+      className="relative scroll-mt-32 px-4 py-20 sm:scroll-mt-28 md:px-6 md:py-24 lg:px-8"
     >
       <div className="container max-w-6xl space-y-8 md:space-y-10">
         <Reveal className="space-y-4">
@@ -212,7 +212,7 @@ const Contact: React.FC<ContactProps> = ({
                 <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-sky-200/70">
                   {content.quick_links_label}
                 </p>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                   {quickActions.map((action) => (
                     <a
                       key={action.label}
@@ -227,8 +227,8 @@ const Contact: React.FC<ContactProps> = ({
                       }
                       className={
                         action.primary
-                          ? "inline-flex h-11 items-center rounded-full bg-sky-400 px-5 text-sm font-semibold text-slate-950 shadow-[0_18px_40px_rgba(56,189,248,0.28)] transition duration-200 hover:-translate-y-[1px] hover:bg-sky-300"
-                          : "inline-flex h-11 items-center rounded-full border border-white/15 bg-white/5 px-5 text-sm font-semibold text-white transition duration-200 hover:-translate-y-px hover:border-white/30 hover:bg-white/10"
+                          ? "inline-flex h-11 w-full items-center justify-center rounded-full bg-sky-400 px-5 text-sm font-semibold text-slate-950 shadow-[0_18px_40px_rgba(56,189,248,0.28)] transition duration-200 hover:-translate-y-[1px] hover:bg-sky-300 sm:w-auto"
+                          : "inline-flex h-11 w-full items-center justify-center rounded-full border border-white/15 bg-white/5 px-5 text-sm font-semibold text-white transition duration-200 hover:-translate-y-px hover:border-white/30 hover:bg-white/10 sm:w-auto"
                       }
                     >
                       {action.label}
@@ -283,7 +283,7 @@ const Contact: React.FC<ContactProps> = ({
                     {socialLinks.map((social) => (
                       <div
                         key={social.href}
-                        className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 backdrop-blur transition duration-200 hover:-translate-y-[1px] hover:border-sky-200/40 hover:bg-white/20"
+                        className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/10 backdrop-blur transition duration-200 hover:-translate-y-[1px] hover:border-sky-200/40 hover:bg-white/20"
                       >
                         <SocialLink {...social} />
                       </div>
@@ -314,7 +314,7 @@ const Contact: React.FC<ContactProps> = ({
               >
                 {({ isSubmitting }) => (
                   <Form id="email-form" className="space-y-6">
-                    <div className="grid gap-5 md:grid-cols-2">
+                    <div className="grid gap-4 sm:gap-5 md:grid-cols-2">
                       {formFields.map((data, index) => {
                         const isMessage = data.id === "message";
                         return (
@@ -334,9 +334,9 @@ const Contact: React.FC<ContactProps> = ({
                               name={data.name}
                               placeholder={data.placeholder}
                               as={isMessage ? "textarea" : "input"}
-                              rows={isMessage ? 5 : undefined}
+                              rows={isMessage ? 6 : undefined}
                               className={
-                                isMessage ? "min-h-[140px] resize-none" : ""
+                                isMessage ? "min-h-[160px] resize-none" : ""
                               }
                             />
                           </div>
@@ -348,7 +348,7 @@ const Contact: React.FC<ContactProps> = ({
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full rounded-full bg-sky-400 px-6 py-3.5 text-sm font-semibold text-slate-900 shadow-lg shadow-sky-500/30 transition duration-200 hover:-translate-y-[1px] hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:bg-sky-400"
+                        className="w-full rounded-full bg-sky-400 px-6 py-4 text-sm font-semibold text-slate-900 shadow-lg shadow-sky-500/30 transition duration-200 hover:-translate-y-[1px] hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:bg-sky-400"
                       >
                         {isSubmitting
                           ? "Sending..."

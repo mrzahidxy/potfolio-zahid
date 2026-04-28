@@ -13,7 +13,6 @@ if (!mongoUri) {
   throw new Error("MONGODB_URI is required to start the visit counter service");
 }
 
-// Connect to MongoDB
 mongoose
   .connect(mongoUri)
   .then(() => {
@@ -23,7 +22,6 @@ mongoose
     console.error("Error connecting to MongoDB:", error);
   });
 
-// Express setup
 const app = express();
 const PORT = process.env.PORT ?? 8010;
 
@@ -44,7 +42,6 @@ app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "ok", db: dbStatus });
 });
 
-// REST endpoint that is the single source of truth for increments
 app.post("/api/visit", async (_req: Request, res: Response) => {
   try {
     const updatedCount = await incrementVisitCount();
@@ -56,7 +53,6 @@ app.post("/api/visit", async (_req: Request, res: Response) => {
   }
 });
 
-// Allow clients to read the current count without incrementing
 app.get("/api/visit", async (_req: Request, res: Response) => {
   try {
     const visitCount = await readVisitCount();
@@ -67,12 +63,10 @@ app.get("/api/visit", async (_req: Request, res: Response) => {
   }
 });
 
-// Start the Express server
 const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-// WebSocket setup
 const wss = new WebSocketServer({ server });
 
 wss.on("connection", async (ws: WebSocket) => {
@@ -90,7 +84,6 @@ wss.on("connection", async (ws: WebSocket) => {
   });
 });
 
-// Broadcast function
 const broadcastVisitCount = (visitCount: number) => {
   const message = JSON.stringify({ type: "visit_count", count: visitCount });
   wss.clients.forEach((client) => {

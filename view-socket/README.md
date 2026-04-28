@@ -17,4 +17,4 @@ npm run dev
 
 ## Production / Render
 
-The repo includes `render.yaml` which provisions a Render web service with `npm start` as the start command. The `prestart` script compiles TypeScript before boot so no custom build hook is necessary. Make sure to configure the `MONGODB_URI` environment variable in Render or via `.env.local` locally.
+The repo includes `render.yaml` which provisions a Render web service with `npm start` as the start command. The `prestart` script compiles TypeScript before boot so no custom build hook is necessary. Copy `.env.sample` to `.env.local` locally and set `MONGODB_URI` there, plus `ALLOWED_ORIGINS` if you need a restricted CORS allowlist.

@@ -1,6 +1,5 @@
 "use client";
 
-import { Inter } from "next/font/google";
 import { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -15,8 +14,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AuthContext } from "@/context/AuthContext";
-
-const inter = Inter({ subsets: ["latin"] });
 
 const navLinks = [
   { href: "/admin", label: "Dashboard", icon: faGauge },
@@ -70,12 +67,12 @@ export default function AdminShell({
     navLinks.find((link) => pathname?.startsWith(link.href))?.label ?? "Admin";
 
   if (isLoginPage) {
-    return <div className={inter.className}>{children}</div>;
+    return <div className="font-sans">{children}</div>;
   }
 
   return (
     <div
-      className={`${inter.className} flex min-h-screen ${isDarkMode ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-900"}`}
+      className={`font-sans flex min-h-screen ${isDarkMode ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-900"}`}
     >
       <aside
         className={`hidden w-64 flex-col border-r px-5 py-6 shadow-xl backdrop-blur lg:flex ${

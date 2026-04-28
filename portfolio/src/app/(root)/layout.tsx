@@ -1,14 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
 import Navbar from "@/components/Navbar/Navbar";
 import PortfolioFooter from "@/components/PortfolioFooter";
 import { PublicProfileProvider } from "@/context/PublicProfileContext";
 import { readProfileContent } from "@/lib/profile-content";
-
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
 
 export async function generateMetadata(): Promise<Metadata> {
   const profile = await readProfileContent();
@@ -39,7 +33,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${jakarta.className} bg-transparent text-slate-900 antialiased transition-colors duration-300 dark:text-slate-50`}
+        className="font-sans bg-transparent text-slate-900 antialiased transition-colors duration-300 dark:text-slate-50"
       >
         <PublicProfileProvider>
           <Navbar />

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Navbar from "@/components/Navbar/Navbar";
 import PortfolioFooter from "@/components/PortfolioFooter";
@@ -25,6 +25,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default async function RootLayout({
   children,
 }: {
@@ -37,7 +43,7 @@ export default async function RootLayout({
       >
         <PublicProfileProvider>
           <Navbar />
-          <main className="pt-28 md:pt-24">{children}</main>
+          <main className="pt-[7.5rem] sm:pt-32 md:pt-24">{children}</main>
           <PortfolioFooter />
         </PublicProfileProvider>
       </body>

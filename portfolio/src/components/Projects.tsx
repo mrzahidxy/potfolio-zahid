@@ -45,7 +45,7 @@ const Projects: React.FC = () => {
     return (
       <section
         id="projects"
-        className="scroll-mt-28 px-4 py-20 md:px-6 md:py-24 lg:px-8"
+        className="scroll-mt-32 px-4 py-20 sm:scroll-mt-28 md:px-6 md:py-24 lg:px-8"
       >
         <div className="container max-w-6xl flex items-center justify-center">
           <DefaultLoader />
@@ -59,9 +59,9 @@ const Projects: React.FC = () => {
   return (
     <section
       id="projects"
-      className="relative scroll-mt-28 px-4 py-20 md:px-6 md:py-24 lg:px-8"
+      className="relative scroll-mt-32 px-4 py-20 sm:scroll-mt-28 md:px-6 md:py-24 lg:px-8"
     >
-      <div className="container max-w-6xl space-y-10 md:space-y-12">
+      <div className="container max-w-6xl space-y-8 sm:space-y-10 md:space-y-12">
         <Reveal className="space-y-4">
           <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
             Projects
@@ -75,7 +75,7 @@ const Projects: React.FC = () => {
         </Reveal>
 
         {projects.length > 0 ? (
-          <div className="grid gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 xl:gap-7">
+          <div className="grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 xl:gap-7">
             {projects.map((project: Project, index) => (
               <Reveal
                 key={project._id ?? project.title}

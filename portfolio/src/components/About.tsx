@@ -29,7 +29,7 @@ const About: React.FC<AboutProps> = ({
   return (
     <section
       id="about"
-      className="relative scroll-mt-28 px-4 py-20 md:px-6 md:py-24 lg:px-8"
+      className="relative scroll-mt-32 px-4 py-20 sm:scroll-mt-28 md:px-6 md:py-24 lg:px-8"
     >
       <div className="container max-w-6xl space-y-12 md:space-y-14">
         <Reveal className="space-y-4">

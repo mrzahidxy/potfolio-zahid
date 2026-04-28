@@ -5,7 +5,7 @@ import Experience from "@/components/Experience";
 
 export default function Home() {
   return (
-    <div className="relative flex flex-col gap-0 bg-transparent text-slate-900 dark:text-slate-50">
+    <div className="relative flex flex-col gap-0 overflow-x-clip bg-transparent text-slate-900 dark:text-slate-50">
       <HomeProfileSections />
       <Experience />
       <Projects />

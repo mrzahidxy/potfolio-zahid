@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import Project, { IProject } from "@/models/Project";
 import dbConnect from "@/lib/dbConnect";
+import { createLogger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
+const log = createLogger({ context: "api/projects" });
 
 export async function GET() {
   try {
@@ -19,7 +21,7 @@ export async function GET() {
     });
     return NextResponse.json({ success: true, data: projects });
   } catch (error) {
-    console.error("Error occurred:", error);
+    log.error("Failed to fetch public projects.", error);
     return NextResponse.json(
       { success: false, message: "An error occurred while fetching projects." },
       { status: 500 }

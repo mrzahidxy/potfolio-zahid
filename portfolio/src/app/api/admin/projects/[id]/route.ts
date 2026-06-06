@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
+import { createLogger } from "@/lib/logger";
 import dbConnect from "@/lib/dbConnect";
 import Project from "@/models/Project";
 import { uploadToCloudinary } from "@/helper/common-method";
 
 export const dynamic = "force-dynamic";
+const log = createLogger({ context: "api/admin/projects/[id]" });
 
 // GET: Fetch a project by ID
 export async function GET(req: Request, { params }: { params: { id: string } }) {
@@ -23,7 +25,11 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     }
     return NextResponse.json({ success: true, data: project }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ success: false, message: "Error fetching project" }, { status: 400 });
+    log.error("Failed to fetch project.", error);
+    return NextResponse.json(
+      { success: false, message: "Error fetching project" },
+      { status: 400 }
+    );
   }
 }
 
@@ -82,8 +88,11 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
     return NextResponse.json({ success: true, data: project }, { status: 200 });
   } catch (error) {
-    console.error("Error updating project:", error);
-    return NextResponse.json({ success: false, message: "Error updating project" }, { status: 400 });
+    log.error("Failed to update project.", error);
+    return NextResponse.json(
+      { success: false, message: "Error updating project" },
+      { status: 400 }
+    );
   }
 }
 
@@ -105,6 +114,10 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     }
     return NextResponse.json({ success: true, message: "Project deleted successfully" }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ success: false, message: "Error deleting project" }, { status: 400 });
+    log.error("Failed to delete project.", error);
+    return NextResponse.json(
+      { success: false, message: "Error deleting project" },
+      { status: 400 }
+    );
   }
 }

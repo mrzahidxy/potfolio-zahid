@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
+import { createLogger } from "@/lib/logger";
 import dbConnect from "@/lib/dbConnect";
 import Project from "@/models/Project";
 
 export const dynamic = "force-dynamic";
+const log = createLogger({ context: "api/admin/projects/[id]/archive" });
 
 export async function PATCH(
   req: Request,
@@ -42,7 +44,7 @@ export async function PATCH(
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error toggling archive status:", error);
+    log.error("Failed to toggle archive status.", error);
     return NextResponse.json(
       { success: false, message: "Error updating archive status" },
       { status: 400 }

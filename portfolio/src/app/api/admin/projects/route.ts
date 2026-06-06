@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import Project from "@/models/Project";
 import dbConnect from "@/lib/dbConnect";
 import { uploadToCloudinary } from "@/helper/common-method";
+import { createLogger } from "@/lib/logger";
 
 export async function POST(req: NextRequest) {
+  const log = createLogger({ context: "api/admin/projects" });
   try {
     const connection = await dbConnect();
     if (!connection) {
@@ -64,7 +66,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, data: project }, { status: 201 });
   } catch (error) {
-    console.error("Error creating project:", error);
-    return NextResponse.json({ success: false, message: "Error creating project" }, { status: 400 });
+    log.error("Failed to create project.", error);
+    return NextResponse.json(
+      { success: false, message: "Error creating project" },
+      { status: 400 }
+    );
   }
 }

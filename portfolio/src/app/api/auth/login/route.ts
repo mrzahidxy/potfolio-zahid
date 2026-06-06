@@ -3,9 +3,11 @@ import jwt from "jsonwebtoken";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import { NextRequest, NextResponse } from "next/server";
+import { createLogger } from "@/lib/logger";
 
 // Login handler
 export async function POST(req: NextRequest) {
+  const log = createLogger({ context: "api/auth/login" });
   const connection = await dbConnect();
   if (!connection) {
     return NextResponse.json(
@@ -53,7 +55,7 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error creating user:", error);
+    log.error("Failed to create login session.", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },
       { status: 500 }

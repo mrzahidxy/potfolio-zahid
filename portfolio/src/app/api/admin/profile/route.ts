@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createLogger } from "@/lib/logger";
 import { adminProfileSchema } from "@/lib/profile-admin";
 import {
   readAdminProfileApiContent,
@@ -7,6 +8,7 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+const log = createLogger({ context: "api/admin/profile" });
 
 export async function GET() {
   try {
@@ -15,7 +17,7 @@ export async function GET() {
       data: await readAdminProfileApiContent(),
     });
   } catch (error) {
-    console.error("Error loading profile content:", error);
+    log.error("Failed to load admin profile content.", error);
     return NextResponse.json(
       { success: false, message: "Failed to load profile content." },
       { status: 500 }
@@ -47,7 +49,7 @@ export async function PUT(req: NextRequest) {
       data: updatedProfile,
     });
   } catch (error) {
-    console.error("Error updating profile content:", error);
+    log.error("Failed to update admin profile content.", error);
     return NextResponse.json(
       { success: false, message: "Failed to update profile content." },
       { status: 500 }

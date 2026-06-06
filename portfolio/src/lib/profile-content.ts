@@ -1,6 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 import dbConnect from "@/lib/dbConnect";
+import { createLogger } from "@/lib/logger";
 import PortfolioContent from "@/models/PortfolioContent";
 import {
   defaultAdminProfilePayload,
@@ -16,6 +17,7 @@ import type { AdminExperiencePayload } from "./experience-admin";
 
 const PROFILE_PATH = path.join(process.cwd(), "src", "data", "profile.json");
 const PORTFOLIO_CONTENT_KEY = "primary";
+const log = createLogger({ context: "lib/profile-content" });
 
 const toSlug = (value: string) =>
   value
@@ -137,7 +139,7 @@ export async function readProfileContent(): Promise<ProfileContent> {
 
     return mergeProfileRecordWithFile(fileProfile, record);
   } catch (error) {
-    console.error("Falling back to file-based profile content:", error);
+    log.warn("Falling back to file-based profile content.", error);
     return fileProfile;
   }
 }
@@ -162,7 +164,7 @@ async function readProfileContentForExperienceApi(): Promise<ProfileContent> {
 
     return mergeProfileRecordWithFile(fileProfile, record);
   } catch (error) {
-    console.error("Falling back to file-based experience content:", error);
+    log.warn("Falling back to file-based experience content.", error);
     return fileProfile;
   }
 }
@@ -193,7 +195,7 @@ async function writeProfileContent(profile: ProfileContent): Promise<ProfileCont
       );
     }
   } catch (error) {
-    console.error("Failed to sync portfolio content to database:", error);
+    log.error("Failed to sync portfolio content to database.", error);
   }
 
   return normalizedProfile;
@@ -269,7 +271,7 @@ export async function readPublicProfileApiContent(): Promise<PublicProfileData> 
 
     return pickPublicProfileContent(mergeProfileRecordWithFile(fileProfile, record));
   } catch (error) {
-    console.error("Falling back to file-based public profile content:", error);
+    log.warn("Falling back to file-based public profile content.", error);
     return pickPublicProfileContent(fileProfile);
   }
 }
@@ -294,7 +296,7 @@ export async function readAdminProfileApiContent(): Promise<AdminProfilePayload>
 
     return pickAdminProfileContent(mergeProfileRecordWithFile(fileProfile, record));
   } catch (error) {
-    console.error("Falling back to file-based admin profile content:", error);
+    log.warn("Falling back to file-based admin profile content.", error);
     return pickAdminProfileContent(fileProfile);
   }
 }

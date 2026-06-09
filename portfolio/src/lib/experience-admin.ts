@@ -45,5 +45,6 @@ export const toAdminExperienceFormValues = (
   value: AdminExperiencePayload
 ): AdminExperienceFormValues => ({
   ...value,
+  setAsCurrent: value.setAsCurrent ?? false,
   highlightsText: experienceHighlightsToText(value.highlights),
 });

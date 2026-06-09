@@ -5,12 +5,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   faArrowRightFromBracket,
+  faBars,
   faBriefcase,
   faDiagramProject,
   faGauge,
   faMoon,
   faSun,
   faUser,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AuthContext } from "@/context/AuthContext";
@@ -37,6 +39,7 @@ export default function AdminShell({
   const router = useRouter();
   const pathname = usePathname();
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const isLoginPage = pathname === "/admin/login";
   const hasAdminAccess =
     Boolean(currentUser?.accessToken) && currentUser?.isAdmin === true;
@@ -64,6 +67,10 @@ export default function AdminShell({
     localStorage.setItem("adminDarkMode", JSON.stringify(isDarkMode));
     document.documentElement.classList.toggle("dark", isDarkMode);
   }, [isDarkMode]);
+
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname]);
 
   const handleLogout = () => {
     dispatch({ type: "LOGOUT" });
@@ -150,53 +157,112 @@ export default function AdminShell({
 
       <div className="flex-1">
         <header
-          className={`flex items-center justify-between border-b px-4 py-4 shadow-sm backdrop-blur ${
+          className={`border-b px-4 py-4 shadow-sm backdrop-blur ${
             isDarkMode ? "border-slate-800 bg-slate-900/70" : "border-slate-200 bg-white/80"
           }`}
         >
-          <div>
-            <p
-              className={`text-xs uppercase tracking-[0.3em] ${
-                isDarkMode ? "text-slate-500" : "text-slate-500"
-              }`}
-            >
-              Admin
-            </p>
-            <h1
-              className={`text-xl font-semibold ${
-                isDarkMode ? "text-white" : "text-slate-900"
-              }`}
-            >
-              {activeTitle}
-            </h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setIsDarkMode((prev) => !prev)}
-              className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-semibold transition ${
-                isDarkMode
-                  ? "border-slate-700 bg-slate-800 text-slate-100 hover:border-slate-500"
-                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
-              }`}
-              aria-label="Toggle theme"
-            >
-              <FontAwesomeIcon
-                icon={isDarkMode ? faSun : faMoon}
-                className="h-4 w-4"
-              />
-            </button>
-            <div
-              className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm shadow-inner ${
-                isDarkMode
-                  ? "border-slate-800 bg-slate-900 text-slate-200"
-                  : "border-slate-200 bg-white text-slate-700"
-              }`}
-            >
-              <span className="inline-flex h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_0_6px_rgba(52,211,153,0.25)]" />
-              <span>Active</span>
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p
+                className={`text-xs uppercase tracking-[0.3em] ${
+                  isDarkMode ? "text-slate-500" : "text-slate-500"
+                }`}
+              >
+                Admin
+              </p>
+              <h1
+                className={`text-xl font-semibold ${
+                  isDarkMode ? "text-white" : "text-slate-900"
+                }`}
+              >
+                {activeTitle}
+              </h1>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setMobileNavOpen((prev) => !prev)}
+                className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-semibold transition lg:hidden ${
+                  isDarkMode
+                    ? "border-slate-700 bg-slate-800 text-slate-100 hover:border-slate-500"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                }`}
+                aria-label="Toggle admin navigation"
+                aria-expanded={mobileNavOpen}
+              >
+                <FontAwesomeIcon
+                  icon={mobileNavOpen ? faXmark : faBars}
+                  className="h-4 w-4"
+                />
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsDarkMode((prev) => !prev)}
+                className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-semibold transition ${
+                  isDarkMode
+                    ? "border-slate-700 bg-slate-800 text-slate-100 hover:border-slate-500"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                }`}
+                aria-label="Toggle theme"
+              >
+                <FontAwesomeIcon
+                  icon={isDarkMode ? faSun : faMoon}
+                  className="h-4 w-4"
+                />
+              </button>
+              <div
+                className={`hidden items-center gap-2 rounded-full border px-3 py-1.5 text-sm shadow-inner sm:flex ${
+                  isDarkMode
+                    ? "border-slate-800 bg-slate-900 text-slate-200"
+                    : "border-slate-200 bg-white text-slate-700"
+                }`}
+              >
+                <span className="inline-flex h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_0_6px_rgba(52,211,153,0.25)]" />
+                <span>Active</span>
+              </div>
             </div>
           </div>
+
+          {mobileNavOpen && (
+            <nav className="mt-4 space-y-1 lg:hidden" aria-label="Admin navigation">
+              {navLinks.map((link) => {
+                const active = isActiveAdminLink(pathname, link.href);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                      active
+                        ? isDarkMode
+                          ? "bg-slate-800 text-white shadow-inner"
+                          : "bg-slate-100 text-slate-900 shadow-inner"
+                        : isDarkMode
+                          ? "text-slate-300 hover:bg-slate-800 hover:text-white"
+                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    }`}
+                  >
+                    <FontAwesomeIcon icon={link.icon} className="h-4 w-4" />
+                    {link.label}
+                  </Link>
+                );
+              })}
+              <button
+                type="button"
+                onClick={handleLogout}
+                className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                  isDarkMode
+                    ? "border-slate-800 text-slate-200 hover:border-slate-600 hover:bg-slate-800"
+                    : "border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-100"
+                }`}
+              >
+                <span>Logout</span>
+                <FontAwesomeIcon
+                  icon={faArrowRightFromBracket}
+                  className="h-4 w-4"
+                />
+              </button>
+            </nav>
+          )}
         </header>
 
         <main className="px-4 py-6 lg:px-8 lg:py-8">

@@ -26,8 +26,7 @@ export default function DashboardPage() {
 
   const handleLogout = () => {
     dispatch({ type: "LOGOUT" });
-    localStorage.removeItem("currentUser");
-    router.push("/admin/login");
+    router.replace("/admin/login");
   };
 
   useEffect(() => {

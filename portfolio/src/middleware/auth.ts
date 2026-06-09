@@ -2,12 +2,20 @@
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-const secret = new TextEncoder().encode(process.env.NEXT_PUBLIC_JWT_SEC || "");
+const getJwtSecret = () => process.env.JWT_SEC || process.env.NEXT_PUBLIC_JWT_SEC;
 
 async function authorizeRequest(
   req: Request,
   { requireAdmin = false }: { requireAdmin?: boolean } = {}
 ) {
+  const jwtSecret = getJwtSecret();
+  if (!jwtSecret) {
+    return NextResponse.json(
+      { success: false, error: "Authentication is not configured." },
+      { status: 500 }
+    );
+  }
+
   const authHeader = req.headers.get("authorization");
   if (!authHeader) {
     return NextResponse.json(
@@ -15,10 +23,19 @@ async function authorizeRequest(
       { status: 401 }
     );
   }
-  const token = authHeader.split(" ")[1];
+
+  const [scheme, token] = authHeader.split(" ");
+  if (scheme !== "Bearer" || !token) {
+    return NextResponse.json(
+      { success: false, error: "User is unauthenticated." },
+      { status: 401 }
+    );
+  }
+
   try {
+    const secret = new TextEncoder().encode(jwtSecret);
     const { payload } = await jwtVerify(token, secret);
-    if (requireAdmin && !payload.isAdmin) {
+    if (requireAdmin && payload.isAdmin !== true) {
       return NextResponse.json(
         { success: false, error: "You are not an admin." },
         { status: 403 }

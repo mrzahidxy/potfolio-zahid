@@ -37,12 +37,18 @@ export default function AdminShell({
   const router = useRouter();
   const pathname = usePathname();
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const isLoginPage = pathname === "/admin/login";
+  const hasAdminAccess =
+    Boolean(currentUser?.accessToken) && currentUser?.isAdmin === true;
 
   useEffect(() => {
-    if (typeof window !== "undefined" && !currentUser?.accessToken) {
-      router.push("/admin/login");
+    if (typeof window === "undefined" || isLoginPage) return;
+
+    if (!hasAdminAccess) {
+      dispatch({ type: "LOGOUT" });
+      router.replace("/admin/login");
     }
-  }, [currentUser, router]);
+  }, [dispatch, hasAdminAccess, isLoginPage, router]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -59,14 +65,9 @@ export default function AdminShell({
     document.documentElement.classList.toggle("dark", isDarkMode);
   }, [isDarkMode]);
 
-  const isLoginPage = pathname === "/admin/login";
-
   const handleLogout = () => {
     dispatch({ type: "LOGOUT" });
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("currentUser");
-    }
-    router.push("/admin/login");
+    router.replace("/admin/login");
   };
 
   const activeTitle =
@@ -75,6 +76,14 @@ export default function AdminShell({
 
   if (isLoginPage) {
     return <div className="font-sans">{children}</div>;
+  }
+
+  if (!hasAdminAccess) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 text-sm text-slate-300">
+        Redirecting to sign in...
+      </div>
+    );
   }
 
   return (

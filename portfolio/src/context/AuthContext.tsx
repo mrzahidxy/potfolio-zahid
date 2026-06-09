@@ -1,3 +1,5 @@
+"use client";
+
 import React, {
   createContext,
   useEffect,
@@ -5,18 +7,20 @@ import React, {
   ReactNode,
 } from "react";
 
+interface AuthUser {
+  accessToken: string;
+  email?: string;
+  isAdmin?: boolean;
+}
+
 // Define the type for the initial state
 interface State {
-  currentUser: {
-    accessToken: string;
-    email?: string;
-    isAdmin?: boolean;
-  } | null;
+  currentUser: AuthUser | null;
 }
 
 // Define the action types
 type Action =
-  | { type: "LOGIN"; payload: { accessToken: string; email?: string; isAdmin?: boolean } }
+  | { type: "LOGIN"; payload: AuthUser }
   | { type: "LOGOUT" };
 
 // Define the context type
@@ -35,8 +39,10 @@ const getInitialUser = (): State["currentUser"] => {
   if (typeof window === "undefined") return null;
   const storedUser = localStorage.getItem("currentUser");
   try {
-    return storedUser ? JSON.parse(storedUser) : null;
+    const parsed = storedUser ? JSON.parse(storedUser) : null;
+    return parsed && typeof parsed.accessToken === "string" ? parsed : null;
   } catch {
+    localStorage.removeItem("currentUser");
     return null;
   }
 };
@@ -74,7 +80,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.setItem("currentUser", JSON.stringify(state.currentUser));
+      if (state.currentUser) {
+        localStorage.setItem("currentUser", JSON.stringify(state.currentUser));
+      } else {
+        localStorage.removeItem("currentUser");
+      }
     }
   }, [state.currentUser]);
 

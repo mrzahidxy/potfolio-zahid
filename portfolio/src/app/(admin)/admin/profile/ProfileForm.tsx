@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import DefaultLoader from "@/components/common/DefaultLoader";
 import { useAxiosWithAuth } from "@/helper/request-method";
@@ -62,29 +62,29 @@ export default function ProfileForm() {
   );
   const [errors, setErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitResult, setSubmitResult] = useState<{
     success: boolean;
     message: string;
   } | null>(null);
 
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const response = await api.get<ProfileResponse>("/admin/profile");
-        setFormData(toAdminProfileFormValues(response.data.data));
-      } catch (error) {
-        setSubmitResult({
-          success: false,
-          message: "Failed to load profile content.",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadProfile();
+  const loadProfile = useCallback(async () => {
+    try {
+      setLoading(true);
+      setLoadError(null);
+      const response = await api.get<ProfileResponse>("/admin/profile");
+      setFormData(toAdminProfileFormValues(response.data.data));
+    } catch (error) {
+      setLoadError(getApiError(error, "Failed to load profile content."));
+    } finally {
+      setLoading(false);
+    }
   }, [api]);
+
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
 
   const handleChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -139,8 +139,7 @@ export default function ProfileForm() {
 
       setSubmitResult({
         success: false,
-        message:
-          error?.response?.data?.message ?? "Failed to update profile content.",
+        message: getApiError(error, "Failed to update profile content."),
       });
     } finally {
       setIsSubmitting(false);
@@ -149,6 +148,29 @@ export default function ProfileForm() {
 
   if (loading) {
     return <DefaultLoader />;
+  }
+
+  if (loadError) {
+    return (
+      <div className="rounded-2xl border border-red-500/40 bg-red-500/10 p-6 text-red-700 dark:text-red-200">
+        <p className="font-semibold">{loadError}</p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={loadProfile}
+            className="rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500"
+          >
+            Retry
+          </button>
+          <Link
+            href="/admin"
+            className="rounded-full border border-red-500/40 px-4 py-2 text-sm font-semibold transition hover:border-red-400"
+          >
+            Back to dashboard
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -497,6 +519,11 @@ export default function ProfileForm() {
       </form>
     </div>
   );
+}
+
+function getApiError(error: unknown, fallback: string) {
+  const response = (error as any)?.response?.data;
+  return response?.error ?? response?.message ?? fallback;
 }
 
 function Field({

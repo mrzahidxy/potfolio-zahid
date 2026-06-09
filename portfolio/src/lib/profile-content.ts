@@ -3,10 +3,7 @@ import path from "path";
 import dbConnect from "@/lib/dbConnect";
 import { createLogger } from "@/lib/logger";
 import PortfolioContent from "@/models/PortfolioContent";
-import {
-  defaultAdminProfilePayload,
-  type AdminProfilePayload,
-} from "./profile-admin";
+import type { AdminProfilePayload } from "./profile-admin";
 import {
   defaultPublicProfileData,
   type ProfileContent,
@@ -291,7 +288,7 @@ export async function readAdminProfileApiContent(): Promise<AdminProfilePayload>
     }).lean<PortfolioContentRecord>();
 
     if (!record) {
-      return defaultAdminProfilePayload;
+      return pickAdminProfileContent(fileProfile);
     }
 
     return pickAdminProfileContent(mergeProfileRecordWithFile(fileProfile, record));

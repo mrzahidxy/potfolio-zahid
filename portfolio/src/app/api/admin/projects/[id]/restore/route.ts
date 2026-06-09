@@ -4,14 +4,12 @@ import dbConnect from "@/lib/dbConnect";
 import { findProjectByIdOrSlug } from "@/lib/project-admin";
 
 export const dynamic = "force-dynamic";
-const log = createLogger({ context: "api/admin/projects/[id]/archive" });
+const log = createLogger({ context: "api/admin/projects/[id]/restore" });
 
 export async function PATCH(
-  req: Request,
+  _req: Request,
   { params }: { params: { id: string } }
 ) {
-  const { id } = params;
-
   try {
     const connection = await dbConnect();
     if (!connection) {
@@ -21,7 +19,7 @@ export async function PATCH(
       );
     }
 
-    const project = await findProjectByIdOrSlug(id);
+    const project = await findProjectByIdOrSlug(params.id);
 
     if (!project) {
       return NextResponse.json(
@@ -30,20 +28,14 @@ export async function PATCH(
       );
     }
 
-    project.isArchived = true;
+    project.isArchived = false;
     await project.save();
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: project,
-      },
-      { status: 200 }
-    );
+    return NextResponse.json({ success: true, data: project }, { status: 200 });
   } catch (error) {
-    log.error("Failed to archive project.", error);
+    log.error("Failed to restore project.", error);
     return NextResponse.json(
-      { success: false, error: "Error archiving project." },
+      { success: false, error: "Error restoring project." },
       { status: 500 }
     );
   }

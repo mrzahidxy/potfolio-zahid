@@ -22,6 +22,12 @@ const navLinks = [
   { href: "/admin/profile", label: "Profile", icon: faUser },
 ];
 
+const isActiveAdminLink = (pathname: string | null, href: string) => {
+  if (!pathname) return false;
+  if (href === "/admin") return pathname === href;
+  return pathname === href || pathname.startsWith(`${href}/`);
+};
+
 export default function AdminShell({
   children,
 }: {
@@ -64,7 +70,8 @@ export default function AdminShell({
   };
 
   const activeTitle =
-    navLinks.find((link) => pathname?.startsWith(link.href))?.label ?? "Admin";
+    navLinks.find((link) => isActiveAdminLink(pathname, link.href))?.label ??
+    "Admin";
 
   if (isLoginPage) {
     return <div className="font-sans">{children}</div>;
@@ -91,7 +98,7 @@ export default function AdminShell({
 
         <nav className="space-y-1">
           {navLinks.map((link) => {
-            const active = pathname?.startsWith(link.href);
+            const active = isActiveAdminLink(pathname, link.href);
             return (
               <Link
                 key={link.href}

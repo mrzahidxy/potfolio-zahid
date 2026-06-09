@@ -3,17 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import Link from "next/link";
 import Image from "next/image";
+import type { Project } from "@/lib/project-types";
 
 type Props = {
-  project: {
-    description: string;
-    img: string;
-    technology: Array<string>;
-    githubLink: string;
-    liveLink: string;
-    title: string;
-    _id?: string;
-  };
+  project: Project;
 };
 
 const FeatureCard: React.FC<Props> = ({ project }) => {

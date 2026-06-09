@@ -1,65 +1,87 @@
 import { NextRequest, NextResponse } from "next/server";
 import Project from "@/models/Project";
 import dbConnect from "@/lib/dbConnect";
-import { uploadToCloudinary } from "@/helper/common-method";
 import { createLogger } from "@/lib/logger";
+import {
+  projectDataFromPayload,
+  projectPayloadSchema,
+  uploadProjectImage,
+} from "@/lib/project-admin";
 
-export async function POST(req: NextRequest) {
-  const log = createLogger({ context: "api/admin/projects" });
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+const log = createLogger({ context: "api/admin/projects" });
+
+export async function GET() {
   try {
     const connection = await dbConnect();
     if (!connection) {
       return NextResponse.json(
-        { success: false, message: "Database is not configured." },
+        { success: false, error: "Database is not configured." },
+        { status: 500 }
+      );
+    }
+
+    const projects = await Project.find().sort({ createdAt: -1 });
+    return NextResponse.json({ success: true, data: projects }, { status: 200 });
+  } catch (error) {
+    log.error("Failed to fetch admin projects.", error);
+    return NextResponse.json(
+      { success: false, error: "Error fetching projects." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const connection = await dbConnect();
+    if (!connection) {
+      return NextResponse.json(
+        { success: false, error: "Database is not configured." },
         { status: 500 }
       );
     }
 
     const formData = await req.formData();
     const file = formData.get("img") as File | null;
-    const title = formData.get("title") as string | null;
-    const description = formData.get("description") as string | null;
-    const technology = formData.get("technology") as string | null;
-    const githubLink = formData.get("githubLink") as string | null;
-    const liveLink = formData.get("liveLink") as string | null;
+    const parsed = projectPayloadSchema.safeParse({
+      title: formData.get("title"),
+      description: formData.get("description"),
+      technology: formData.get("technology"),
+      githubLink: formData.get("githubLink"),
+      liveLink: formData.get("liveLink") || "",
+    });
 
-    let img: string | undefined = undefined;
-
-    // If an image is provided, upload it to Cloudinary
-    if (file) {
-      const fileBuffer = await file.arrayBuffer();
-      const base64Data = Buffer.from(fileBuffer).toString("base64");
-      const fileUri = `data:${file.type};base64,${base64Data}`;
-
-      // Upload to Cloudinary
-      const uploadRes = await uploadToCloudinary(fileUri, file.name);
-
-      if (!uploadRes.success) {
-        return NextResponse.json(
-          { message: "Image upload failed" },
-          { status: 500 }
-        );
-      }
-
-      img = (uploadRes as any).result.secure_url; // Get the new Cloudinary image URL
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Please correct the highlighted fields.",
+          errors: parsed.error.flatten().fieldErrors,
+        },
+        { status: 400 }
+      );
     }
 
-    // Create a new project object with the fields provided
-    const newProject = {
-      title,
-      description,
-      technology: technology ? technology.split(",") : [], // Convert string to array if provided
-      githubLink,
-      liveLink,
-      img, // Only include the image if one was uploaded
-    };
+    const newProject: Record<string, unknown> = projectDataFromPayload(parsed.data);
 
-    // Insert the new project into the database
+    if (file && file.size > 0) {
+      const upload = await uploadProjectImage(file);
+      if (!upload.success) {
+        return NextResponse.json(
+          { success: false, error: upload.error },
+          { status: 400 }
+        );
+      }
+      newProject.img = upload.imageUrl;
+    }
+
     const project = await Project.create(newProject);
 
     if (!project) {
       return NextResponse.json(
-        { success: false, message: "Project creation failed" },
+        { success: false, error: "Project creation failed." },
         { status: 500 }
       );
     }
@@ -68,8 +90,8 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     log.error("Failed to create project.", error);
     return NextResponse.json(
-      { success: false, message: "Error creating project" },
-      { status: 400 }
+      { success: false, error: "Error creating project." },
+      { status: 500 }
     );
   }
 }

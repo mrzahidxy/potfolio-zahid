@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import { createLogger } from "@/lib/logger";
 import dbConnect from "@/lib/dbConnect";
 import Project from "@/models/Project";
-import { uploadToCloudinary } from "@/helper/common-method";
+import {
+  findProjectByIdOrSlug,
+  projectDataFromPayload,
+  projectPayloadSchema,
+} from "@/lib/project-admin";
 
 export const dynamic = "force-dynamic";
 const log = createLogger({ context: "api/admin/projects/[id]" });
@@ -14,87 +18,82 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     const connection = await dbConnect();
     if (!connection) {
       return NextResponse.json(
-        { success: false, message: "Database is not configured." },
+        { success: false, error: "Database is not configured." },
         { status: 500 }
       );
     }
 
-    const project = await Project.findById(id);
+    const project = await findProjectByIdOrSlug(id);
     if (!project) {
-      return NextResponse.json({ success: false, message: "Project not found" }, { status: 404 });
+      return NextResponse.json({ success: false, error: "Project not found." }, { status: 404 });
     }
     return NextResponse.json({ success: true, data: project }, { status: 200 });
   } catch (error) {
     log.error("Failed to fetch project.", error);
     return NextResponse.json(
-      { success: false, message: "Error fetching project" },
-      { status: 400 }
+      { success: false, error: "Error fetching project." },
+      { status: 500 }
     );
   }
 }
 
-// PUT: Update a project by ID
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+// PATCH: Update a project by ID
+export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   const { id } = params;
   try {
     const connection = await dbConnect();
     if (!connection) {
       return NextResponse.json(
-        { success: false, message: "Database is not configured." },
+        { success: false, error: "Database is not configured." },
         { status: 500 }
       );
     }
 
     const formData = await req.formData();
-    const file = formData.get("img") as File | null;
-    const title = formData.get("title") as string | null;
-    const description = formData.get("description") as string | null;
-    const technology = formData.get("technology") as string | null;
-    const githubLink = formData.get("githubLink") as string | null;
-    const liveLink = formData.get("liveLink") as string | null;
+    const parsed = projectPayloadSchema.safeParse({
+      title: formData.get("title"),
+      description: formData.get("description"),
+      technology: formData.get("technology"),
+      githubLink: formData.get("githubLink"),
+      liveLink: formData.get("liveLink") || "",
+    });
 
-    let img: string | undefined = undefined;
-
-    if (file) {
-      const fileBuffer = await file.arrayBuffer();
-      const base64Data = Buffer.from(fileBuffer).toString("base64");
-      const fileUri = `data:${file.type};base64,${base64Data}`;
-
-      const uploadRes = await uploadToCloudinary(fileUri, file.name);
-
-      if (!uploadRes.success) {
-        return NextResponse.json({ message: "Image upload failed" }, { status: 500 });
-      }
-
-      img = (uploadRes as any).result.secure_url;
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Please correct the highlighted fields.",
+          errors: parsed.error.flatten().fieldErrors,
+        },
+        { status: 400 }
+      );
     }
 
-    const updateData: any = {};
-    if (title) updateData.title = title;
-    if (description) updateData.description = description;
-    if (technology) updateData.technology = technology.split(",");
-    if (githubLink) updateData.githubLink = githubLink;
-    if (liveLink) updateData.liveLink = liveLink;
-    if (img) updateData.img = img;
+    const existing = await findProjectByIdOrSlug(id);
+    if (!existing) {
+      return NextResponse.json({ success: false, error: "Project not found." }, { status: 404 });
+    }
 
-    const project = await Project.findByIdAndUpdate(id, updateData, {
+    const project = await Project.findByIdAndUpdate(existing._id, projectDataFromPayload(parsed.data), {
       new: true,
       runValidators: true,
     });
 
     if (!project) {
-      return NextResponse.json({ success: false, message: "Project not found" }, { status: 404 });
+      return NextResponse.json({ success: false, error: "Project not found." }, { status: 404 });
     }
 
     return NextResponse.json({ success: true, data: project }, { status: 200 });
   } catch (error) {
     log.error("Failed to update project.", error);
     return NextResponse.json(
-      { success: false, message: "Error updating project" },
-      { status: 400 }
+      { success: false, error: "Error updating project." },
+      { status: 500 }
     );
   }
 }
+
+export const PUT = PATCH;
 
 // DELETE: Remove a project by ID
 export async function DELETE(req: Request, { params }: { params: { id: string } }) {
@@ -103,21 +102,30 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     const connection = await dbConnect();
     if (!connection) {
       return NextResponse.json(
-        { success: false, message: "Database is not configured." },
+        { success: false, error: "Database is not configured." },
         { status: 500 }
       );
     }
 
-    const deletedProject = await Project.deleteOne({ _id: id });
-    if (!deletedProject) {
-      return NextResponse.json({ success: false, message: "Project not found" }, { status: 404 });
+    const existing = await findProjectByIdOrSlug(id);
+    if (!existing) {
+      return NextResponse.json({ success: false, error: "Project not found." }, { status: 404 });
     }
-    return NextResponse.json({ success: true, message: "Project deleted successfully" }, { status: 200 });
+
+    const deletedProject = await Project.deleteOne({ _id: existing._id });
+    if (!deletedProject.deletedCount) {
+      return NextResponse.json({ success: false, error: "Project not found." }, { status: 404 });
+    }
+
+    return NextResponse.json(
+      { success: true, deletedId: String(existing._id) },
+      { status: 200 }
+    );
   } catch (error) {
     log.error("Failed to delete project.", error);
     return NextResponse.json(
-      { success: false, message: "Error deleting project" },
-      { status: 400 }
+      { success: false, error: "Error deleting project." },
+      { status: 500 }
     );
   }
 }

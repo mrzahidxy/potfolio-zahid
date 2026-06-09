@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { AuthContext } from "@/context/AuthContext";
 import { useAxiosWithAuth } from "@/helper/request-method";
 
 interface ProjectListResponse {
@@ -16,9 +18,17 @@ interface ExperienceListResponse {
 
 export default function DashboardPage() {
   const api = useAxiosWithAuth();
+  const router = useRouter();
+  const { dispatch } = useContext(AuthContext);
   const [activeCount, setActiveCount] = useState<number>(0);
   const [archivedCount, setArchivedCount] = useState<number>(0);
   const [experienceCount, setExperienceCount] = useState<number>(0);
+
+  const handleLogout = () => {
+    dispatch({ type: "LOGOUT" });
+    localStorage.removeItem("currentUser");
+    router.push("/admin/login");
+  };
 
   useEffect(() => {
     const fetchCounts = async () => {
@@ -62,7 +72,7 @@ export default function DashboardPage() {
             <LinkChip label="Profile" href="/admin/profile" />
             <LinkChip label="Add Project" href="/admin/projects/add" />
             <LinkChip label="Back to Site" href="/" />
-            <LinkChip label="Logout" href="/admin/login" />
+            <ActionChip label="Logout" onClick={handleLogout} />
           </div>
         </div>
 
@@ -136,5 +146,23 @@ function LinkChip({
     >
       {label}
     </Link>
+  );
+}
+
+function ActionChip({
+  label,
+  onClick,
+}: {
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:text-white"
+    >
+      {label}
+    </button>
   );
 }

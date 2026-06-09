@@ -11,7 +11,7 @@ async function authorizeRequest(
   const authHeader = req.headers.get("authorization");
   if (!authHeader) {
     return NextResponse.json(
-      { success: false, message: "User is unauthenticated" },
+      { success: false, error: "User is unauthenticated." },
       { status: 401 }
     );
   }
@@ -20,7 +20,7 @@ async function authorizeRequest(
     const { payload } = await jwtVerify(token, secret);
     if (requireAdmin && !payload.isAdmin) {
       return NextResponse.json(
-        { success: false, message: "You are not an admin" },
+        { success: false, error: "You are not an admin." },
         { status: 403 }
       );
     }
@@ -30,7 +30,7 @@ async function authorizeRequest(
     return response;
   } catch (error) {
     return NextResponse.json(
-      { success: false, message: "Invalid or expired token" },
+      { success: false, error: "Invalid or expired token." },
       { status: 403 }
     );
   }

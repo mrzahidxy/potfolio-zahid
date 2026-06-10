@@ -1,17 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 
-const SOCKET_URL =
-  process.env.NEXT_PUBLIC_WEBSOCKET_URL || "ws://localhost:8010";
-const API_URL = process.env.NEXT_PUBLIC_VISIT_API_URL;
+const SOCKET_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL?.trim() || "";
+const API_URL = process.env.NEXT_PUBLIC_VISIT_API_URL?.trim() || "";
+const shouldConnectVisitCounter = Boolean(SOCKET_URL);
 
 function PortfolioView() {
   const [visitCount, setVisitCount] = useState<number>(0);
   const [status, setStatus] = useState<
     "connecting" | "connected" | "disconnected"
-  >("connecting");
+  >(shouldConnectVisitCounter ? "connecting" : "disconnected");
   const reconnectTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    if (!shouldConnectVisitCounter) {
+      setStatus("disconnected");
+      return;
+    }
+
     const connect = () => {
       setStatus("connecting");
       const socket = new WebSocket(SOCKET_URL);
@@ -24,8 +29,8 @@ function PortfolioView() {
           if (data.type === "visit_count") {
             setVisitCount(data.count);
           }
-        } catch (error) {
-          console.error("Invalid message from socket:", error);
+        } catch {
+          setStatus("disconnected");
         }
       };
 
@@ -51,13 +56,18 @@ function PortfolioView() {
   }, []);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/visit`, { method: "POST" }).catch((error) =>
-      console.error("Visit API error:", error)
-    );
+    if (!shouldConnectVisitCounter || !API_URL) return;
+
+    fetch(`${API_URL}/api/visit`, { method: "POST" }).catch(() => {
+      setStatus("disconnected");
+    });
   }, []);
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex items-center gap-2.5 rounded-full border border-slate-200/80 bg-white/85 px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-[0_16px_40px_rgba(15,23,42,0.12)] backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85 dark:text-slate-100">
+    <div
+      className="fixed bottom-5 right-5 z-50 flex items-center gap-2.5 rounded-full border border-slate-200/80 bg-white/85 px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-[0_16px_40px_rgba(15,23,42,0.12)] backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85 dark:text-slate-100"
+      aria-live="polite"
+    >
       <span
         className={`h-2.5 w-2.5 rounded-full ${
           status === "connected"

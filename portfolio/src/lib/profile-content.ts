@@ -6,10 +6,12 @@ import PortfolioContent from "@/models/PortfolioContent";
 import type { AdminProfilePayload } from "./profile-admin";
 import {
   defaultPublicProfileData,
+  type FeaturedProject,
   type ProfileContent,
   type ProfileExperience,
   type PublicProfileData,
 } from "./profile-types";
+import type { Project } from "./project-types";
 import type { AdminExperiencePayload } from "./experience-admin";
 
 const PROFILE_PATH = path.join(process.cwd(), "src", "data", "profile.json");
@@ -44,7 +46,7 @@ const normalizeProfileContent = (profile: ProfileContent): ProfileContent => ({
 });
 
 const getPeriodStart = (period: string) =>
-  period.split(/\s+[–—-]\s+/)[0]?.trim() ?? "";
+  period.split(/\s+(?:-|[\u2013\u2014])\s+/)[0]?.trim() ?? "";
 
 const toPreviousExperience = (
   experience: ProfileExperience,
@@ -66,11 +68,30 @@ const toPreviousExperience = (
   };
 };
 
+const toFallbackProject = (project: FeaturedProject, index: number): Project => {
+  const slug = toSlug(project.title || `project-${index + 1}`);
+
+  return {
+    _id: `profile-${slug || index + 1}`,
+    slug,
+    title: project.title,
+    description: project.description,
+    technology: project.technologies ?? [],
+    githubLink: project.links.github,
+    liveLink: project.links.live,
+    isArchived: false,
+  };
+};
+
 async function readProfileFromFile(): Promise<ProfileContent> {
   const raw = await fs.readFile(PROFILE_PATH, "utf8");
   const parsed = JSON.parse(raw) as ProfileContent;
 
   return normalizeProfileContent(parsed);
+}
+
+export async function readStaticProfileContent(): Promise<ProfileContent> {
+  return readProfileFromFile();
 }
 
 type PortfolioContentRecord = Partial<ProfileContent> & {
@@ -271,6 +292,16 @@ export async function readPublicProfileApiContent(): Promise<PublicProfileData> 
     log.warn("Falling back to file-based public profile content.", error);
     return pickPublicProfileContent(fileProfile);
   }
+}
+
+export async function listPublicFallbackProjects(): Promise<Project[]> {
+  const fileProfile = await readProfileFromFile();
+
+  return (fileProfile.history.featured_projects ?? []).map(toFallbackProject);
+}
+
+export async function listPublicExperiences(): Promise<ProfileExperience[]> {
+  return listAdminExperiences();
 }
 
 export async function readAdminProfileApiContent(): Promise<AdminProfilePayload> {

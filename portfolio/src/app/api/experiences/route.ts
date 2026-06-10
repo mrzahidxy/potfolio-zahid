@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { listAdminExperiences } from "@/lib/profile-content";
+import { listPublicExperiences } from "@/lib/profile-content";
 import { createLogger } from "@/lib/logger";
 
 export const runtime = "nodejs";
@@ -8,7 +8,7 @@ const log = createLogger({ context: "api/experiences" });
 
 export async function GET() {
   try {
-    const experiences = await listAdminExperiences();
+    const experiences = await listPublicExperiences();
     return NextResponse.json({ success: true, data: experiences });
   } catch (error) {
     log.error("Failed to load public experiences.", error);

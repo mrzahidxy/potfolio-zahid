@@ -8,13 +8,9 @@ import {
 } from "react";
 import {
   defaultPublicProfileData,
+  type PublicProfileApiResponse,
   type PublicProfileData,
 } from "@/lib/profile-types";
-
-interface PublicProfileApiResponse {
-  success: boolean;
-  data: PublicProfileData;
-}
 
 interface PublicProfileContextValue {
   profile: PublicProfileData;
@@ -49,8 +45,7 @@ export function PublicProfileProvider({
         } else if (isActive) {
           setProfile(defaultPublicProfileData);
         }
-      } catch (error) {
-        console.error("Error loading public profile:", error);
+      } catch {
         if (isActive) {
           setProfile(defaultPublicProfileData);
         }

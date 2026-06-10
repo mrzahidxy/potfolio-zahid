@@ -1,10 +1,10 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import ClientProvider from "./ClientProvider";
-import { readProfileContent } from "@/lib/profile-content";
+import { readStaticProfileContent } from "@/lib/profile-content";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const profile = await readProfileContent();
+  const profile = await readStaticProfileContent();
   const profileName = profile.personal_details.name;
   const profileTitle = profile.personal_details.title;
   const profileBio = profile.personal_details.bio;

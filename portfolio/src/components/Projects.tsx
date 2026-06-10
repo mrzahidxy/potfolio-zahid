@@ -16,9 +16,9 @@ const Projects: React.FC = () => {
     const fetchProjects = async () => {
       try {
         const response = await api.get<ProjectListResponse>(`/projects`);
-        setProjects(response.data.data);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
+        setProjects(response.data.data ?? []);
+      } catch {
+        setProjects([]);
       } finally {
         setLoading(false);
       }

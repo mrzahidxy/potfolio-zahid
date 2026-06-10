@@ -27,7 +27,7 @@ const NavbarLink: React.FC<NavbarLinkProps> = ({
         } ${className}`}
         href={to}
         onClick={onClick}
-        aria-current={isActive ? "page" : undefined}
+        aria-current={isActive ? "location" : undefined}
       >
         {label}
       </a>

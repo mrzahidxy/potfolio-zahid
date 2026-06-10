@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createLogger } from "@/lib/logger";
 import { adminExperienceSchema } from "@/lib/experience-admin";
 import {
   deleteAdminExperience,
@@ -8,6 +9,7 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+const log = createLogger({ context: "api/admin/experiences/[id]" });
 
 export async function GET(
   _req: NextRequest,
@@ -25,7 +27,7 @@ export async function GET(
 
     return NextResponse.json({ success: true, data: experience });
   } catch (error) {
-    console.error("Error loading experience:", error);
+    log.error("Failed to load admin experience.", error);
     return NextResponse.json(
       { success: false, message: "Failed to load experience." },
       { status: 500 }
@@ -67,7 +69,7 @@ export async function PUT(
       message: "Experience updated successfully.",
     });
   } catch (error) {
-    console.error("Error updating experience:", error);
+    log.error("Failed to update admin experience.", error);
     return NextResponse.json(
       { success: false, message: "Failed to update experience." },
       { status: 500 }
@@ -94,7 +96,7 @@ export async function DELETE(
       message: "Experience deleted successfully.",
     });
   } catch (error) {
-    console.error("Error deleting experience:", error);
+    log.error("Failed to delete admin experience.", error);
     return NextResponse.json(
       { success: false, message: "Failed to delete experience." },
       { status: 500 }

@@ -5,21 +5,7 @@ import FeatureCard from "./common/FeatureCard";
 import { useAxiosWithAuth } from "@/helper/request-method";
 import DefaultLoader from "./common/DefaultLoader";
 import Reveal from "./common/Reveal";
-
-interface Project {
-  description: string;
-  img: string;
-  technology: Array<string>;
-  githubLink: string;
-  liveLink: string;
-  title: string;
-  _id?: string;
-}
-
-interface ProjectApiResponse {
-  success: boolean;
-  data: Project[];
-}
+import type { Project, ProjectListResponse } from "@/lib/project-types";
 
 const Projects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -29,10 +15,10 @@ const Projects: React.FC = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await api.get<ProjectApiResponse>(`/projects`);
-        setProjects(response.data.data);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
+        const response = await api.get<ProjectListResponse>(`/projects`);
+        setProjects(response.data.data ?? []);
+      } catch {
+        setProjects([]);
       } finally {
         setLoading(false);
       }

@@ -100,12 +100,14 @@ const Contact: React.FC<ContactProps> = ({
     {
       href: links.linkedin,
       icon: "/icon/linkedin.png",
-      alt: "linkedin-link",
+      alt: "LinkedIn",
+      label: "Open LinkedIn profile",
     },
     {
       href: links.github,
       icon: "/icon/github.png",
-      alt: "github-link",
+      alt: "GitHub",
+      label: "Open GitHub profile",
     },
   ];
   const quickActions = [

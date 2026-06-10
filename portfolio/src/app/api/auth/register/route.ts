@@ -2,9 +2,11 @@ import CryptoJS from "crypto-js";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import { NextRequest, NextResponse } from "next/server";
+import { createLogger } from "@/lib/logger";
 
 // Register handler
 export async function POST(req: NextRequest) {
+  const log = createLogger({ context: "api/auth/register" });
   const connection = await dbConnect();
   if (!connection) {
     return NextResponse.json(
@@ -38,7 +40,7 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating user:", error); // Log the error for debugging
+    log.error("Failed to create user.", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },
       { status: 500 }

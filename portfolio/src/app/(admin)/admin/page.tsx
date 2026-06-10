@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { AuthContext } from "@/context/AuthContext";
 import { useAxiosWithAuth } from "@/helper/request-method";
-
-interface ProjectListResponse {
-  success: boolean;
-  data: Array<{ _id: string }>;
-}
+import type { ProjectListResponse } from "@/lib/project-types";
 
 interface ExperienceListResponse {
   success: boolean;
@@ -16,29 +14,50 @@ interface ExperienceListResponse {
 
 export default function DashboardPage() {
   const api = useAxiosWithAuth();
+  const router = useRouter();
+  const { dispatch } = useContext(AuthContext);
   const [activeCount, setActiveCount] = useState<number>(0);
   const [archivedCount, setArchivedCount] = useState<number>(0);
   const [experienceCount, setExperienceCount] = useState<number>(0);
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [statsError, setStatsError] = useState<string | null>(null);
+
+  const handleLogout = () => {
+    dispatch({ type: "LOGOUT" });
+    router.replace("/admin/login");
+  };
+
+  const fetchCounts = useCallback(async () => {
+    try {
+      setLoadingStats(true);
+      setStatsError(null);
+
+      const [projectResponse, experienceResponse] = await Promise.all([
+        api.get<ProjectListResponse>("/admin/projects"),
+        api.get<ExperienceListResponse>("/admin/experiences"),
+      ]);
+
+      const projects = projectResponse.data.data ?? [];
+      setActiveCount(projects.filter((project) => !project.isArchived).length);
+      setArchivedCount(projects.filter((project) => project.isArchived).length);
+      setExperienceCount(experienceResponse.data.data?.length ?? 0);
+    } catch (error) {
+      setStatsError(getApiError(error, "Failed to load dashboard stats."));
+    } finally {
+      setLoadingStats(false);
+    }
+  }, [api]);
 
   useEffect(() => {
-    const fetchCounts = async () => {
-      try {
-        const [activeResponse, archivedResponse, experienceResponse] = await Promise.all([
-          api.get<ProjectListResponse>("/projects"),
-          api.get<ProjectListResponse>("/projects/archived"),
-          api.get<ExperienceListResponse>("/admin/experiences"),
-        ]);
-
-        setActiveCount(activeResponse.data.data.length);
-        setArchivedCount(archivedResponse.data.data.length);
-        setExperienceCount(experienceResponse.data.data.length);
-      } catch (error) {
-        console.error("Error loading dashboard stats:", error);
-      }
-    };
-
     fetchCounts();
-  }, [api]);
+  }, [fetchCounts]);
+
+  const hasNoStats =
+    !loadingStats &&
+    !statsError &&
+    activeCount === 0 &&
+    archivedCount === 0 &&
+    experienceCount === 0;
 
   return (
     <div className="space-y-5">
@@ -62,13 +81,34 @@ export default function DashboardPage() {
             <LinkChip label="Profile" href="/admin/profile" />
             <LinkChip label="Add Project" href="/admin/projects/add" />
             <LinkChip label="Back to Site" href="/" />
-            <LinkChip label="Logout" href="/admin/login" />
+            <ActionChip label="Logout" onClick={handleLogout} />
           </div>
         </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <StatCard label="Active Projects" value={activeCount} />
-          <StatCard label="Archived Projects" value={archivedCount} />
+        {statsError && (
+          <div className="mt-5 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-200">
+            <p className="font-semibold">{statsError}</p>
+            <button
+              type="button"
+              onClick={fetchCounts}
+              className="mt-3 rounded-full bg-red-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-red-500"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-live="polite">
+          <StatCard
+            label="Active Projects"
+            value={loadingStats ? "Loading..." : activeCount}
+            href="/admin/projects"
+          />
+          <StatCard
+            label="Archived Projects"
+            value={loadingStats ? "Loading..." : archivedCount}
+            href="/admin/projects"
+          />
           <Link
             href="/admin/experiences"
             className="rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-300 hover:bg-white dark:border-slate-800 dark:bg-slate-950/50 dark:hover:border-slate-700 dark:hover:bg-slate-900"
@@ -77,7 +117,7 @@ export default function DashboardPage() {
               Experience
             </p>
             <p className="mt-2 text-lg font-semibold text-slate-900 dark:text-white">
-              {experienceCount} entries
+              {loadingStats ? "Loading..." : `${experienceCount} entries`}
             </p>
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
               Manage your role history separately from profile copy.
@@ -98,21 +138,44 @@ export default function DashboardPage() {
             </p>
           </Link>
         </div>
+
+        {hasNoStats && (
+          <div className="mt-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-300">
+            No projects or experience entries have been added yet.
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-function StatCard({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/50">
+function StatCard({
+  label,
+  value,
+  href,
+}: {
+  label: string;
+  value: number | string;
+  href: string;
+}) {
+  const content = (
+    <>
       <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
         {label}
       </p>
       <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">
         {value}
       </p>
-    </div>
+    </>
+  );
+
+  return (
+    <Link
+      href={href}
+      className="rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-300 hover:bg-white dark:border-slate-800 dark:bg-slate-950/50 dark:hover:border-slate-700 dark:hover:bg-slate-900"
+    >
+      {content}
+    </Link>
   );
 }
 
@@ -136,5 +199,28 @@ function LinkChip({
     >
       {label}
     </Link>
+  );
+}
+
+function getApiError(error: unknown, fallback: string) {
+  const response = (error as any)?.response?.data;
+  return response?.error ?? response?.message ?? fallback;
+}
+
+function ActionChip({
+  label,
+  onClick,
+}: {
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:text-white"
+    >
+      {label}
+    </button>
   );
 }

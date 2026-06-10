@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, FormEvent, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import DefaultLoader from "@/components/common/DefaultLoader";
@@ -40,31 +40,31 @@ export default function ExperienceForm({ id }: { id?: string }) {
   );
   const [errors, setErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(Boolean(id));
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitResult, setSubmitResult] = useState<{
     success: boolean;
     message: string;
   } | null>(null);
 
-  useEffect(() => {
+  const loadExperience = useCallback(async () => {
     if (!id) return;
 
-    const loadExperience = async () => {
-      try {
-        const response = await api.get<ExperienceResponse>(`/admin/experiences/${id}`);
-        setFormData(toAdminExperienceFormValues(response.data.data));
-      } catch (error) {
-        setSubmitResult({
-          success: false,
-          message: "Failed to load experience.",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadExperience();
+    try {
+      setLoading(true);
+      setLoadError(null);
+      const response = await api.get<ExperienceResponse>(`/admin/experiences/${id}`);
+      setFormData(toAdminExperienceFormValues(response.data.data));
+    } catch (error) {
+      setLoadError(getApiError(error, "Failed to load experience."));
+    } finally {
+      setLoading(false);
+    }
   }, [api, id]);
+
+  useEffect(() => {
+    loadExperience();
+  }, [loadExperience]);
 
   const handleChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -101,6 +101,7 @@ export default function ExperienceForm({ id }: { id?: string }) {
         ? await api.put<ExperienceResponse>(`/admin/experiences/${id}`, parsed.data)
         : await api.post<ExperienceResponse>("/admin/experiences", parsed.data);
 
+      setFormData(toAdminExperienceFormValues(response.data.data));
       setSubmitResult({
         success: true,
         message:
@@ -122,8 +123,7 @@ export default function ExperienceForm({ id }: { id?: string }) {
 
       setSubmitResult({
         success: false,
-        message:
-          error?.response?.data?.message ?? "Failed to save experience.",
+        message: getApiError(error, "Failed to save experience."),
       });
     } finally {
       setIsSubmitting(false);
@@ -132,6 +132,29 @@ export default function ExperienceForm({ id }: { id?: string }) {
 
   if (loading) {
     return <DefaultLoader />;
+  }
+
+  if (loadError) {
+    return (
+      <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-center text-red-700 dark:text-red-200">
+        <p className="font-semibold">{loadError}</p>
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
+          <button
+            type="button"
+            onClick={loadExperience}
+            className="rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-sky-400"
+          >
+            Retry
+          </button>
+          <Link
+            href="/admin/experiences"
+            className="rounded-full border border-red-500/40 px-4 py-2 text-sm font-semibold transition hover:border-red-400"
+          >
+            Back to list
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -247,6 +270,11 @@ export default function ExperienceForm({ id }: { id?: string }) {
       </form>
     </div>
   );
+}
+
+function getApiError(error: unknown, fallback: string) {
+  const response = (error as any)?.response?.data;
+  return response?.error ?? response?.message ?? fallback;
 }
 
 function Field({

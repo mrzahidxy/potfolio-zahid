@@ -13,12 +13,14 @@ interface ExperienceTableProps {
   experiences: ExperienceRow[];
   onDelete: (id: string) => void;
   onUpdate: (id: string) => void;
+  busyAction: string | null;
 }
 
 export default function ExperienceTable({
   experiences,
   onDelete,
   onUpdate,
+  busyAction,
 }: ExperienceTableProps) {
   return (
     <div className="overflow-x-auto">
@@ -58,7 +60,7 @@ export default function ExperienceTable({
                 {experience.period}
               </td>
               <td className="px-4 py-3 leading-7 text-slate-600 dark:text-slate-300">
-                {experience.location || "—"}
+                {experience.location || "-"}
               </td>
               <td className="max-w-sm px-4 py-3 leading-7 text-slate-600 dark:text-slate-300">
                 {experience.summary}
@@ -68,16 +70,18 @@ export default function ExperienceTable({
                   <button
                     type="button"
                     onClick={() => experience.id && onUpdate(experience.id)}
-                    className="rounded-md border border-slate-300 px-3 py-1.5 text-center text-xs font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:bg-slate-800"
+                    disabled={Boolean(busyAction) || !experience.id}
+                    className="rounded-md border border-slate-300 px-3 py-1.5 text-center text-xs font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:bg-slate-800"
                   >
                     Update
                   </button>
                   <button
                     type="button"
                     onClick={() => experience.id && onDelete(experience.id)}
-                    className="rounded-md border border-red-500/50 px-3 py-1.5 text-center text-xs font-medium text-red-600 transition hover:border-red-400 hover:bg-red-500/10 dark:text-red-200"
+                    disabled={Boolean(busyAction) || !experience.id}
+                    className="rounded-md border border-red-500/50 px-3 py-1.5 text-center text-xs font-medium text-red-600 transition hover:border-red-400 hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:text-red-200"
                   >
-                    Delete
+                    {busyAction === `delete-${experience.id}` ? "Deleting..." : "Delete"}
                   </button>
                 </div>
               </td>

@@ -23,6 +23,11 @@ export default function ExperienceManagementPage() {
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+  const [busyAction, setBusyAction] = useState<string | null>(null);
 
   const fetchExperiences = useCallback(async () => {
     try {
@@ -30,10 +35,10 @@ export default function ExperienceManagementPage() {
       const response = await api.get<{ success: boolean; data: Experience[] }>(
         "/admin/experiences"
       );
-      setExperiences(response.data.data);
+      setExperiences(response.data.data ?? []);
       setError(null);
     } catch (err) {
-      setError("Failed to load experiences. Please try again later.");
+      setError(getApiError(err, "Failed to load experiences. Please try again later."));
     } finally {
       setLoading(false);
     }
@@ -44,11 +49,21 @@ export default function ExperienceManagementPage() {
   }, [fetchExperiences]);
 
   const handleDelete = async (id: string) => {
+    if (!window.confirm("Delete this experience permanently?")) return;
+
     try {
+      setBusyAction(`delete-${id}`);
+      setFeedback(null);
       await api.delete(`/admin/experiences/${id}`);
       setExperiences((prev) => prev.filter((experience) => experience.id !== id));
-    } catch (err: any) {
-      setError(err?.response?.data?.message ?? "Failed to delete experience.");
+      setFeedback({ type: "success", message: "Experience deleted successfully." });
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        message: getApiError(err, "Failed to delete experience."),
+      });
+    } finally {
+      setBusyAction(null);
     }
   };
 
@@ -105,12 +120,25 @@ export default function ExperienceManagementPage() {
         </div>
       </div>
 
+      {feedback && (
+        <div
+          className={`rounded-xl border p-4 text-sm ${
+            feedback.type === "success"
+              ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-200"
+              : "border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-200"
+          }`}
+        >
+          {feedback.message}
+        </div>
+      )}
+
       <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900/60">
         {experiences.length ? (
           <ExperienceTable
             experiences={experiences}
             onDelete={handleDelete}
             onUpdate={handleUpdate}
+            busyAction={busyAction}
           />
         ) : (
           <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900/40 dark:text-slate-300">
@@ -120,4 +148,9 @@ export default function ExperienceManagementPage() {
       </div>
     </div>
   );
+}
+
+function getApiError(err: unknown, fallback: string) {
+  const response = (err as any)?.response?.data;
+  return response?.error ?? response?.message ?? fallback;
 }

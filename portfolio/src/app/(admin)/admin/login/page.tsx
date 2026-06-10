@@ -28,21 +28,26 @@ export default function LoginForm() {
     }
 
     try {
-      const response = await axios.post("/api/auth/login", { email, password })
+      const response = await axios.post("/api/auth/login", { email, password });
       
       if (response.data.success) {
-        dispatch({ type: "LOGIN", payload: response.data.data });
-
-        if (response.data.data?.isAdmin) {
-          router.push("/admin");
-        }else{
-          router.push("/");
+        if (!response.data.data?.isAdmin) {
+          dispatch({ type: "LOGOUT" });
+          setError("Admin access is required.");
+          return;
         }
-      }
-      setError(response.data.message)
 
-    } catch (err) {
-      setError("Invalid email or password");
+        dispatch({ type: "LOGIN", payload: response.data.data });
+        router.replace("/admin");
+      }
+      setError(response.data.error ?? response.data.message ?? "");
+
+    } catch (err: any) {
+      setError(
+        err?.response?.data?.error ??
+          err?.response?.data?.message ??
+          "Invalid email or password"
+      );
     }
   };
 

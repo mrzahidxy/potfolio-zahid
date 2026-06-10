@@ -6,6 +6,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { useAxiosWithAuth } from "@/helper/request-method";
 import { useRouter } from "next/navigation";
+import type {
+  ProjectFormValues,
+  ProjectResponse,
+} from "@/lib/project-types";
 
 // Define the schema for form validation (excluding the file input)
 const schema = z.object({
@@ -21,13 +25,13 @@ const schema = z.object({
   img: z.string().optional().or(z.literal("")),
 });
 
-type FormData = z.infer<typeof schema>;
+type FormData = ProjectFormValues;
 
-type props = {
+type Props = {
   slug?: string;
 };
 
-export default function ProjectForm({ slug }: props) {
+export default function ProjectForm({ slug }: Props) {
  const {push} = useRouter()
   const api = useAxiosWithAuth();
   const [formData, setFormData] = useState<FormData>({
@@ -53,17 +57,21 @@ export default function ProjectForm({ slug }: props) {
 
     const getProject = async () => {
       try {
-        const res = await api.get(`/admin/projects/${slug}`);
+        const res = await api.get<ProjectResponse>(`/admin/projects/${slug}`);
         setFormData({
           title: res.data.data.title,
           description: res.data.data.description,
           technology: res.data.data.technology.join(", "),
           githubLink: res.data.data.githubLink,
-          liveLink: res.data.data.liveLink,
+          liveLink: res.data.data.liveLink ?? "",
+          img: res.data.data.img ?? "",
         });
-        setImagePreview(res.data.data.img);
+        setImagePreview(res.data.data.img ?? null);
       } catch (error) {
-        console.error("Error fetching project:", error);
+        setSubmitResult({
+          success: false,
+          message: getApiError(error, "Failed to load project."),
+        });
       }
     };
 
@@ -79,6 +87,13 @@ export default function ProjectForm({ slug }: props) {
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
+      if (!e.target.files[0].type.startsWith("image/")) {
+        setSubmitResult({
+          success: false,
+          message: "Please choose a valid image file.",
+        });
+        return;
+      }
       setImageFile(e.target.files[0]);
     }
   };
@@ -94,30 +109,49 @@ export default function ProjectForm({ slug }: props) {
 
       const formDataToSend = new FormData();
       Object.entries(validatedData).forEach(([key, value]) => {
+        if (key === "img") return;
         formDataToSend.append(key, value);
       });
 
 
-      // Append the image file if it exists
-      if (imageFile) {
+      if (!slug && imageFile) {
         formDataToSend.append("img", imageFile);
       }
 
-      slug
-        ? await api.put(`/admin/projects/${slug}`, formDataToSend, {
+      const response = slug
+        ? await api.patch<ProjectResponse>(`/admin/projects/${slug}`, formDataToSend, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
           })
-        : await api.post(`/admin/projects`, formDataToSend, {
+        : await api.post<ProjectResponse>(`/admin/projects`, formDataToSend, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
           });
 
+      if (slug && imageFile) {
+        const imageFormData = new FormData();
+        imageFormData.append("img", imageFile);
+        const imageResponse = await api.post<ProjectResponse>(
+          `/admin/projects/${response.data.data._id}/image`,
+          imageFormData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        setImagePreview(imageResponse.data.data.img ?? null);
+      } else {
+        setImagePreview(response.data.data.img ?? null);
+      }
+
       setSubmitResult({
         success: true,
-        message: "Project added successfully! Redirecting...",
+        message: slug
+          ? "Project updated successfully. Redirecting..."
+          : "Project added successfully. Redirecting...",
       });
 
       setTimeout(() => {
@@ -129,7 +163,7 @@ export default function ProjectForm({ slug }: props) {
       } else {
         setSubmitResult({
           success: false,
-          message: (error as any)?.response?.data?.message,
+          message: getApiError(error, "Failed to save project."),
         });
       }
     } finally {
@@ -267,6 +301,11 @@ export default function ProjectForm({ slug }: props) {
       )}
     </div>
   );
+}
+
+function getApiError(error: unknown, fallback: string) {
+  const response = (error as any)?.response?.data;
+  return response?.error ?? response?.message ?? fallback;
 }
 
 function FormField({

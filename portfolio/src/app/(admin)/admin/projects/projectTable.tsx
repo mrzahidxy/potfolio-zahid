@@ -1,25 +1,16 @@
 import Image from "next/image";
 import React from 'react'
+import type { ProjectTableProps } from "@/lib/project-types";
 
-interface Project {
-  _id: string
-  title: string
-  description: string
-  technology: string[]
-  githubLink: string
-  liveLink: string
-  img: string
-  isArchived: boolean
-}
-
-interface ProjectTableProps {
-  projects: Project[]
-  onDelete: (id: string) => void
-  onUpdate: (id: string) => void
-  onArchive: (id: string) => void
-}
-
-export default function ProjectTable({ projects, onDelete, onUpdate, onArchive }: ProjectTableProps) {
+export default function ProjectTable({
+  projects,
+  onDelete,
+  onUpdate,
+  onArchive,
+  onRestore,
+  onImageUpload,
+  busyAction,
+}: ProjectTableProps) {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-700 dark:divide-slate-800 dark:text-slate-200">
@@ -57,7 +48,7 @@ export default function ProjectTable({ projects, onDelete, onUpdate, onArchive }
               <td className="px-4 py-3 align-top">
                 <div className="flex justify-center">
                   <Image
-                    src={project.img}
+                    src={project.img || "/next.svg"}
                     alt={project.title}
                     width={56}
                     height={56}
@@ -82,21 +73,51 @@ export default function ProjectTable({ projects, onDelete, onUpdate, onArchive }
                 <div className="flex min-w-[9rem] flex-col items-stretch gap-2">
                   <button
                     onClick={() => onUpdate(project._id)}
+                    disabled={Boolean(busyAction)}
                     className="rounded-md border border-slate-300 px-3 py-1.5 text-center text-xs font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:bg-slate-800"
                   >
                     Update
                   </button>
+                  <label
+                    className={`cursor-pointer rounded-md border border-sky-500/50 px-3 py-1.5 text-center text-xs font-medium text-sky-700 transition hover:border-sky-400 hover:bg-sky-500/10 dark:text-sky-300 ${
+                      busyAction ? "pointer-events-none opacity-60" : ""
+                    }`}
+                  >
+                    {busyAction === `image-${project._id}` ? "Uploading..." : "Change image"}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      className="sr-only"
+                      disabled={Boolean(busyAction)}
+                      onChange={(event) => {
+                        const file = event.currentTarget.files?.[0];
+                        if (file) onImageUpload(project._id, file);
+                        event.currentTarget.value = "";
+                      }}
+                    />
+                  </label>
                   <button
-                    onClick={() => onArchive(project._id)}
+                    onClick={() =>
+                      project.isArchived
+                        ? onRestore(project._id)
+                        : onArchive(project._id)
+                    }
+                    disabled={Boolean(busyAction)}
                     className="rounded-md border border-amber-500/50 px-3 py-1.5 text-center text-xs font-medium text-amber-700 transition hover:border-amber-400 hover:bg-amber-500/10 dark:text-amber-300"
                   >
-                    {project.isArchived ? "Restore" : "Archive"}
+                    {busyAction === `archive-${project._id}` ||
+                    busyAction === `restore-${project._id}`
+                      ? "Saving..."
+                      : project.isArchived
+                        ? "Restore"
+                        : "Archive"}
                   </button>
                   <button
                     onClick={() => onDelete(project._id)}
+                    disabled={Boolean(busyAction)}
                     className="rounded-md border border-red-500/50 px-3 py-1.5 text-center text-xs font-medium text-red-600 transition hover:border-red-400 hover:bg-red-500/10 dark:text-red-200"
                   >
-                    Delete
+                    {busyAction === `delete-${project._id}` ? "Deleting..." : "Delete"}
                   </button>
                 </div>
               </td>

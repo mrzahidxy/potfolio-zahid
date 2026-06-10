@@ -1,15 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { ProfileExperience } from "@/lib/profile-types";
+import type {
+  ProfileExperience,
+  ProfileExperienceListResponse,
+} from "@/lib/profile-types";
 import { useAxiosWithAuth } from "@/helper/request-method";
 import DefaultLoader from "./common/DefaultLoader";
 import Reveal from "./common/Reveal";
-
-interface ExperienceApiResponse {
-  success: boolean;
-  data: ProfileExperience[];
-}
 
 const Experience: React.FC = () => {
   const api = useAxiosWithAuth();
@@ -19,10 +17,11 @@ const Experience: React.FC = () => {
   useEffect(() => {
     const fetchExperiences = async () => {
       try {
-        const response = await api.get<ExperienceApiResponse>("/experiences");
-        setExperiences(response.data.data);
-      } catch (error) {
-        console.error("Error fetching experiences:", error);
+        const response =
+          await api.get<ProfileExperienceListResponse>("/experiences");
+        setExperiences(response.data.data ?? []);
+      } catch {
+        setExperiences([]);
       } finally {
         setLoading(false);
       }

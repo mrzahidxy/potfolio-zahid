@@ -109,6 +109,7 @@ export default function ProjectForm({ slug }: Props) {
 
       const formDataToSend = new FormData();
       Object.entries(validatedData).forEach(([key, value]) => {
+        if (key === "img") return;
         formDataToSend.append(key, value);
       });
 

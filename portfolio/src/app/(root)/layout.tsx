@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Navbar from "@/components/Navbar/Navbar";
 import PortfolioFooter from "@/components/PortfolioFooter";
+import ChatbotLauncher from "@/components/ChatbotLauncher";
 import { PublicProfileProvider } from "@/context/PublicProfileContext";
 import { readStaticProfileContent } from "@/lib/profile-content";
 
@@ -35,6 +36,7 @@ export default async function RootLayout({
       <Navbar />
       <main className="pt-[7.5rem] sm:pt-32 md:pt-24">{children}</main>
       <PortfolioFooter />
+      <ChatbotLauncher />
     </PublicProfileProvider>
   );
 }

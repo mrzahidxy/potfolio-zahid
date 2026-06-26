@@ -2,7 +2,11 @@
 .env
 .env*.local
 portfolio/.env*
+!portfolio/.env.example
+chatbot/.env*
+!chatbot/.env.example
 view-socket/.env*
+!view-socket/.env.sample
 
 # Dependencies
 node_modules/
@@ -15,11 +19,15 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Next.js (portfolio app)
+# Next.js apps
 portfolio/.next/
 portfolio/out/
 portfolio/.vercel
 portfolio/next-env.d.ts
+chatbot/.next/
+chatbot/out/
+chatbot/.vercel
+chatbot/next-env.d.ts
 
 # Build artifacts
 portfolio/build

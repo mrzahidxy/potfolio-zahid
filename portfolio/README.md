@@ -4,7 +4,15 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+Create local environment values first:
+
+```bash
+cp .env.example .env.local
+```
+
+Required production variables are documented in `.env.example`. At minimum, database-backed admin features need `MONGODB_URI`, `PASS_SEC`, and `JWT_SEC`.
+
+Then run the development server:
 
 ```bash
 npm run dev

@@ -1,43 +1,41 @@
-name: Vercel Production Deployment
+name: Portfolio Vercel Production
 
 on:
   push:
     branches:
       - main
+    paths:
+      - "portfolio/**"
+      - ".github/workflows/production.yaml"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./portfolio
+        working-directory: portfolio
     steps:
-      # Step 1: Check out the repository
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Setup Node.js environment
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 'v18.17.1' # Specify your Node.js version
+          node-version: 20
+          cache: npm
+          cache-dependency-path: portfolio/package-lock.json
 
-      # Step 3: Install Dependencies
-      - name: Install Dependencies
-        run: npm install
+      - name: Install dependencies
+        run: npm ci
 
-      # Step 4: Build the Project
-      - name: Build Project
+      - name: Build project
         run: npm run build
 
-      # Step 5: Deploy to Vercel using Official Action
-      - name: Deploy to Vercel
+      - name: Deploy production to Vercel
         uses: amondnet/vercel-action@v20
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }} # Required
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }} # Required
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.PORTFOLIO_VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.PORTFOLIO_VERCEL_PROJECT_ID }}
           working-directory: ./portfolio
-          vercel-args: '--prod' # Optional: Additional Vercel CLI arguments
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          vercel-args: --prod

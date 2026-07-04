@@ -2,8 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const SOCKET_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL?.trim() || "";
-const API_URL = process.env.NEXT_PUBLIC_VISIT_API_URL?.trim() || "";
+const DEFAULT_SOCKET_URL =
+  process.env.NODE_ENV === "development" ? "ws://localhost:8010" : "";
+const DEFAULT_API_URL =
+  process.env.NODE_ENV === "development" ? "http://localhost:8010" : "";
+const SOCKET_URL =
+  process.env.NEXT_PUBLIC_WEBSOCKET_URL?.trim() || DEFAULT_SOCKET_URL;
+const API_URL = process.env.NEXT_PUBLIC_VISIT_API_URL?.trim() || DEFAULT_API_URL;
 const shouldConnectVisitCounter = Boolean(SOCKET_URL);
 
 export default function OSVisitStatsWidget() {
@@ -73,8 +78,8 @@ export default function OSVisitStatsWidget() {
       return;
     }
 
-    fetch(`${API_URL}/api/visit`, { method: "POST" }).catch(() => {
-      setStatus("disconnected");
+    fetch(`${API_URL}/api/visit`, { method: "POST" }).catch((error) => {
+      console.error("Visit API error:", error);
     });
   }, []);
 

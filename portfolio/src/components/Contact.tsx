@@ -1,10 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Formik, Form, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import emailjs from "emailjs-com";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faEnvelope,
+  faPaperPlane,
+  faPenToSquare,
+  faBolt,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import FormInput from "./common/FormInput";
 import ContactInfo from "./common/ContatcInfo";
 import SocialLink from "./common/SocialLink";
@@ -97,6 +105,7 @@ const Contact: React.FC<ContactProps> = ({
 }) => {
   const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [isComposeOpen, setIsComposeOpen] = useState<boolean>(false);
   const socialLinks = [
     {
       href: links.linkedin,
@@ -176,6 +185,21 @@ const Contact: React.FC<ContactProps> = ({
       setSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (!isComposeOpen) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsComposeOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isComposeOpen]);
 
   return (
     <section
@@ -302,8 +326,36 @@ const Contact: React.FC<ContactProps> = ({
           </Reveal>
 
           <Reveal delayMs={150}>
-            <div className="rounded-[22px] border border-slate-200/80 bg-white/80 p-6 shadow-sm backdrop-blur sm:p-7 md:p-8 dark:border-slate-800 dark:bg-slate-900/60">
-              <div className="mb-7 space-y-3">
+            <div className="flex h-full min-h-[440px] flex-col overflow-hidden rounded-[22px] border border-slate-200/80 bg-white/90 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/70">
+              <div className="flex min-h-14 items-center justify-between gap-3 border-b border-slate-200/80 bg-slate-50/90 px-5 dark:border-slate-800 dark:bg-slate-950/60 sm:px-6">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300">
+                    <FontAwesomeIcon icon={faEnvelope} className="h-4 w-4" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-50">
+                      Smart compose
+                    </p>
+                    <p className="truncate text-[12px] text-slate-500 dark:text-slate-400">
+                      {contactDetails.email}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormError(null);
+                    setIsComposeOpen(true);
+                  }}
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-sky-400 px-4 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-500/20 transition duration-200 hover:-translate-y-[1px] hover:bg-sky-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+                >
+                  <FontAwesomeIcon icon={faPenToSquare} className="h-4 w-4" />
+                  Compose
+                </button>
+              </div>
+
+              <div className="flex flex-1 flex-col p-5 sm:p-6 md:p-7">
+                <div className="space-y-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
                   {content.form_eyebrow_label}
                 </p>
@@ -314,19 +366,113 @@ const Contact: React.FC<ContactProps> = ({
                   {content.form_intro}
                 </p>
               </div>
+
+                <div className="mt-6 grid gap-3">
+                  {[
+                    ["To", contactDetails.email],
+                    ["Subject", "Project, role, or collaboration"],
+                    ["Status", "Ready to draft and send"],
+                  ].map(([label, value]) => (
+                    <div
+                      key={label}
+                      className="grid min-h-12 grid-cols-[78px,1fr] items-center rounded-[16px] border border-slate-200/80 bg-slate-50/80 px-4 text-sm dark:border-slate-800 dark:bg-slate-950/40"
+                    >
+                      <span className="font-semibold text-slate-500 dark:text-slate-400">
+                        {label}
+                      </span>
+                      <span className="min-w-0 truncate text-slate-800 dark:text-slate-100">
+                        {value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 flex flex-1 flex-col justify-between rounded-[18px] border border-dashed border-slate-300 bg-slate-50/70 p-5 dark:border-slate-700 dark:bg-slate-950/30">
+                  <div className="space-y-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-sky-600 shadow-sm dark:bg-slate-900 dark:text-sky-300">
+                      <FontAwesomeIcon icon={faBolt} className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-50">
+                      Mail-style popup
+                    </p>
+                    <p className="text-[14px] leading-7 text-slate-600 dark:text-slate-300">
+                      Open the compose window to send a structured message
+                      through the existing contact form.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormError(null);
+                      setIsComposeOpen(true);
+                    }}
+                    className="mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-900 shadow-sm transition duration-200 hover:-translate-y-[1px] hover:border-sky-200 hover:text-sky-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-50 dark:hover:border-sky-800 dark:hover:text-sky-300"
+                  >
+                    <FontAwesomeIcon icon={faPenToSquare} className="h-4 w-4" />
+                    Open message composer
+                  </button>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </OSWindow>
+
+      {isComposeOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/60 px-3 py-4 backdrop-blur-sm sm:items-center sm:px-5"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="contact-compose-title"
+        >
+          <button
+            type="button"
+            aria-label="Close composer"
+            className="absolute inset-0 h-full w-full cursor-default"
+            onClick={() => setIsComposeOpen(false)}
+          />
+          <div className="relative flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-t-[24px] border border-slate-200 bg-white shadow-[0_28px_90px_rgba(2,6,23,0.32)] dark:border-slate-700 dark:bg-slate-950 sm:rounded-[24px]">
+            <div className="flex min-h-14 items-center justify-between gap-3 border-b border-slate-200 bg-slate-50 px-4 dark:border-slate-800 dark:bg-slate-900 sm:px-5">
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300">
+                  <FontAwesomeIcon icon={faEnvelope} className="h-4 w-4" />
+                </span>
+                <div className="min-w-0">
+                  <h3
+                    id="contact-compose-title"
+                    className="truncate text-sm font-semibold text-slate-900 dark:text-slate-50"
+                  >
+                    New message
+                  </h3>
+                  <p className="truncate text-[12px] text-slate-500 dark:text-slate-400">
+                    To {contactDetails.email}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsComposeOpen(false)}
+                aria-label="Close composer"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-200 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-50"
+              >
+                <FontAwesomeIcon icon={faXmark} className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="overflow-y-auto p-4 sm:p-6">
               <Formik
                 initialValues={initialValues}
                 onSubmit={handleSubmit}
                 validationSchema={validationSchema}
               >
                 {({ isSubmitting }) => (
-                  <Form id="email-form" className="space-y-6">
+                  <Form id="email-form" className="space-y-5">
                     <div className="grid gap-4 sm:gap-5 md:grid-cols-2">
-                      {formFields.map((data, index) => {
+                      {formFields.map((data) => {
                         const isMessage = data.id === "message";
                         return (
                           <div
-                            key={index}
+                            key={data.id}
                             className={isMessage ? "md:col-span-2" : ""}
                           >
                             <label
@@ -341,26 +487,14 @@ const Contact: React.FC<ContactProps> = ({
                               name={data.name}
                               placeholder={data.placeholder}
                               as={isMessage ? "textarea" : "input"}
-                              rows={isMessage ? 6 : undefined}
+                              rows={isMessage ? 7 : undefined}
                               className={
-                                isMessage ? "min-h-[160px] resize-none" : ""
+                                isMessage ? "min-h-[190px] resize-none" : ""
                               }
                             />
                           </div>
                         );
                       })}
-                    </div>
-
-                    <div className="w-full">
-                      <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full rounded-full bg-sky-400 px-6 py-4 text-sm font-semibold text-slate-900 shadow-lg shadow-sky-500/30 transition duration-200 hover:-translate-y-[1px] hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:bg-sky-400"
-                      >
-                        {isSubmitting
-                          ? "Sending..."
-                          : content.submit_button_label}
-                      </button>
                     </div>
 
                     {formError && (
@@ -374,13 +508,33 @@ const Contact: React.FC<ContactProps> = ({
                         {content.success_message}
                       </div>
                     )}
+
+                    <div className="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
+                      <button
+                        type="button"
+                        onClick={() => setIsComposeOpen(false)}
+                        className="inline-flex h-12 items-center justify-center rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-sky-400 px-6 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-500/30 transition duration-200 hover:-translate-y-[1px] hover:bg-sky-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:bg-sky-400"
+                      >
+                        <FontAwesomeIcon icon={faPaperPlane} className="h-4 w-4" />
+                        {isSubmitting
+                          ? "Sending..."
+                          : content.submit_button_label}
+                      </button>
+                    </div>
                   </Form>
                 )}
               </Formik>
             </div>
-          </Reveal>
+          </div>
         </div>
-      </OSWindow>
+      )}
     </section>
   );
 };

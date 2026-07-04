@@ -15,13 +15,21 @@ import {
   faDesktop,
   faEnvelope,
   faFolder,
+  faGamepad,
   faHouse,
+  faPaperPlane,
   faRobot,
 } from "@fortawesome/free-solid-svg-icons";
 import { usePublicProfile } from "@/context/PublicProfileContext";
 import OSVisitStatsWidget from "./OSVisitStatsWidget";
 
-export type OSDesktopItem = "about" | "projects" | "experience" | "contact";
+export type OSDesktopItem =
+  | "about"
+  | "projects"
+  | "experience"
+  | "contact"
+  | "mail"
+  | "game";
 
 const CHATBOT_WIDGET_URL =
   process.env.NEXT_PUBLIC_CHATBOT_WIDGET_URL?.trim() || "";
@@ -43,7 +51,12 @@ const OSDesktopContext = createContext<OSDesktopContextValue | null>(null);
 
 const shortcuts: LauncherItem[] = [
   { id: "about", label: "About Me", icon: faDesktop, color: "text-indigo-600" },
-  { id: "projects", label: "Projects", icon: faFolder, color: "text-amber-500" },
+  {
+    id: "projects",
+    label: "Projects",
+    icon: faFolder,
+    color: "text-amber-500",
+  },
   {
     id: "experience",
     label: "Experience",
@@ -51,12 +64,22 @@ const shortcuts: LauncherItem[] = [
     color: "text-emerald-600",
   },
   { id: "contact", label: "Contact", icon: faEnvelope, color: "text-sky-600" },
+  {
+    id: "mail",
+    label: "Mail",
+    icon: faPaperPlane,
+    color: "text-fuchsia-600",
+  },
+  {
+    id: "game",
+    label: "Byte Run",
+    icon: faGamepad,
+    color: "text-rose-600",
+  },
 ];
 
-const dockItems: LauncherItem[] = [
-  { id: "about", label: "About", icon: faDesktop },
-  { id: "projects", label: "Projects", icon: faFolder },
-  { id: "experience", label: "Experience", icon: faBriefcase },
+const pinnedDockItems: LauncherItem[] = [
+  { id: "about", label: "About Me", icon: faDesktop },
   { id: "contact", label: "Contact", icon: faEnvelope },
 ];
 
@@ -74,24 +97,31 @@ function cx(...classes: Array<string | false>) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function OSDesktopShell({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function OSDesktopShell({ children }: { children: ReactNode }) {
   const { profile } = usePublicProfile();
   const [activeItem, setActiveItem] = useState<OSDesktopItem | null>("about");
   const [selectedItem, setSelectedItem] = useState<OSDesktopItem>("about");
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [dateLabel, setDateLabel] = useState("");
   const hasChatbot = Boolean(CHATBOT_WIDGET_URL);
+  const dockItems = useMemo(() => {
+    const pinnedIds = new Set(pinnedDockItems.map((item) => item.id));
+    const activeShortcut =
+      activeItem && !pinnedIds.has(activeItem)
+        ? shortcuts.find((item) => item.id === activeItem)
+        : null;
+
+    return activeShortcut
+      ? [...pinnedDockItems, activeShortcut]
+      : pinnedDockItems;
+  }, [activeItem]);
   const desktopContext = useMemo(
     () => ({
       activeItem,
       openItem: setActiveItem,
       closeActiveItem: () => setActiveItem(null),
     }),
-    [activeItem]
+    [activeItem],
   );
   const availabilityLabel = profile.preferences.available_for_opportunities
     ? profile.content.intro.availability_available
@@ -103,13 +133,13 @@ export default function OSDesktopShell({
         weekday: "short",
         month: "short",
         day: "numeric",
-      }).format(new Date())
+      }).format(new Date()),
     );
   }, []);
 
   return (
     <OSDesktopContext.Provider value={desktopContext}>
-      <div className="relative isolate min-h-screen overflow-hidden bg-[#8ab7e8] text-slate-950 dark:bg-[#16233f] dark:text-slate-50">
+      <div className="relative isolate min-h-screen min-h-[100dvh] overflow-hidden bg-[#8ab7e8] text-slate-950 dark:bg-[#16233f] dark:text-slate-50">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_18%,rgba(255,255,255,0.72),transparent_28%),radial-gradient(circle_at_70%_20%,rgba(217,232,255,0.7),transparent_32%),linear-gradient(135deg,rgba(96,165,250,0.24)_0%,rgba(129,140,248,0.28)_58%,rgba(168,85,247,0.16)_100%)] dark:bg-[radial-gradient(circle_at_12%_18%,rgba(56,189,248,0.2),transparent_30%),radial-gradient(circle_at_78%_18%,rgba(129,140,248,0.2),transparent_28%),linear-gradient(135deg,rgba(15,23,42,0.1)_0%,rgba(30,41,59,0.7)_100%)]" />
 
         <header className="relative z-30 flex h-10 items-center justify-between border-b border-white/[0.45] bg-white/[0.76] px-3 text-sm shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/[0.72]">
@@ -130,12 +160,37 @@ export default function OSDesktopShell({
             </button>
             <nav
               aria-label="Desktop menu"
-              className="hidden items-center gap-6 text-slate-700 dark:text-slate-200 sm:flex"
+              className="hidden items-center gap-1 text-slate-700 dark:text-slate-200 sm:flex"
             >
-              <span>File</span>
-              <span>Edit</span>
-              <span>View</span>
-              <span>Help</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedItem("about");
+                  setActiveItem("about");
+                }}
+                className="rounded-md px-2 py-1 text-xs font-semibold transition hover:bg-white/70 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 dark:hover:bg-white/10 dark:hover:text-indigo-300"
+              >
+                About Me
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedItem("contact");
+                  setActiveItem("contact");
+                }}
+                className="rounded-md px-2 py-1 text-xs font-semibold transition hover:bg-white/70 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 dark:hover:bg-white/10 dark:hover:text-indigo-300"
+              >
+                Contact
+              </button>
+              {hasChatbot && (
+                <button
+                  type="button"
+                  onClick={() => setIsChatbotOpen((current) => !current)}
+                  className="rounded-md px-2 py-1 text-xs font-semibold transition hover:bg-white/70 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 dark:hover:bg-white/10 dark:hover:text-indigo-300"
+                >
+                  AI Bot
+                </button>
+              )}
             </nav>
           </div>
 
@@ -148,13 +203,13 @@ export default function OSDesktopShell({
           </div>
         </header>
 
-        <div className="relative z-10 mx-auto flex min-h-[calc(100vh-2.5rem)] max-w-[1512px] flex-col px-3 pb-24 pt-4 sm:px-5 lg:px-8">
-          <div className="grid flex-1 gap-4 lg:grid-cols-[118px,minmax(0,1fr)]">
+        <div className="relative z-10 mx-auto flex min-h-[max(calc(100dvh-6rem),520px)] max-w-[1512px] min-w-[320px] flex-col overflow-hidden px-3 pb-2 pt-2 sm:px-5 lg:min-h-[max(calc(100dvh-6rem),620px)] lg:min-w-[960px] lg:px-8">
+          <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-[170px,minmax(0,1fr)] xl:grid-cols-[190px,minmax(0,1fr)]">
             <nav
               aria-label="Desktop shortcuts"
-              className="hidden lg:order-1 lg:block"
+              className="hidden min-h-0 overflow-hidden lg:order-1 lg:block"
             >
-              <div className="grid grid-cols-4 gap-2 lg:grid-cols-1 lg:gap-5 lg:pt-6">
+              <div className="grid grid-cols-2 gap-2 lg:gap-2 lg:pt-1 xl:gap-2 xl:pt-2 2xl:gap-3 2xl:pt-3">
                 {shortcuts.map((item) => {
                   const isSelected = selectedItem === item.id;
 
@@ -174,11 +229,11 @@ export default function OSDesktopShell({
                         }
                       }}
                       className={cx(
-                        "group flex min-h-[82px] w-full flex-col items-center justify-center gap-2 rounded-md px-2 py-2 text-center text-xs font-semibold text-white drop-shadow-[0_1px_1px_rgba(15,23,42,0.65)] outline-none transition hover:bg-white/[0.16] focus-visible:bg-white/[0.18] focus-visible:ring-2 focus-visible:ring-white/70 lg:min-h-[92px]",
-                        isSelected && "bg-white/[0.22] ring-1 ring-white/70"
+                        "group flex min-h-[66px] w-full flex-col items-center justify-center gap-1 rounded-md px-1.5 py-1 text-center text-[11px] font-semibold text-white drop-shadow-[0_1px_1px_rgba(15,23,42,0.65)] outline-none transition hover:bg-white/[0.16] focus-visible:bg-white/[0.18] focus-visible:ring-2 focus-visible:ring-white/70 lg:min-h-[68px] xl:min-h-[74px] xl:gap-1.5 xl:text-xs 2xl:min-h-[80px]",
+                        isSelected && "bg-white/[0.22] ring-1 ring-white/70",
                       )}
                     >
-                      <span className="flex h-10 w-10 items-center justify-center rounded-md border border-white/70 bg-white/90 text-xl shadow-md">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-md border border-white/70 bg-white/90 text-lg shadow-md xl:h-10 xl:w-10 xl:text-xl">
                         <FontAwesomeIcon
                           icon={item.icon}
                           className={item.color}
@@ -191,7 +246,9 @@ export default function OSDesktopShell({
               </div>
             </nav>
 
-            <div className="order-1 min-w-0 lg:order-2">{children}</div>
+            <div className="order-1 min-h-0 min-w-0 overflow-hidden lg:order-2">
+              {children}
+            </div>
           </div>
         </div>
 
@@ -229,7 +286,7 @@ export default function OSDesktopShell({
                     className={cx(
                       "relative flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-slate-200/80 bg-white/[0.85] text-slate-800 shadow-sm transition hover:-translate-y-1 hover:bg-indigo-50 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 dark:hover:bg-indigo-950/50 dark:hover:text-indigo-200",
                       isActive &&
-                        "-translate-y-1 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-300 dark:bg-indigo-950/50 dark:text-indigo-200"
+                        "-translate-y-1 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-300 dark:bg-indigo-950/50 dark:text-indigo-200",
                     )}
                   >
                     <FontAwesomeIcon icon={item.icon} />
@@ -245,15 +302,17 @@ export default function OSDesktopShell({
               {hasChatbot && (
                 <button
                   type="button"
-                  aria-label={isChatbotOpen ? "Close AI chatbot" : "Open AI chatbot"}
+                  aria-label={
+                    isChatbotOpen ? "Close AI chatbot" : "Open AI chatbot"
+                  }
                   aria-pressed={isChatbotOpen}
                   aria-expanded={isChatbotOpen}
-                  title="AI Chat"
+                  title="AI Bot"
                   onClick={() => setIsChatbotOpen((current) => !current)}
                   className={cx(
                     "relative flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-slate-200/80 bg-white/[0.85] text-slate-800 shadow-sm transition hover:-translate-y-1 hover:bg-indigo-50 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 dark:hover:bg-indigo-950/50 dark:hover:text-indigo-200",
                     isChatbotOpen &&
-                      "-translate-y-1 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-300 dark:bg-indigo-950/50 dark:text-indigo-200"
+                      "-translate-y-1 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-300 dark:bg-indigo-950/50 dark:text-indigo-200",
                   )}
                 >
                   <FontAwesomeIcon icon={faRobot} />

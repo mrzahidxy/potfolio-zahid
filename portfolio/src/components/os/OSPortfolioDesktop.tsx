@@ -3,10 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { ErrorMessage, Field, Formik, Form, FormikHelpers } from "formik";
+import * as Yup from "yup";
+import emailjs from "emailjs-com";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowUpRightFromSquare,
   faEnvelope,
+  faPaperPlane,
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import { usePublicProfile } from "@/context/PublicProfileContext";
@@ -15,15 +19,54 @@ import type {
   ProfileExperienceListResponse,
 } from "@/lib/profile-types";
 import type { Project, ProjectListResponse } from "@/lib/project-types";
+import OSRetroGame from "./OSRetroGame";
 import OSWindow from "./OSWindow";
 import { useOSDesktop } from "./OSDesktopShell";
+
+interface FormValues {
+  name: string;
+  subject: string;
+  email: string;
+  message: string;
+}
+
+const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+const getEmailErrorMessage = (error: unknown): string => {
+  const errorText =
+    typeof error === "object" && error !== null && "text" in error
+      ? String((error as { text?: unknown }).text ?? "")
+      : typeof error === "object" && error !== null && "message" in error
+        ? String((error as { message?: unknown }).message ?? "")
+        : "";
+
+  const normalizedText = errorText.toLowerCase();
+
+  if (normalizedText.includes("service id not found")) {
+    return "Email service is misconfigured. Please update NEXT_PUBLIC_EMAILJS_SERVICE_ID with a valid EmailJS service ID.";
+  }
+  if (normalizedText.includes("template id not found")) {
+    return "Email template is misconfigured. Please update NEXT_PUBLIC_EMAILJS_TEMPLATE_ID with a valid EmailJS template ID.";
+  }
+  if (
+    normalizedText.includes("public key is invalid") ||
+    normalizedText.includes("user id is invalid")
+  ) {
+    return "Email public key is invalid. Please update NEXT_PUBLIC_EMAILJS_PUBLIC_KEY.";
+  }
+
+  return "Message could not be sent right now. Please try again in a moment.";
+};
 
 export default function OSPortfolioDesktop() {
   const { activeItem, closeActiveItem } = useOSDesktop();
   const { profile, loading } = usePublicProfile();
   const [projects, setProjects] = useState<Project[]>([]);
   const [experiences, setExperiences] = useState<ProfileExperience[]>([]);
-  const [isMaximized, setIsMaximized] = useState(false);
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
     let isActive = true;
@@ -62,10 +105,6 @@ export default function OSPortfolioDesktop() {
     };
   }, []);
 
-  useEffect(() => {
-    setIsMaximized(false);
-  }, [activeItem]);
-
   const shortName = useMemo(() => {
     const parts = profile.personal_details.name.split(" ").filter(Boolean);
     return (
@@ -92,27 +131,65 @@ export default function OSPortfolioDesktop() {
     );
   }
 
-  const windowClassName = isMaximized
-    ? "min-h-[calc(100vh-8.5rem)] w-full"
-    : "";
-  const scrollBodyClassName = isMaximized
-    ? "max-h-[calc(100vh-12rem)] overflow-auto"
-    : "";
   const windowActions = {
-    isMaximized,
     onClose: closeActiveItem,
     onMinimize: closeActiveItem,
-    onMaximize: () => setIsMaximized((current) => !current),
+  };
+  const defaultWindowClassName = "w-full min-w-[720px] min-h-[520px]";
+  const initialValues: FormValues = {
+    name: "",
+    subject: "",
+    email: "",
+    message: "",
+  };
+  const validationSchema = Yup.object().shape({
+    name: Yup.string()
+      .required("Name is required")
+      .min(3, "Name must be at least 3 characters"),
+    subject: Yup.string().required("Subject is required"),
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Email is required"),
+    message: Yup.string()
+      .required("Message is required")
+      .min(20, "Message must be at least 20 characters"),
+  });
+  const handleSubmit = async (
+    values: FormValues,
+    { resetForm, setSubmitting }: FormikHelpers<FormValues>,
+  ) => {
+    try {
+      setFormError(null);
+      setIsFormSubmitted(false);
+
+      if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+        setFormError(
+          "Email service is not configured. Set NEXT_PUBLIC_EMAILJS_SERVICE_ID, NEXT_PUBLIC_EMAILJS_TEMPLATE_ID, and NEXT_PUBLIC_EMAILJS_PUBLIC_KEY.",
+        );
+        return;
+      }
+
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        { ...values },
+        EMAILJS_PUBLIC_KEY,
+      );
+      setIsFormSubmitted(true);
+      resetForm();
+    } catch (error) {
+      setFormError(getEmailErrorMessage(error));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <div
-      className={`flex min-h-[calc(100vh-10rem)] items-start justify-center ${isMaximized ? "pt-0" : "pt-2 lg:pt-8"}`}
-    >
-      <div className={isMaximized ? "w-full" : "w-full max-w-5xl"}>
+    <div className="flex h-full min-h-0 items-center justify-center overflow-auto py-6 pb-20 pt-6">
+      <div className="w-full max-w-5xl shrink-0">
         {!activeItem && (
           <div
-            className="min-h-[58vh]"
+            className="h-full"
             aria-label="No open windows"
           />
         )}
@@ -120,8 +197,8 @@ export default function OSPortfolioDesktop() {
         {activeItem === "about" && (
           <OSWindow
             title="About Me"
-            className={windowClassName}
-            bodyClassName={`p-5 sm:p-7 ${scrollBodyClassName}`}
+            className={`${defaultWindowClassName} max-w-5xl`}
+            bodyClassName="overflow-auto p-5 sm:p-7"
             {...windowActions}
           >
             <section
@@ -191,8 +268,8 @@ export default function OSPortfolioDesktop() {
         {activeItem === "projects" && (
           <OSWindow
             title="Projects"
-            className={windowClassName}
-            bodyClassName={`divide-y divide-slate-200 dark:divide-slate-800 ${scrollBodyClassName}`}
+            className={`${defaultWindowClassName} max-w-5xl`}
+            bodyClassName="overflow-auto divide-y divide-slate-200 dark:divide-slate-800"
             {...windowActions}
           >
             <section id="projects">
@@ -238,8 +315,8 @@ export default function OSPortfolioDesktop() {
         {activeItem === "experience" && (
           <OSWindow
             title="Experience"
-            className={windowClassName}
-            bodyClassName={`divide-y divide-slate-200 dark:divide-slate-800 ${scrollBodyClassName}`}
+            className={`${defaultWindowClassName} max-w-5xl`}
+            bodyClassName="overflow-auto divide-y divide-slate-200 dark:divide-slate-800"
             {...windowActions}
           >
             <section id="experience">
@@ -282,8 +359,8 @@ export default function OSPortfolioDesktop() {
         {activeItem === "contact" && (
           <OSWindow
             title="Contact"
-            className={windowClassName}
-            bodyClassName={`p-5 ${scrollBodyClassName}`}
+            className={`${defaultWindowClassName} max-w-5xl`}
+            bodyClassName="overflow-auto p-5"
             {...windowActions}
           >
             <section id="contact">
@@ -322,6 +399,192 @@ export default function OSPortfolioDesktop() {
                 </Link>
               </div>
             </section>
+          </OSWindow>
+        )}
+
+        {activeItem === "mail" && (
+          <OSWindow
+            title="Mail"
+            subtitle="Compose"
+            className={defaultWindowClassName}
+            bodyClassName="overflow-auto bg-[#f5f7fb] dark:bg-slate-950"
+            {...windowActions}
+          >
+            <section
+              id="ai-mail"
+              className="min-h-[500px] bg-white text-slate-950 dark:bg-slate-900 dark:text-slate-50"
+            >
+              <div className="flex min-w-0 flex-col">
+                <div className="flex min-h-12 items-center border-b border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-slate-900">
+                  <div className="min-w-0">
+                    <h2 className="truncate text-sm font-semibold text-slate-950 dark:text-white">
+                      Compose Message
+                    </h2>
+                    <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+                      From portfolio visitor to {profile.personal_details.name}
+                    </p>
+                  </div>
+                </div>
+
+                <Formik
+                  initialValues={initialValues}
+                  onSubmit={handleSubmit}
+                  validationSchema={validationSchema}
+                >
+                  {({ isSubmitting }) => (
+                    <Form
+                      id="os-email-form"
+                      className="flex flex-1 flex-col bg-white dark:bg-slate-900"
+                    >
+                      <div className="border-b border-slate-200 dark:border-slate-800">
+                        <div className="grid min-h-10 grid-cols-[64px,minmax(0,1fr)] items-center px-4">
+                          <label
+                            htmlFor="os-mail-to"
+                            className="text-sm font-semibold text-slate-500 dark:text-slate-400"
+                          >
+                            To
+                          </label>
+                          <input
+                            id="os-mail-to"
+                            type="email"
+                            value={profile.personal_details.contact.email}
+                            readOnly
+                            className="min-w-0 bg-transparent text-sm font-medium text-slate-900 outline-none dark:text-slate-100"
+                          />
+                        </div>
+
+                        <div className="grid min-h-10 grid-cols-[64px,minmax(0,1fr)] items-start border-t border-slate-100 px-4 py-2.5 dark:border-slate-800">
+                          <label
+                            htmlFor="os-mail-email"
+                            className="pt-0.5 text-sm font-semibold text-slate-500 dark:text-slate-400"
+                          >
+                            From
+                          </label>
+                          <div>
+                            <Field
+                              id="os-mail-email"
+                              name="email"
+                              type="email"
+                              placeholder="your.email@example.com"
+                              className="w-full bg-transparent text-sm font-medium text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
+                            />
+                            <ErrorMessage
+                              name="email"
+                              component="div"
+                              className="mt-1 text-xs font-medium text-red-600 dark:text-red-400"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid min-h-10 grid-cols-[64px,minmax(0,1fr)] items-start border-t border-slate-100 px-4 py-2.5 dark:border-slate-800">
+                          <label
+                            htmlFor="os-mail-name"
+                            className="pt-0.5 text-sm font-semibold text-slate-500 dark:text-slate-400"
+                          >
+                            Name
+                          </label>
+                          <div>
+                            <Field
+                              id="os-mail-name"
+                              name="name"
+                              type="text"
+                              placeholder="Your name"
+                              className="w-full bg-transparent text-sm font-medium text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
+                            />
+                            <ErrorMessage
+                              name="name"
+                              component="div"
+                              className="mt-1 text-xs font-medium text-red-600 dark:text-red-400"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid min-h-10 grid-cols-[64px,minmax(0,1fr)] items-start border-t border-slate-100 px-4 py-2.5 dark:border-slate-800">
+                          <label
+                            htmlFor="os-mail-subject"
+                            className="pt-0.5 text-sm font-semibold text-slate-500 dark:text-slate-400"
+                          >
+                            Subject
+                          </label>
+                          <div>
+                            <Field
+                              id="os-mail-subject"
+                              name="subject"
+                              type="text"
+                              placeholder="Project, role, or collaboration"
+                              className="w-full bg-transparent text-sm font-medium text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
+                            />
+                            <ErrorMessage
+                              name="subject"
+                              component="div"
+                              className="mt-1 text-xs font-medium text-red-600 dark:text-red-400"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-1 flex-col p-4">
+                        <Field
+                          id="os-mail-message"
+                          name="message"
+                          as="textarea"
+                          rows={8}
+                          placeholder="Write your message..."
+                          className="min-h-[170px] flex-1 resize-none bg-transparent text-[15px] leading-7 text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
+                        />
+                        <ErrorMessage
+                          name="message"
+                          component="div"
+                          className="mt-2 text-xs font-medium text-red-600 dark:text-red-400"
+                        />
+                      </div>
+
+                      {(formError || isFormSubmitted) && (
+                        <div className="px-4 pb-3">
+                          {formError && (
+                            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+                              {formError}
+                            </div>
+                          )}
+
+                          {isFormSubmitted && !formError && (
+                            <div className="rounded-md border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-semibold text-sky-700 dark:border-sky-900/60 dark:bg-sky-950/30 dark:text-sky-300">
+                              {profile.content.contact.success_message}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="flex justify-end border-t border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-950/70">
+                        <button
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-sky-500 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-sky-500"
+                        >
+                          <FontAwesomeIcon
+                            icon={faPaperPlane}
+                            className="h-4 w-4"
+                          />
+                          {isSubmitting ? "Sending..." : "Send Message"}
+                        </button>
+                      </div>
+                    </Form>
+                  )}
+                </Formik>
+              </div>
+            </section>
+          </OSWindow>
+        )}
+
+        {activeItem === "game" && (
+          <OSWindow
+            title="Byte Run"
+            subtitle="Retro game"
+            className={`${defaultWindowClassName} max-h-[calc(100dvh-10rem)]`}
+            bodyClassName="overflow-hidden bg-slate-950"
+            {...windowActions}
+          >
+            <OSRetroGame />
           </OSWindow>
         )}
       </div>

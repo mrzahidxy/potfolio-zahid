@@ -28,7 +28,10 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
     const trimmed = content.trim();
     if (!trimmed || isLoading) return;
 
-    const nextMessages: ChatMessageType[] = [...messages, { role: "user", content: trimmed }];
+    const nextMessages: ChatMessageType[] = [
+      ...messages,
+      { role: "user", content: trimmed },
+    ];
     setMessages(nextMessages);
     setInput("");
     setError(null);
@@ -46,9 +49,14 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
         throw new Error(data.error || "Unable to get a reply right now.");
       }
 
-      setMessages((current) => [...current, { role: "assistant", content: data.reply! }]);
+      setMessages((current) => [
+        ...current,
+        { role: "assistant", content: data.reply! },
+      ]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to get a reply right now.");
+      setError(
+        err instanceof Error ? err.message : "Unable to get a reply right now."
+      );
     } finally {
       setIsLoading(false);
       inputRef.current?.focus();
@@ -60,53 +68,95 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
     void sendMessage(input);
   }
 
+  const shellClassName = embedded
+    ? "h-screen border-0 bg-white shadow-none ring-0"
+    : "h-[min(720px,calc(100vh-3rem))] rounded-lg border border-white/80 bg-white/[0.92] shadow-soft ring-1 ring-slate-950/[0.06] backdrop-blur-xl";
+
   return (
     <section
-      className={`flex min-h-0 w-full flex-col overflow-hidden border border-slate-200 bg-slate-50 shadow-soft ${
-        embedded ? "h-screen rounded-none sm:h-[600px] sm:rounded-3xl" : "h-[min(720px,calc(100vh-3rem))] rounded-3xl"
-      }`}
+      className={`flex min-h-0 w-full flex-col overflow-hidden ${shellClassName}`}
       aria-label="Zahid portfolio chatbot"
     >
-      <header className="flex items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-2.5">
-        <div className="min-w-0">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">Portfolio Assistant</p>
-          <h1 className="truncate text-base font-bold leading-tight text-slate-950">Ask about Zahid</h1>
-        </div>
-        <p className="hidden shrink-0 text-xs text-slate-500 sm:block">Projects · Skills · Contact</p>
-      </header>
+      {!embedded && (
+        <header className="flex min-h-11 items-center justify-between gap-3 border-b border-slate-200/80 bg-gradient-to-b from-white/95 to-slate-100/[0.92] px-4 py-2.5">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-slate-950 font-mono text-xs font-bold text-emerald-300 shadow-sm">
+              AI
+            </span>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold leading-tight text-slate-900">
+                Zahid Assistant.exe
+              </p>
+              <p className="truncate font-mono text-[11px] text-slate-500">
+                Projects / Skills / Contact
+              </p>
+            </div>
+          </div>
+          <div className="flex shrink-0 items-center gap-1 text-sm leading-none text-slate-700">
+            <span className="flex h-7 w-8 items-center justify-center rounded hover:bg-slate-200/80">
+              -
+            </span>
+            <span className="flex h-7 w-8 items-center justify-center rounded text-[13px] hover:bg-slate-200/80">
+              []
+            </span>
+            <span className="flex h-7 w-8 items-center justify-center rounded hover:bg-red-500 hover:text-white">
+              x
+            </span>
+          </div>
+        </header>
+      )}
 
-      <div className="flex-1 space-y-4 overflow-y-auto p-4">
+      <div className="flex items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-4 py-2 font-mono text-[11px] text-slate-500">
+        <span>session: ai-chatbot</span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-emerald-400" />
+          online
+        </span>
+      </div>
+
+      <div className="flex-1 space-y-4 overflow-y-auto bg-slate-100/70 p-4">
         {messages.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-700">
-            <p className="font-medium text-slate-950">Hi, I’m Zahid’s portfolio assistant.</p>
-            <p className="mt-1">Choose a starter question or ask anything about Zahid’s work.</p>
-            <div className="mt-4 flex flex-wrap gap-2">
+          <div className="rounded-lg border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-700 shadow-sm">
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+              AI chatbot ready
+            </p>
+            <p className="mt-2 font-semibold text-slate-950">
+              This AI chatbot can answer portfolio questions about Zahid&apos;s
+              work, skills, projects, availability, and contact details.
+            </p>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
               {starterQuestions.map((question) => (
                 <button
                   key={question}
                   type="button"
                   onClick={() => void sendMessage(question)}
-                  className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700 transition hover:border-slate-400 hover:bg-white"
+                  className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-left font-mono text-[12px] font-medium text-slate-700 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
                 >
+                  <span className="mr-2 text-slate-400">&gt;</span>
                   {question}
                 </button>
               ))}
             </div>
           </div>
         ) : (
-          messages.map((message, index) => <ChatMessage key={`${message.role}-${index}`} message={message} />)
+          messages.map((message, index) => (
+            <ChatMessage key={`${message.role}-${index}`} message={message} />
+          ))
         )}
 
         {isLoading && (
           <div className="flex justify-start">
-            <div className="rounded-2xl rounded-bl-md border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
-              Thinking…
+            <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 font-mono text-[13px] text-slate-500 shadow-sm">
+              Thinking...
             </div>
           </div>
         )}
 
         {error && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+          <div
+            className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            role="alert"
+          >
             {error}
           </div>
         )}
@@ -119,13 +169,13 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
             value={input}
             onChange={(event) => setInput(event.target.value)}
             maxLength={1000}
-            placeholder="Ask about Zahid..."
-            className="min-w-0 flex-1 rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-slate-500"
+            placeholder="Type a command or question..."
+            className="min-w-0 flex-1 rounded-md border border-slate-200 bg-slate-50 px-4 py-3 font-mono text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white focus:ring-2 focus:ring-indigo-500/15"
           />
           <button
             type="submit"
             disabled={isLoading || !input.trim()}
-            className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Send
           </button>

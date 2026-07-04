@@ -20,6 +20,8 @@ export default function OSVisitStatsWidget() {
       return;
     }
 
+    let shouldReconnect = true;
+
     const connect = () => {
       setStatus("connecting");
       const socket = new WebSocket(SOCKET_URL);
@@ -44,7 +46,10 @@ export default function OSVisitStatsWidget() {
 
       socket.onclose = () => {
         setStatus("disconnected");
-        reconnectTimer.current = setTimeout(connect, 3000);
+
+        if (shouldReconnect) {
+          reconnectTimer.current = setTimeout(connect, 3000);
+        }
       };
 
       return socket;
@@ -53,11 +58,13 @@ export default function OSVisitStatsWidget() {
     const socket = connect();
 
     return () => {
-      socket.close();
+      shouldReconnect = false;
 
       if (reconnectTimer.current) {
         clearTimeout(reconnectTimer.current);
       }
+
+      socket.close();
     };
   }, []);
 

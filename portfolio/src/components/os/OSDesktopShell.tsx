@@ -3,6 +3,7 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -23,7 +24,7 @@ import OSVisitStatsWidget from "./OSVisitStatsWidget";
 export type OSDesktopItem = "about" | "projects" | "experience" | "contact";
 
 const CHATBOT_WIDGET_URL =
-  process.env.NEXT_PUBLIC_CHATBOT_WIDGET_URL || "http://localhost:3000/widget";
+  process.env.NEXT_PUBLIC_CHATBOT_WIDGET_URL?.trim() || "";
 
 interface OSDesktopContextValue {
   activeItem: OSDesktopItem | null;
@@ -82,6 +83,8 @@ export default function OSDesktopShell({
   const [activeItem, setActiveItem] = useState<OSDesktopItem | null>("about");
   const [selectedItem, setSelectedItem] = useState<OSDesktopItem>("about");
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+  const [dateLabel, setDateLabel] = useState("");
+  const hasChatbot = Boolean(CHATBOT_WIDGET_URL);
   const desktopContext = useMemo(
     () => ({
       activeItem,
@@ -93,6 +96,16 @@ export default function OSDesktopShell({
   const availabilityLabel = profile.preferences.available_for_opportunities
     ? profile.content.intro.availability_available
     : profile.content.intro.availability_unavailable;
+
+  useEffect(() => {
+    setDateLabel(
+      new Intl.DateTimeFormat(undefined, {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      }).format(new Date())
+    );
+  }, []);
 
   return (
     <OSDesktopContext.Provider value={desktopContext}>
@@ -131,7 +144,7 @@ export default function OSDesktopShell({
               {availabilityLabel}
             </span>
             <span>100%</span>
-            <span className="hidden sm:inline">Sat, Jul 4</span>
+            {dateLabel && <span className="hidden sm:inline">{dateLabel}</span>}
           </div>
         </header>
 
@@ -229,27 +242,29 @@ export default function OSDesktopShell({
                   </button>
                 );
               })}
-              <button
-                type="button"
-                aria-label={isChatbotOpen ? "Close AI chatbot" : "Open AI chatbot"}
-                aria-pressed={isChatbotOpen}
-                aria-expanded={isChatbotOpen}
-                title="AI Chat"
-                onClick={() => setIsChatbotOpen((current) => !current)}
-                className={cx(
-                  "relative flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-slate-200/80 bg-white/[0.85] text-slate-800 shadow-sm transition hover:-translate-y-1 hover:bg-indigo-50 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 dark:hover:bg-indigo-950/50 dark:hover:text-indigo-200",
-                  isChatbotOpen &&
-                    "-translate-y-1 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-300 dark:bg-indigo-950/50 dark:text-indigo-200"
-                )}
-              >
-                <FontAwesomeIcon icon={faRobot} />
-                {isChatbotOpen && (
-                  <span
-                    className="absolute -bottom-1 h-1 w-5 rounded-full bg-indigo-600 dark:bg-indigo-300"
-                    aria-hidden="true"
-                  />
-                )}
-              </button>
+              {hasChatbot && (
+                <button
+                  type="button"
+                  aria-label={isChatbotOpen ? "Close AI chatbot" : "Open AI chatbot"}
+                  aria-pressed={isChatbotOpen}
+                  aria-expanded={isChatbotOpen}
+                  title="AI Chat"
+                  onClick={() => setIsChatbotOpen((current) => !current)}
+                  className={cx(
+                    "relative flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-slate-200/80 bg-white/[0.85] text-slate-800 shadow-sm transition hover:-translate-y-1 hover:bg-indigo-50 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 dark:hover:bg-indigo-950/50 dark:hover:text-indigo-200",
+                    isChatbotOpen &&
+                      "-translate-y-1 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-300 dark:bg-indigo-950/50 dark:text-indigo-200"
+                  )}
+                >
+                  <FontAwesomeIcon icon={faRobot} />
+                  {isChatbotOpen && (
+                    <span
+                      className="absolute -bottom-1 h-1 w-5 rounded-full bg-indigo-600 dark:bg-indigo-300"
+                      aria-hidden="true"
+                    />
+                  )}
+                </button>
+              )}
             </nav>
             <span className="hidden min-w-[160px] justify-end text-xs font-medium text-slate-700 dark:text-slate-300 sm:flex">
               (c) 2026 Zahid Hasan
@@ -257,7 +272,7 @@ export default function OSDesktopShell({
           </div>
         </footer>
 
-        {isChatbotOpen && (
+        {hasChatbot && isChatbotOpen && (
           <div className="fixed bottom-16 right-3 z-40 w-[calc(100vw-1.5rem)] max-w-[420px] overflow-hidden rounded-lg border border-white/80 bg-white/[0.94] shadow-[0_24px_70px_rgba(26,47,87,0.28)] backdrop-blur-xl dark:border-slate-700/80 dark:bg-slate-950/[0.92] sm:right-6">
             <div className="flex min-h-11 items-center justify-between gap-3 border-b border-slate-200/80 bg-gradient-to-b from-white/95 to-slate-100/[0.92] px-4 py-2.5 dark:border-slate-800/90 dark:from-slate-900/95 dark:to-slate-950/[0.92]">
               <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">

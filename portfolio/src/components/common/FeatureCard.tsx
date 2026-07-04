@@ -11,7 +11,7 @@ type Props = {
 
 const FeatureCard: React.FC<Props> = ({ project }) => {
   return (
-    <div className="group flex h-full flex-col overflow-hidden rounded-[30px] border border-slate-200/70 bg-white/85 shadow-[0_24px_60px_rgba(15,23,42,0.06)] backdrop-blur transition duration-300 hover:-translate-y-1 hover:shadow-[0_32px_80px_rgba(15,23,42,0.1)] dark:border-slate-800/80 dark:bg-slate-900/75">
+    <div className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-slate-200/80 bg-white/80 shadow-sm backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-sky-200 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)] dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-sky-800">
       <div className="relative h-48 overflow-hidden border-b border-slate-200/70 bg-gradient-to-br from-slate-100 via-white to-slate-100 sm:h-56 md:h-64 dark:border-slate-800/80 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800">
         {project.img ? (
           <Image
@@ -34,7 +34,7 @@ const FeatureCard: React.FC<Props> = ({ project }) => {
           {project?.technology?.map((tech: string) => (
             <span
               key={tech}
-              className="rounded-full border border-slate-200/80 bg-slate-50/90 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-700 transition duration-200 hover:border-slate-300 hover:bg-slate-100 sm:text-[11px] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-slate-600 dark:hover:bg-slate-700/80"
+              className="rounded-[12px] border border-slate-200/80 bg-slate-50/90 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-700 transition duration-200 hover:border-slate-300 hover:bg-slate-100 sm:text-[11px] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-slate-600 dark:hover:bg-slate-700/80"
             >
               {tech}
             </span>
@@ -56,7 +56,7 @@ const FeatureCard: React.FC<Props> = ({ project }) => {
               href={project.liveLink}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-slate-950 px-5 text-white shadow-[0_16px_30px_rgba(15,23,42,0.16)] transition duration-200 hover:-translate-y-[2px] hover:bg-slate-800 sm:w-auto dark:bg-sky-400 dark:text-slate-950 dark:hover:bg-sky-300"
+              className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[14px] bg-slate-950 px-5 text-white shadow-[0_16px_30px_rgba(15,23,42,0.16)] transition duration-200 hover:-translate-y-[2px] hover:bg-slate-800 sm:w-auto dark:bg-sky-300 dark:text-slate-950 dark:hover:bg-sky-200"
             >
               View Project
               <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-xs" />
@@ -68,7 +68,7 @@ const FeatureCard: React.FC<Props> = ({ project }) => {
               href={project.githubLink}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-slate-200/80 bg-white px-5 text-slate-700 shadow-sm transition duration-200 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 sm:w-auto dark:border-slate-700 dark:bg-transparent dark:text-slate-200 dark:hover:border-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-50"
+              className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[14px] border border-slate-200/80 bg-white px-5 text-slate-700 shadow-sm transition duration-200 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 sm:w-auto dark:border-slate-700 dark:bg-transparent dark:text-slate-200 dark:hover:border-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-50"
             >
               <FontAwesomeIcon icon={faGithub} />
               View Code

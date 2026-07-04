@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import FeatureCard from "./common/FeatureCard";
 import { useAxiosWithAuth } from "@/helper/request-method";
 import DefaultLoader from "./common/DefaultLoader";
+import OSWindow from "./os/OSWindow";
 import Reveal from "./common/Reveal";
 import type { Project, ProjectListResponse } from "@/lib/project-types";
 
@@ -31,11 +32,13 @@ const Projects: React.FC = () => {
     return (
       <section
         id="projects"
-        className="scroll-mt-32 px-4 py-20 sm:scroll-mt-28 md:px-6 md:py-24 lg:px-8"
+        className="scroll-mt-32 py-6 sm:scroll-mt-28 md:py-8"
       >
-        <div className="container max-w-6xl flex items-center justify-center">
-          <DefaultLoader />
-        </div>
+        <OSWindow title="Projects" subtitle="/projects" bodyClassName="p-8">
+          <div className="flex min-h-40 items-center justify-center">
+            <DefaultLoader />
+          </div>
+        </OSWindow>
       </section>
     );
   }
@@ -45,9 +48,13 @@ const Projects: React.FC = () => {
   return (
     <section
       id="projects"
-      className="relative scroll-mt-32 px-4 py-20 sm:scroll-mt-28 md:px-6 md:py-24 lg:px-8"
+      className="relative scroll-mt-32 py-6 sm:scroll-mt-28 md:py-8"
     >
-      <div className="container max-w-6xl space-y-8 sm:space-y-10 md:space-y-12">
+      <OSWindow
+        title="Projects"
+        subtitle="/projects"
+        bodyClassName="space-y-8 p-5 sm:space-y-10 sm:p-7 md:space-y-12 md:p-8"
+      >
         <Reveal className="space-y-4">
           <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
             Projects
@@ -79,7 +86,7 @@ const Projects: React.FC = () => {
             </div>
           </Reveal>
         )}
-      </div>
+      </OSWindow>
     </section>
   );
 };

@@ -4,9 +4,7 @@ import type {
   ProfilePersonalDetails,
   ProfilePreferences,
 } from "@/lib/profile-types";
-import HeroBackgroundAnimation, {
-  type HeroBackgroundColorScheme,
-} from "./common/HeroBackgroundAnimation";
+import OSWindow from "./os/OSWindow";
 
 interface IntroProps {
   personalDetails: ProfilePersonalDetails;
@@ -15,72 +13,99 @@ interface IntroProps {
 }
 
 function Intro({ personalDetails, preferences, content }: IntroProps) {
-  const heroBackground = preferences.hero_background;
-  const heroBackgroundScheme: HeroBackgroundColorScheme =
-    heroBackground?.scheme === "light" || heroBackground?.scheme === "dark"
-      ? heroBackground.scheme
-      : "dark";
-
   return (
     <section
       id="intro"
-      className="relative isolate overflow-hidden scroll-mt-32 bg-slate-950 text-white sm:scroll-mt-28"
+      className="relative scroll-mt-32 px-0 pb-6 pt-2 sm:scroll-mt-28 md:pb-8"
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.35),transparent_45%),radial-gradient(circle_at_80%_0%,rgba(59,130,246,0.35),transparent_35%),radial-gradient(circle_at_50%_80%,rgba(14,165,233,0.25),transparent_40%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(15,23,42,0.4)_0%,rgba(15,23,42,0.9)_50%,rgba(8,47,73,0.7)_100%)]" />
-      <HeroBackgroundAnimation
-        elementCount={heroBackground?.element_count ?? 6}
-        colorScheme={heroBackgroundScheme}
-      />
-
-      <div className="container relative flex min-h-[calc(100dvh-7.5rem)] max-w-6xl items-start px-4 py-16 sm:min-h-[calc(100dvh-8rem)] sm:items-center sm:py-20 md:min-h-[calc(100vh-7.5rem)] md:px-6 md:py-24 lg:py-24">
-        <div className="hero-entrance hero-entrance-delay-1 flex w-full justify-center lg:justify-start">
-          <div className="flex max-w-4xl flex-col items-center text-center lg:items-start lg:text-left">
-            <div className="inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-[10px] font-medium text-sky-100 ring-1 ring-white/5 backdrop-blur sm:text-[11px]">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_0_6px_rgba(16,185,129,0.25)] animate-pulse" />
+      <OSWindow
+        title="About Me"
+        subtitle={`${personalDetails.name}.profile`}
+        bodyClassName="relative overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,rgba(14,165,233,0.16),transparent_34%),radial-gradient(circle_at_82%_12%,rgba(16,185,129,0.13),transparent_30%)] dark:bg-[radial-gradient(circle_at_18%_20%,rgba(14,165,233,0.2),transparent_34%),radial-gradient(circle_at_82%_12%,rgba(16,185,129,0.12),transparent_30%)]" />
+        <div className="relative grid min-h-[520px] gap-8 p-5 sm:p-7 md:p-9 lg:grid-cols-[minmax(0,1fr),320px] lg:items-center lg:p-10">
+          <div className="hero-entrance hero-entrance-delay-1 max-w-3xl">
+            <div className="inline-flex flex-wrap items-center gap-2 rounded-full border border-emerald-200/80 bg-emerald-50/80 px-3 py-1.5 text-[11px] font-semibold text-emerald-700 shadow-sm dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:text-emerald-300">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_0_5px_rgba(16,185,129,0.16)]" />
               {preferences.available_for_opportunities
                 ? content.availability_available
                 : content.availability_unavailable}
             </div>
 
-            <p className="mt-7 text-[11px] tracking-[0.32em] uppercase text-sky-200/75 sm:mt-10">
+            <p className="mt-7 text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">
               {personalDetails.name} / {personalDetails.title}
             </p>
-            <h1 className="mt-4 max-w-3xl text-[34px] font-semibold leading-[1.06] tracking-tight text-white sm:mt-6 sm:text-[52px] lg:text-[68px]">
+            <h1 className="mt-4 max-w-3xl text-[34px] font-semibold leading-[1.08] tracking-tight text-slate-950 dark:text-white sm:text-[48px] lg:text-[58px]">
               {content.headline}
             </h1>
-            <p className="mt-5 max-w-2xl text-[16px] leading-7 text-slate-200/90 sm:mt-7 sm:text-[18px] sm:leading-8">
+            <p className="mt-5 max-w-2xl text-[16px] leading-7 text-slate-600 dark:text-slate-300 sm:text-[18px] sm:leading-8">
               {personalDetails.bio}
             </p>
 
-            <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start">
+            <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
               <Link
                 href="#projects"
-                className="inline-flex h-12 w-full items-center justify-center rounded-full bg-sky-400 px-6 text-sm font-semibold text-slate-950 shadow-[0_18px_40px_rgba(56,189,248,0.28)] transition duration-200 hover:-translate-y-[2px] hover:bg-sky-300 sm:w-auto sm:min-w-[10rem]"
+                className="inline-flex h-12 w-full items-center justify-center rounded-[16px] bg-slate-950 px-6 text-sm font-semibold text-white shadow-[0_18px_40px_rgba(15,23,42,0.18)] transition duration-200 hover:-translate-y-[2px] hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 sm:w-auto sm:min-w-[10rem] dark:bg-sky-300 dark:text-slate-950 dark:hover:bg-sky-200"
               >
                 {content.primary_cta_label}
               </Link>
               <Link
                 href="#contact"
-                className="inline-flex h-12 w-full items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 text-sm font-semibold text-white transition duration-200 hover:border-sky-300/60 hover:bg-white/10 hover:text-sky-100 sm:w-auto sm:min-w-[10rem]"
+                className="inline-flex h-12 w-full items-center justify-center rounded-[16px] border border-slate-200/80 bg-white/80 px-6 text-sm font-semibold text-slate-800 shadow-sm transition duration-200 hover:-translate-y-[2px] hover:border-sky-200 hover:bg-sky-50 hover:text-sky-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 sm:w-auto sm:min-w-[10rem] dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-100 dark:hover:border-sky-700 dark:hover:bg-sky-950/40 dark:hover:text-sky-200"
               >
                 {content.secondary_cta_label}
               </Link>
             </div>
 
-            <div className="mt-9 flex flex-wrap justify-center gap-2.5 lg:justify-start">
+            <div className="mt-8 flex flex-wrap gap-2.5">
               {content.highlights.map((item) => (
                 <span
                   key={item}
-                  className="rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-[13px] text-slate-200/90 backdrop-blur transition duration-200 hover:border-white/20 hover:bg-white/[0.08] sm:text-sm"
+                  className="rounded-[14px] border border-slate-200/80 bg-white/70 px-3.5 py-2 text-[13px] font-medium text-slate-700 backdrop-blur dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-200 sm:text-sm"
                 >
                   {item}
                 </span>
               ))}
             </div>
           </div>
+
+          <div className="hero-entrance hero-entrance-delay-2 rounded-[22px] border border-slate-200/80 bg-slate-950 p-4 text-slate-100 shadow-[0_22px_60px_rgba(15,23,42,0.18)] dark:border-slate-800 dark:bg-black/40">
+            <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-3">
+              <span className="text-xs font-semibold text-sky-200">
+                profile.json
+              </span>
+              <span className="text-[11px] text-slate-400">read-only</span>
+            </div>
+            <dl className="space-y-4 text-sm">
+              <div>
+                <dt className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                  Name
+                </dt>
+                <dd className="mt-1 font-semibold text-white">
+                  {personalDetails.name}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                  Role
+                </dt>
+                <dd className="mt-1 text-slate-200">
+                  {personalDetails.title}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                  Location
+                </dt>
+                <dd className="mt-1 text-slate-200">
+                  {personalDetails.location}
+                </dd>
+              </div>
+            </dl>
+          </div>
         </div>
-      </div>
+      </OSWindow>
     </section>
   );
 }

@@ -7,6 +7,7 @@ import type {
 } from "@/lib/profile-types";
 import { useAxiosWithAuth } from "@/helper/request-method";
 import DefaultLoader from "./common/DefaultLoader";
+import OSWindow from "./os/OSWindow";
 import Reveal from "./common/Reveal";
 
 const Experience: React.FC = () => {
@@ -34,11 +35,13 @@ const Experience: React.FC = () => {
     return (
       <section
         id="experience"
-        className="scroll-mt-32 px-4 py-20 sm:scroll-mt-28 md:px-6 md:py-24 lg:px-8"
+        className="scroll-mt-32 py-6 sm:scroll-mt-28 md:py-8"
       >
-        <div className="container flex max-w-6xl items-center justify-center">
-          <DefaultLoader />
-        </div>
+        <OSWindow title="Experience.md" subtitle="Timeline" bodyClassName="p-8">
+          <div className="flex min-h-40 items-center justify-center">
+            <DefaultLoader />
+          </div>
+        </OSWindow>
       </section>
     );
   }
@@ -46,9 +49,13 @@ const Experience: React.FC = () => {
   return (
     <section
       id="experience"
-      className="relative scroll-mt-32 px-4 py-20 sm:scroll-mt-28 md:px-6 md:py-24 lg:px-8"
+      className="relative scroll-mt-32 py-6 sm:scroll-mt-28 md:py-8"
     >
-      <div className="container max-w-6xl space-y-8 sm:space-y-10 md:space-y-12">
+      <OSWindow
+        title="Experience.md"
+        subtitle="Timeline"
+        bodyClassName="space-y-8 p-5 sm:space-y-10 sm:p-7 md:space-y-12 md:p-8"
+      >
         <Reveal className="space-y-4">
           <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
             Experience
@@ -72,12 +79,12 @@ const Experience: React.FC = () => {
               >
                 <article className="grid gap-3 md:gap-5 lg:grid-cols-[190px,1fr]">
                   <div className="lg:pt-3">
-                    <span className="inline-flex w-fit rounded-full border border-slate-200/80 bg-white/85 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700 shadow-[0_12px_30px_rgba(15,23,42,0.08)] backdrop-blur dark:border-slate-700/80 dark:bg-slate-900/80 dark:text-slate-200 sm:text-[12px]">
+                    <span className="inline-flex w-fit rounded-[14px] border border-slate-200/80 bg-slate-50/90 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700 shadow-sm backdrop-blur dark:border-slate-700/80 dark:bg-slate-900/80 dark:text-slate-200 sm:text-[12px]">
                       {experience.period}
                     </span>
                   </div>
 
-                  <div className="rounded-[30px] border border-slate-200/70 bg-white/85 p-4 shadow-[0_24px_60px_rgba(15,23,42,0.06)] backdrop-blur sm:p-6 md:p-7 dark:border-slate-800/80 dark:bg-slate-900/75">
+                  <div className="rounded-[22px] border border-slate-200/80 bg-slate-50/80 p-4 shadow-sm backdrop-blur sm:p-6 md:p-7 dark:border-slate-800 dark:bg-slate-900/60">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                       <div className="space-y-3">
                         <h3 className="text-[19px] font-semibold tracking-tight text-slate-950 dark:text-slate-50 sm:text-[22px]">
@@ -128,7 +135,7 @@ const Experience: React.FC = () => {
             </div>
           </Reveal>
         )}
-      </div>
+      </OSWindow>
     </section>
   );
 };

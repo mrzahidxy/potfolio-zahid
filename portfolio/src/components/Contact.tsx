@@ -8,6 +8,7 @@ import emailjs from "emailjs-com";
 import FormInput from "./common/FormInput";
 import ContactInfo from "./common/ContatcInfo";
 import SocialLink from "./common/SocialLink";
+import OSWindow from "./os/OSWindow";
 import type {
   ProfileContactContent,
   ProfileContactDetails,
@@ -179,9 +180,13 @@ const Contact: React.FC<ContactProps> = ({
   return (
     <section
       id="contact"
-      className="relative scroll-mt-32 px-4 py-20 sm:scroll-mt-28 md:px-6 md:py-24 lg:px-8"
+      className="relative scroll-mt-32 py-6 sm:scroll-mt-28 md:py-8"
     >
-      <div className="container max-w-6xl space-y-8 md:space-y-10">
+      <OSWindow
+        title="Contact.md"
+        subtitle="Message center"
+        bodyClassName="space-y-8 p-5 sm:p-7 md:space-y-10 md:p-8"
+      >
         <Reveal className="space-y-4">
           <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
             {content.eyebrow_label}
@@ -195,7 +200,7 @@ const Contact: React.FC<ContactProps> = ({
         </Reveal>
 
         <Reveal delayMs={70}>
-          <div className="relative overflow-hidden rounded-[34px] bg-slate-950 p-6 text-slate-100 shadow-[0_32px_90px_rgba(15,23,42,0.18)] sm:p-8 md:p-10">
+          <div className="relative overflow-hidden rounded-[22px] bg-slate-950 p-6 text-slate-100 shadow-[0_24px_70px_rgba(15,23,42,0.16)] sm:p-8 md:p-9">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(56,189,248,0.18),transparent_32%),radial-gradient(circle_at_80%_0%,rgba(59,130,246,0.14),transparent_30%)]" />
             <div className="relative grid gap-6 md:gap-8 lg:grid-cols-[1.1fr,0.9fr] lg:items-stretch">
               <div className="space-y-4">
@@ -205,7 +210,7 @@ const Contact: React.FC<ContactProps> = ({
                 <h3 className="max-w-2xl text-2xl font-semibold tracking-tight text-white sm:text-3xl md:text-4xl">
                   {content.banner_heading}
                 </h3>
-                <p className="max-w-2xl text-[15px] leading-7 text-slate-200/84 sm:text-[16px] sm:leading-8">
+                <p className="max-w-2xl text-[15px] leading-7 text-slate-200/80 sm:text-[16px] sm:leading-8">
                   {content.banner_intro}
                 </p>
               </div>
@@ -237,7 +242,7 @@ const Contact: React.FC<ContactProps> = ({
                     </a>
                   ))}
                 </div>
-                <p className="mt-4 text-[14px] leading-7 text-slate-300/82 sm:text-[15px]">
+                <p className="mt-4 text-[14px] leading-7 text-slate-300/80 sm:text-[15px]">
                   {content.quick_links_note}
                 </p>
               </div>
@@ -247,7 +252,7 @@ const Contact: React.FC<ContactProps> = ({
 
         <div className="grid items-stretch gap-5 md:gap-6 xl:grid-cols-[0.96fr,1.04fr]">
           <Reveal delayMs={110}>
-            <div className="relative overflow-hidden rounded-[32px] bg-slate-950 p-6 text-slate-100 shadow-[0_30px_80px_rgba(15,23,42,0.18)] sm:p-7 md:p-8">
+            <div className="relative overflow-hidden rounded-[22px] bg-slate-950 p-6 text-slate-100 shadow-[0_22px_60px_rgba(15,23,42,0.16)] sm:p-7 md:p-8">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.18),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(59,130,246,0.15),transparent_35%)]" />
               <div className="relative flex h-full flex-col space-y-7">
                 <div className="space-y-3">
@@ -257,7 +262,7 @@ const Contact: React.FC<ContactProps> = ({
                   <h3 className="text-xl font-semibold">
                     {content.details_heading}
                   </h3>
-                  <p className="text-[14px] leading-7 text-slate-200/82 sm:text-[15px]">
+                  <p className="text-[14px] leading-7 text-slate-200/80 sm:text-[15px]">
                     {content.details_intro}
                   </p>
                 </div>
@@ -297,7 +302,7 @@ const Contact: React.FC<ContactProps> = ({
           </Reveal>
 
           <Reveal delayMs={150}>
-            <div className="rounded-[32px] border border-slate-200/70 bg-white/85 p-6 shadow-[0_24px_60px_rgba(15,23,42,0.06)] backdrop-blur sm:p-7 md:p-8 dark:border-slate-800/80 dark:bg-slate-900/75">
+            <div className="rounded-[22px] border border-slate-200/80 bg-white/80 p-6 shadow-sm backdrop-blur sm:p-7 md:p-8 dark:border-slate-800 dark:bg-slate-900/60">
               <div className="mb-7 space-y-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
                   {content.form_eyebrow_label}
@@ -375,7 +380,7 @@ const Contact: React.FC<ContactProps> = ({
             </div>
           </Reveal>
         </div>
-      </div>
+      </OSWindow>
     </section>
   );
 };

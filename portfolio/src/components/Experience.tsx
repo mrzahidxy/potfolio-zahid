@@ -20,7 +20,7 @@ const Experience: React.FC = () => {
       try {
         const response =
           await api.get<ProfileExperienceListResponse>("/experiences");
-        setExperiences(response.data.data ?? []);
+        setExperiences(response.data.success ? response.data.data : []);
       } catch {
         setExperiences([]);
       } finally {

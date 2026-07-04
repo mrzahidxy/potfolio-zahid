@@ -18,7 +18,7 @@ import type {
   ProfileExperience,
   ProfileExperienceListResponse,
 } from "@/lib/profile-types";
-import type { Project, ProjectListResponse } from "@/lib/project-types";
+import type { Project, PublicProjectListResponse } from "@/lib/project-types";
 import OSRetroGame from "./OSRetroGame";
 import OSWindow from "./OSWindow";
 import { useOSDesktop } from "./OSDesktopShell";
@@ -78,7 +78,7 @@ export default function OSPortfolioDesktop() {
           fetch("/api/experiences", { cache: "no-store" }),
         ]);
         const [projectPayload, experiencePayload] = await Promise.all([
-          projectResponse.json() as Promise<ProjectListResponse>,
+          projectResponse.json() as Promise<PublicProjectListResponse>,
           experienceResponse.json() as Promise<ProfileExperienceListResponse>,
         ]);
 

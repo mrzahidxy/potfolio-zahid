@@ -30,6 +30,10 @@ export interface ProjectListResponse {
   data: Project[];
 }
 
+export type PublicProjectListResponse =
+  | { success: true; data: Project[] }
+  | { success: false; message: string };
+
 export interface ProjectResponse {
   success: boolean;
   data: Project;

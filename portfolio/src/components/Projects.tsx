@@ -6,7 +6,7 @@ import { useAxiosWithAuth } from "@/helper/request-method";
 import DefaultLoader from "./common/DefaultLoader";
 import OSWindow from "./os/OSWindow";
 import Reveal from "./common/Reveal";
-import type { Project, ProjectListResponse } from "@/lib/project-types";
+import type { Project, PublicProjectListResponse } from "@/lib/project-types";
 
 const Projects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -16,8 +16,8 @@ const Projects: React.FC = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await api.get<ProjectListResponse>(`/projects`);
-        setProjects(response.data.data ?? []);
+        const response = await api.get<PublicProjectListResponse>(`/projects`);
+        setProjects(response.data.success ? response.data.data : []);
       } catch {
         setProjects([]);
       } finally {

@@ -199,7 +199,7 @@ export default function OSPortfolioDesktop() {
           <OSWindow
             title="About Me"
             className={defaultWindowClassName}
-            bodyClassName="overflow-auto p-5 sm:p-7"
+            bodyClassName="smooth-scrollbar overflow-auto p-5 sm:p-7"
             {...windowActions}
           >
             <section
@@ -285,7 +285,7 @@ export default function OSPortfolioDesktop() {
                 <span className="text-right">Open</span>
               </div>
 
-              <div className="min-h-0 flex-1 overflow-auto bg-white dark:bg-slate-900">
+              <div className="smooth-scrollbar min-h-0 flex-1 overflow-auto bg-white dark:bg-slate-900">
                 {projects.length > 0 ? (
                   projects.slice(0, 8).map((project) => (
                     <article
@@ -368,18 +368,18 @@ export default function OSPortfolioDesktop() {
                 <span className="text-slate-800 dark:text-slate-100">Experience</span>
               </div>
 
-              <div className="grid min-h-9 grid-cols-[minmax(280px,1.35fr),minmax(180px,0.85fr),150px] items-center border-b border-slate-200 bg-slate-50/90 px-5 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
+              <div className="grid min-h-9 grid-cols-[minmax(360px,1fr),190px,130px] items-center border-b border-slate-200 bg-slate-50/90 px-5 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
                 <span>Role & Highlights</span>
                 <span>Company</span>
                 <span className="text-right">Period</span>
               </div>
 
-              <div className="min-h-0 flex-1 overflow-auto bg-white dark:bg-slate-900">
+              <div className="smooth-scrollbar min-h-0 flex-1 overflow-auto bg-white dark:bg-slate-900">
                 {experiences.length > 0 ? (
                   experiences.slice(0, 8).map((experience) => (
                     <article
                       key={experience.id ?? `${experience.company}-${experience.period}`}
-                      className="group grid min-h-28 grid-cols-[minmax(280px,1.35fr),minmax(180px,0.85fr),150px] items-start gap-5 border-b border-slate-100 px-5 py-5 transition hover:bg-sky-50/80 dark:border-slate-800 dark:hover:bg-slate-800/70"
+                      className="group grid min-h-28 grid-cols-[minmax(360px,1fr),190px,130px] items-start gap-3 border-b border-slate-100 px-5 py-5 transition hover:bg-sky-50/80 dark:border-slate-800 dark:hover:bg-slate-800/70"
                     >
                       <div className="flex min-w-0 items-start gap-4">
                         <span className="flex h-11 w-12 shrink-0 items-center justify-center rounded-md bg-amber-400 text-amber-900 shadow-sm ring-1 ring-amber-500/30">
@@ -439,7 +439,7 @@ export default function OSPortfolioDesktop() {
             <section id="contact" className="flex h-full min-h-0 flex-col">
               <div className="flex min-h-10 items-center gap-2 border-b border-slate-200 bg-white/80 px-4 text-xs font-semibold text-slate-500 dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-400"><span>Desktop</span><span>/</span><span className="text-slate-800 dark:text-slate-100">Contact</span></div>
               <div className="grid min-h-8 grid-cols-[minmax(220px,1fr),92px] items-center border-b border-slate-200 bg-slate-50/90 px-4 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400"><span>Name</span><span className="text-right">Open</span></div>
-              <div className="min-h-0 flex-1 overflow-auto bg-white dark:bg-slate-900">
+              <div className="smooth-scrollbar min-h-0 flex-1 overflow-auto bg-white dark:bg-slate-900">
                 {[
                   { name: "Email", value: profile.personal_details.contact.email, href: `mailto:${profile.personal_details.contact.email}`, icon: faEnvelope },
                   { name: "LinkedIn", value: "linkedin.com", href: profile.personal_details.links.linkedin, icon: faLinkedin },

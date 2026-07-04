@@ -47,6 +47,43 @@ html.dark body {
   color: #0f172a;
 }
 
+.smooth-scrollbar {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.48) transparent;
+  overscroll-behavior: contain;
+}
+
+.smooth-scrollbar::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.smooth-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.smooth-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(148, 163, 184, 0.42), rgba(71, 85, 105, 0.52));
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+}
+
+.smooth-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.56), rgba(14, 165, 233, 0.56));
+  background-clip: content-box;
+}
+
+html.dark .smooth-scrollbar {
+  scrollbar-color: rgba(148, 163, 184, 0.42) transparent;
+}
+
+html.dark .smooth-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(148, 163, 184, 0.34), rgba(51, 65, 85, 0.7));
+  background-clip: content-box;
+}
+
 @keyframes move {
   10% {
     transform: translateY(0px);

@@ -17,8 +17,10 @@ import {
   faFolder,
   faGamepad,
   faHouse,
+  faMoon,
   faPaperPlane,
   faRobot,
+  faSun,
 } from "@fortawesome/free-solid-svg-icons";
 import { usePublicProfile } from "@/context/PublicProfileContext";
 import OSVisitStatsWidget from "./OSVisitStatsWidget";
@@ -102,6 +104,7 @@ export default function OSDesktopShell({ children }: { children: ReactNode }) {
   const [activeItem, setActiveItem] = useState<OSDesktopItem | null>("about");
   const [selectedItem, setSelectedItem] = useState<OSDesktopItem>("about");
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [dateLabel, setDateLabel] = useState("");
   const hasChatbot = Boolean(CHATBOT_WIDGET_URL);
   const dockItems = useMemo(() => {
@@ -123,85 +126,41 @@ export default function OSDesktopShell({ children }: { children: ReactNode }) {
     }),
     [activeItem],
   );
-  const availabilityLabel = profile.preferences.available_for_opportunities
-    ? profile.content.intro.availability_available
-    : profile.content.intro.availability_unavailable;
+  useEffect(() => {
+    const storedTheme = localStorage.getItem("portfolio-theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const initialDarkMode = storedTheme ? storedTheme === "dark" : prefersDark;
+
+    setIsDarkMode(initialDarkMode);
+    document.documentElement.classList.toggle("dark", initialDarkMode);
+
+    const updateDateTime = () => {
+      setDateLabel(
+        new Intl.DateTimeFormat(undefined, {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+        }).format(new Date()),
+      );
+    };
+
+    updateDateTime();
+    const timer = window.setInterval(updateDateTime, 30_000);
+
+    return () => window.clearInterval(timer);
+  }, []);
 
   useEffect(() => {
-    setDateLabel(
-      new Intl.DateTimeFormat(undefined, {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-      }).format(new Date()),
-    );
-  }, []);
+    document.documentElement.classList.toggle("dark", isDarkMode);
+    localStorage.setItem("portfolio-theme", isDarkMode ? "dark" : "light");
+  }, [isDarkMode]);
 
   return (
     <OSDesktopContext.Provider value={desktopContext}>
       <div className="relative isolate flex h-screen h-[100dvh] flex-col overflow-hidden bg-[#8ab7e8] text-slate-950 dark:bg-[#16233f] dark:text-slate-50">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_18%,rgba(255,255,255,0.72),transparent_28%),radial-gradient(circle_at_70%_20%,rgba(217,232,255,0.7),transparent_32%),linear-gradient(135deg,rgba(96,165,250,0.24)_0%,rgba(129,140,248,0.28)_58%,rgba(168,85,247,0.16)_100%)] dark:bg-[radial-gradient(circle_at_12%_18%,rgba(56,189,248,0.2),transparent_30%),radial-gradient(circle_at_78%_18%,rgba(129,140,248,0.2),transparent_28%),linear-gradient(135deg,rgba(15,23,42,0.1)_0%,rgba(30,41,59,0.7)_100%)]" />
-
-        <header className="relative z-30 flex h-10 shrink-0 items-center justify-between border-b border-white/[0.45] bg-white/[0.76] px-3 text-sm shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/[0.72]">
-          <div className="flex min-w-0 items-center gap-4">
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedItem("about");
-                setActiveItem("about");
-              }}
-              className="flex shrink-0 items-center gap-2 font-semibold text-slate-950 transition hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 dark:text-white dark:hover:text-indigo-300"
-            >
-              <FontAwesomeIcon
-                icon={faDesktop}
-                className="text-indigo-600 dark:text-indigo-300"
-              />
-              <span>Zahid OS</span>
-            </button>
-            <nav
-              aria-label="Desktop menu"
-              className="hidden items-center gap-1 text-slate-700 dark:text-slate-200 sm:flex"
-            >
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedItem("about");
-                  setActiveItem("about");
-                }}
-                className="rounded-md px-2 py-1 text-xs font-semibold transition hover:bg-white/70 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 dark:hover:bg-white/10 dark:hover:text-indigo-300"
-              >
-                About Me
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedItem("contact");
-                  setActiveItem("contact");
-                }}
-                className="rounded-md px-2 py-1 text-xs font-semibold transition hover:bg-white/70 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 dark:hover:bg-white/10 dark:hover:text-indigo-300"
-              >
-                Contact
-              </button>
-              {hasChatbot && (
-                <button
-                  type="button"
-                  onClick={() => setIsChatbotOpen((current) => !current)}
-                  className="rounded-md px-2 py-1 text-xs font-semibold transition hover:bg-white/70 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 dark:hover:bg-white/10 dark:hover:text-indigo-300"
-                >
-                  AI Bot
-                </button>
-              )}
-            </nav>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-3 text-xs font-semibold text-slate-800 dark:text-slate-100">
-            <span className="hidden max-w-[220px] truncate rounded-full bg-emerald-50 px-2 py-1 text-[11px] text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 md:inline-flex">
-              {availabilityLabel}
-            </span>
-            <span>100%</span>
-            {dateLabel && <span className="hidden sm:inline">{dateLabel}</span>}
-          </div>
-        </header>
 
         <div className="relative z-10 mx-auto flex min-h-0 w-full max-w-[1512px] min-w-[320px] flex-1 flex-col overflow-hidden px-3 pb-16 pt-2 sm:px-5 lg:min-w-[960px] lg:px-8">
           <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-[170px,minmax(0,1fr)] xl:grid-cols-[190px,minmax(0,1fr)]">
@@ -267,7 +226,7 @@ export default function OSDesktopShell({ children }: { children: ReactNode }) {
             </button>
             <nav
               aria-label="Dock"
-              className="mx-auto flex items-center gap-2 overflow-x-auto"
+              className="smooth-scrollbar mx-auto flex items-center gap-2 overflow-x-auto"
             >
               {dockItems.map((item) => {
                 const isActive = activeItem === item.id;
@@ -325,9 +284,18 @@ export default function OSDesktopShell({ children }: { children: ReactNode }) {
                 </button>
               )}
             </nav>
-            <span className="hidden min-w-[160px] justify-end text-xs font-medium text-slate-700 dark:text-slate-300 sm:flex">
-              (c) 2026 Zahid Hasan
-            </span>
+            <div className="hidden min-w-[220px] items-center justify-end gap-3 text-xs font-medium text-slate-700 dark:text-slate-300 sm:flex">
+              {dateLabel && <span>{dateLabel}</span>}
+              <button
+                type="button"
+                onClick={() => setIsDarkMode((current) => !current)}
+                aria-label={isDarkMode ? "Use light mode" : "Use dark mode"}
+                title={isDarkMode ? "Light mode" : "Dark mode"}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200/80 bg-white/[0.85] text-slate-800 shadow-sm transition hover:-translate-y-1 hover:bg-indigo-50 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 dark:hover:bg-indigo-950/50 dark:hover:text-indigo-200"
+              >
+                <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} />
+              </button>
+            </div>
           </div>
         </footer>
 

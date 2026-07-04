@@ -139,10 +139,10 @@ export default function OSDesktopShell({ children }: { children: ReactNode }) {
 
   return (
     <OSDesktopContext.Provider value={desktopContext}>
-      <div className="relative isolate min-h-screen min-h-[100dvh] overflow-hidden bg-[#8ab7e8] text-slate-950 dark:bg-[#16233f] dark:text-slate-50">
+      <div className="relative isolate flex h-screen h-[100dvh] flex-col overflow-hidden bg-[#8ab7e8] text-slate-950 dark:bg-[#16233f] dark:text-slate-50">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_18%,rgba(255,255,255,0.72),transparent_28%),radial-gradient(circle_at_70%_20%,rgba(217,232,255,0.7),transparent_32%),linear-gradient(135deg,rgba(96,165,250,0.24)_0%,rgba(129,140,248,0.28)_58%,rgba(168,85,247,0.16)_100%)] dark:bg-[radial-gradient(circle_at_12%_18%,rgba(56,189,248,0.2),transparent_30%),radial-gradient(circle_at_78%_18%,rgba(129,140,248,0.2),transparent_28%),linear-gradient(135deg,rgba(15,23,42,0.1)_0%,rgba(30,41,59,0.7)_100%)]" />
 
-        <header className="relative z-30 flex h-10 items-center justify-between border-b border-white/[0.45] bg-white/[0.76] px-3 text-sm shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/[0.72]">
+        <header className="relative z-30 flex h-10 shrink-0 items-center justify-between border-b border-white/[0.45] bg-white/[0.76] px-3 text-sm shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/[0.72]">
           <div className="flex min-w-0 items-center gap-4">
             <button
               type="button"
@@ -203,7 +203,7 @@ export default function OSDesktopShell({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <div className="relative z-10 mx-auto flex min-h-[max(calc(100dvh-6rem),520px)] max-w-[1512px] min-w-[320px] flex-col overflow-hidden px-3 pb-2 pt-2 sm:px-5 lg:min-h-[max(calc(100dvh-6rem),620px)] lg:min-w-[960px] lg:px-8">
+        <div className="relative z-10 mx-auto flex min-h-0 w-full max-w-[1512px] min-w-[320px] flex-1 flex-col overflow-hidden px-3 pb-16 pt-2 sm:px-5 lg:min-w-[960px] lg:px-8">
           <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-[170px,minmax(0,1fr)] xl:grid-cols-[190px,minmax(0,1fr)]">
             <nav
               aria-label="Desktop shortcuts"

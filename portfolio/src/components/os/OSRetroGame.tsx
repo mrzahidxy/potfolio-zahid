@@ -28,8 +28,9 @@ export default function OSRetroGame() {
   const [cells, setCells] = useState<FallingCell[]>([]);
   const [score, setScore] = useState(0);
   const [bestScore, setBestScore] = useState(0);
-  const [isRunning, setIsRunning] = useState(true);
+  const [isRunning, setIsRunning] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
+  const [isStarted, setIsStarted] = useState(false);
   const playerColRef = useRef(playerCol);
   const audioContextRef = useRef<AudioContext | null>(null);
 
@@ -81,12 +82,13 @@ export default function OSRetroGame() {
     setCells([]);
     setScore(0);
     setIsGameOver(false);
+    setIsStarted(true);
     setIsRunning(true);
   }, [playSound]);
 
   const movePlayer = useCallback(
     (direction: -1 | 1) => {
-      if (isGameOver) {
+      if (!isStarted || isGameOver) {
         return;
       }
 
@@ -95,7 +97,7 @@ export default function OSRetroGame() {
         Math.max(0, Math.min(COLS - 1, current + direction)),
       );
     },
-    [isGameOver, playSound],
+    [isGameOver, isStarted, playSound],
   );
 
   useEffect(() => {
@@ -112,7 +114,7 @@ export default function OSRetroGame() {
 
       if (event.key === " " || event.key === "Enter") {
         event.preventDefault();
-        if (isGameOver) {
+        if (!isStarted || isGameOver) {
           resetGame();
         } else {
           setIsRunning((current) => !current);
@@ -122,10 +124,10 @@ export default function OSRetroGame() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isGameOver, movePlayer, resetGame]);
+  }, [isGameOver, isStarted, movePlayer, resetGame]);
 
   useEffect(() => {
-    if (!isRunning || isGameOver) {
+    if (!isStarted || !isRunning || isGameOver) {
       return;
     }
 
@@ -177,7 +179,7 @@ export default function OSRetroGame() {
     }, TICK_MS);
 
     return () => window.clearInterval(timer);
-  }, [isRunning, isGameOver, score, playSound]);
+  }, [isStarted, isRunning, isGameOver, score, playSound]);
 
   const grid = useMemo(() => {
     return Array.from({ length: ROWS }, (_, row) =>
@@ -195,26 +197,52 @@ export default function OSRetroGame() {
   }, [cells, playerCol]);
 
   return (
-    <section className="flex h-full min-h-0 items-center justify-center bg-slate-950 p-2 text-slate-100">
-      <div className="mx-auto flex h-full min-h-0 w-full max-w-[300px] flex-col rounded-md border border-slate-700 bg-slate-900 p-2.5 shadow-inner">
-        <div className="mb-2.5 flex items-center justify-between gap-2">
+    <section className="flex h-full min-h-0 items-center justify-center bg-slate-950 p-1.5 text-slate-100">
+      <div className="mx-auto flex h-full min-h-0 w-full max-w-[360px] flex-col rounded-md border border-slate-700 bg-slate-900 p-3 shadow-inner">
+        <div className="mb-3 flex items-center justify-between gap-3">
           <div>
-            <h2 className="font-mono text-sm font-bold text-emerald-300">
+            <h2 className="font-mono text-base font-bold text-emerald-300">
               Byte Run
             </h2>
-            <p className="font-mono text-[10px] text-slate-400">
+            <p className="font-mono text-[11px] text-slate-400">
               Green good. Red bad.
             </p>
           </div>
-          <div className="text-right font-mono text-[10px] text-slate-300">
+          <div className="text-right font-mono text-[11px] text-slate-300">
             <p>Score {score}</p>
             <p>Best {bestScore}</p>
           </div>
         </div>
 
-        <div className="flex min-h-0 flex-1 flex-col gap-2.5">
+        <div className="relative flex min-h-0 flex-1 flex-col gap-2.5">
+          {!isStarted && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center rounded-md border border-emerald-400/30 bg-slate-950/95 p-4 text-center shadow-inner">
+              <div className="max-w-[320px]">
+                <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-emerald-300">
+                  Ready player
+                </p>
+                <h3 className="mt-2 font-mono text-3xl font-black text-white">
+                  BYTE RUN
+                </h3>
+                <p className="mt-3 font-mono text-[11px] leading-5 text-slate-300">
+                  Catch green chips, dodge red blocks. Use A/D or arrow keys.
+                </p>
+                <button
+                  type="button"
+                  onClick={resetGame}
+                  className="mt-5 h-10 rounded-md bg-emerald-400 px-5 font-mono text-xs font-bold text-slate-950 transition hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200"
+                >
+                  Start Game
+                </button>
+                <p className="mt-3 font-mono text-[10px] text-slate-500">
+                  Press Enter or Space
+                </p>
+              </div>
+            </div>
+          )}
+
           <div
-            className="grid gap-1 rounded-md border border-slate-700 bg-slate-950 p-1.5"
+            className="grid gap-1 rounded-md border border-slate-700 bg-slate-950 p-2"
             style={{ gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))` }}
             aria-label="Byte Run game board"
           >
@@ -241,14 +269,14 @@ export default function OSRetroGame() {
               <button
                 type="button"
                 onClick={() => movePlayer(-1)}
-                className="h-8 w-11 rounded-md border border-slate-700 bg-slate-800 font-mono text-[11px] font-bold text-slate-100 transition hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+                className="h-9 w-14 rounded-md border border-slate-700 bg-slate-800 font-mono text-[11px] font-bold text-slate-100 transition hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
               >
                 Left
               </button>
               <button
                 type="button"
                 onClick={() => movePlayer(1)}
-                className="h-8 w-11 rounded-md border border-slate-700 bg-slate-800 font-mono text-[11px] font-bold text-slate-100 transition hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+                className="h-9 w-14 rounded-md border border-slate-700 bg-slate-800 font-mono text-[11px] font-bold text-slate-100 transition hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
               >
                 Right
               </button>
@@ -264,14 +292,14 @@ export default function OSRetroGame() {
                     playSound("start");
                   }
                 }}
-                className="h-8 rounded-md bg-emerald-400 px-2.5 font-mono text-[11px] font-bold text-slate-950 transition hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200"
+                className="h-9 rounded-md bg-emerald-400 px-3 font-mono text-[11px] font-bold text-slate-950 transition hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200"
               >
                 {isGameOver ? "Restart" : isRunning ? "Pause" : "Play"}
               </button>
               <button
                 type="button"
                 onClick={resetGame}
-                className="h-8 rounded-md border border-slate-700 bg-slate-800 px-2.5 font-mono text-[11px] font-bold text-slate-100 transition hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+                className="h-9 rounded-md border border-slate-700 bg-slate-800 px-3 font-mono text-[11px] font-bold text-slate-100 transition hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
               >
                 Reset
               </button>

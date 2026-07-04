@@ -92,7 +92,7 @@ export default function OSPortfolioDesktop() {
     onMinimize: closeActiveItem,
   };
   const defaultWindowClassName =
-    "h-[min(640px,100%)] max-h-full w-full max-w-5xl";
+    "h-[min(700px,100%)] max-h-full w-full max-w-6xl";
 
   return (
     <div className="flex h-full min-h-0 items-center justify-center overflow-hidden py-2">
@@ -117,7 +117,7 @@ export default function OSPortfolioDesktop() {
         {activeItem === "projects" && (
           <OSWindow
             title="Projects"
-            className="h-[min(700px,100%)] max-h-full w-full max-w-6xl"
+            className={defaultWindowClassName}
             bodyClassName="overflow-hidden bg-[#f4f7fb] dark:bg-slate-950"
             {...windowActions}
           >
@@ -128,7 +128,7 @@ export default function OSPortfolioDesktop() {
         {activeItem === "experience" && (
           <OSWindow
             title="Experience"
-            className="h-[min(700px,100%)] max-h-full w-full max-w-6xl"
+            className={defaultWindowClassName}
             bodyClassName="overflow-hidden bg-[#f4f7fb] dark:bg-slate-950"
             {...windowActions}
           >
@@ -169,7 +169,7 @@ export default function OSPortfolioDesktop() {
           <OSWindow
             title="Byte Run"
             subtitle="Retro game"
-            className={`${defaultWindowClassName} max-h-[calc(100dvh-10rem)]`}
+            className={defaultWindowClassName}
             bodyClassName="overflow-hidden bg-slate-950"
             {...windowActions}
           >

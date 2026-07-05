@@ -43,5 +43,7 @@ jobs:
             docker compose pull
             docker compose up -d
             docker image prune -f
-            curl -fsS http://127.0.0.1:8010/health
-            curl -fsS https://view-socket.flowstacker.xyz/health
+
+            check() { curl -fsS --retry 30 --retry-delay 2 --retry-all-errors "$1"; }
+            check http://127.0.0.1:8010/health
+            check https://view-socket.flowstacker.xyz/health

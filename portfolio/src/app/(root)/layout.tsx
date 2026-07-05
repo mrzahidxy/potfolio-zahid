@@ -4,7 +4,8 @@ import { readStaticProfileContent } from "@/lib/profile-content";
 
 export async function generateMetadata(): Promise<Metadata> {
   const profile = await readStaticProfileContent();
-  const profileSite = profile.metadata.site_url || "https://mrzahidxy.vercel.app";
+  const profileSite =
+    profile.metadata.site_url || "https://mrzahidxy.vercel.app";
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || profileSite;
 
   return {

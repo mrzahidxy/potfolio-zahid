@@ -6,7 +6,8 @@ const DEFAULT_API_URL =
   process.env.NODE_ENV === "development" ? "http://localhost:8010" : "";
 const SOCKET_URL =
   process.env.NEXT_PUBLIC_WEBSOCKET_URL?.trim() || DEFAULT_SOCKET_URL;
-const API_URL = process.env.NEXT_PUBLIC_VISIT_API_URL?.trim() || DEFAULT_API_URL;
+const API_URL =
+  process.env.NEXT_PUBLIC_VISIT_API_URL?.trim() || DEFAULT_API_URL;
 const shouldConnectVisitCounter = Boolean(SOCKET_URL);
 
 function PortfolioView() {
@@ -66,7 +67,7 @@ function PortfolioView() {
     }
 
     fetch(`${API_URL}/api/visit`, { method: "POST" }).catch((error) =>
-      console.error("Visit API error:", error)
+      console.error("Visit API error:", error),
     );
   }, []);
 
@@ -86,15 +87,13 @@ function PortfolioView() {
       </span>
       {status === "connecting" && (
         <span
-          className="flex h-3 w-3 items-center justify-center"
+          className="h-3 w-3 animate-spin rounded-full border-2 border-slate-400 border-t-transparent"
           aria-label="connecting"
-        >
-          <span className="h-3 w-3 rounded-full border-2 border-slate-400 border-t-transparent animate-spin" />
-        </span>
+        />
       )}
       {status === "connected" && (
         <span className="text-sm font-semibold text-slate-900 dark:text-slate-50">
-          {visitCount}
+          {visitCount.toLocaleString()}
         </span>
       )}
       {status === "disconnected" && (

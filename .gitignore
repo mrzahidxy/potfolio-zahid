@@ -7,6 +7,7 @@ chatbot/.env*
 !chatbot/.env.example
 view-socket/.env*
 !view-socket/.env.sample
+!view-socket/.env.example
 
 # Dependencies
 node_modules/

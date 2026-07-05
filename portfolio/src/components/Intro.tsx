@@ -33,7 +33,7 @@ function Intro({ personalDetails, preferences, content }: IntroProps) {
         colorScheme={heroBackgroundScheme}
       />
 
-      <div className="container relative flex min-h-[calc(100dvh-7.5rem)] max-w-6xl items-start px-4 py-16 sm:min-h-[calc(100dvh-8rem)] sm:items-center sm:py-20 md:min-h-[calc(100vh-7.5rem)] md:px-6 md:py-24 lg:py-24">
+      <div className="container relative flex min-h-[100dvh] max-w-6xl items-start px-4 pb-16 pt-36 sm:items-center sm:py-24 md:px-6 lg:py-24">
         <div className="hero-entrance hero-entrance-delay-1 flex w-full justify-center lg:justify-start">
           <div className="flex max-w-4xl flex-col items-center text-center lg:items-start lg:text-left">
             <div className="inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-[10px] font-medium text-sky-100 ring-1 ring-white/5 backdrop-blur sm:text-[11px]">

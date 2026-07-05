@@ -34,7 +34,7 @@ export default async function RootLayout({
   return (
     <PublicProfileProvider>
       <Navbar />
-      <main className="pt-[7.5rem] sm:pt-32 md:pt-24">{children}</main>
+      <main>{children}</main>
       <PortfolioFooter />
       <ChatbotLauncher />
     </PublicProfileProvider>

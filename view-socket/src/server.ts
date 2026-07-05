@@ -23,7 +23,8 @@ mongoose
   });
 
 const app = express();
-const PORT = process.env.PORT ?? 8010;
+const PORT = process.env.PORT ?? 8080;
+const HOST = process.env.HOST ?? "0.0.0.0";
 
 const allowedOrigins =
   process.env.ALLOWED_ORIGINS?.split(",").map((o) => o.trim()).filter(Boolean) ||
@@ -36,10 +37,7 @@ app.use(
 );
 
 app.get("/health", (_req: Request, res: Response) => {
-  const state = mongoose.connection.readyState;
-  const dbStatus =
-    state === 1 ? "connected" : state === 2 ? "connecting" : "disconnected";
-  res.json({ status: "ok", db: dbStatus });
+  res.json({ status: "ok" });
 });
 
 app.post("/api/visit", async (_req: Request, res: Response) => {
@@ -63,8 +61,8 @@ app.get("/api/visit", async (_req: Request, res: Response) => {
   }
 });
 
-const server = app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const server = app.listen(Number(PORT), HOST, () => {
+  console.log(`Server running on ${HOST}:${PORT}`);
 });
 
 const wss = new WebSocketServer({ server });

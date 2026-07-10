@@ -4,35 +4,49 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { incrementVisitCount, readVisitCount } from "./helper";
 import mongoose from "mongoose";
+import {
+  createCorsOriginValidator,
+  createOriginGuard,
+  parseAllowedOrigins,
+  visitRateLimiter,
+} from "./security";
 
 dotenv.config({ path: ".env.local" });
 dotenv.config();
 
+mongoose.set("bufferCommands", false);
+
 const mongoUri = process.env.MONGODB_URI;
-if (!mongoUri) {
-  throw new Error("MONGODB_URI is required to start the visit counter service");
+if (mongoUri) {
+  mongoose
+    .connect(mongoUri, { serverSelectionTimeoutMS: 5000 })
+    .then(() => {
+      console.log("MongoDB connected");
+    })
+    .catch(() => {
+      console.error("MongoDB connection failed; service will keep running");
+    });
+} else {
+  console.error("MONGODB_URI is not configured; service will keep running without database readiness");
 }
 
-mongoose
-  .connect(mongoUri)
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((error: unknown) => {
-    console.error("Error connecting to MongoDB:", error);
-  });
+mongoose.connection.on("disconnected", () => {
+  console.error("MongoDB disconnected");
+});
+
+mongoose.connection.on("error", () => {
+  console.error("MongoDB connection error");
+});
 
 const app = express();
 const PORT = process.env.PORT ?? 8080;
 const HOST = process.env.HOST ?? "0.0.0.0";
+const allowedOrigins = parseAllowedOrigins(process.env.ALLOWED_ORIGINS);
 
-const allowedOrigins =
-  process.env.ALLOWED_ORIGINS?.split(",").map((o) => o.trim()).filter(Boolean) ||
-  ["*"];
-
+app.use(createOriginGuard(allowedOrigins, process.env.NODE_ENV));
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: createCorsOriginValidator(allowedOrigins, process.env.NODE_ENV),
   })
 );
 
@@ -40,13 +54,22 @@ app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "ok" });
 });
 
-app.post("/api/visit", async (_req: Request, res: Response) => {
+app.get("/ready", (_req: Request, res: Response) => {
+  if (mongoose.connection.readyState === 1) {
+    res.json({ status: "ready", database: "connected" });
+    return;
+  }
+
+  res.status(503).json({ status: "not_ready", database: "disconnected" });
+});
+
+app.post("/api/visit", visitRateLimiter, async (_req: Request, res: Response) => {
   try {
     const updatedCount = await incrementVisitCount();
     broadcastVisitCount(updatedCount);
     res.json({ message: `Portfolio visited ${updatedCount} times.`, count: updatedCount });
-  } catch (error) {
-    console.error("Error incrementing visit count:", error);
+  } catch {
+    console.error("Failed to increment visit count");
     res.status(500).json({ error: "Failed to increment visit count" });
   }
 });
@@ -55,8 +78,8 @@ app.get("/api/visit", async (_req: Request, res: Response) => {
   try {
     const visitCount = await readVisitCount();
     res.json({ count: visitCount });
-  } catch (error) {
-    console.error("Error reading visit count:", error);
+  } catch {
+    console.error("Failed to read visit count");
     res.status(500).json({ error: "Failed to read visit count" });
   }
 });

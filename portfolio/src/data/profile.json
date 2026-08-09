@@ -15,7 +15,7 @@
       "address": "Dhaka, Bangladesh"
     },
     "links": {
-      "website": "https://mrzahidxy.vercel.app",
+      "website": "",
       "github": "https://github.com/mrzahidxy",
       "linkedin": "https://www.linkedin.com/in/mrzahidxy"
     }
@@ -205,7 +205,7 @@
     ]
   },
   "metadata": {
-    "site_url": "https://mrzahidxy.vercel.app",
+    "site_url": "",
     "last_updated": "2026-04-11",
     "generated_from": "Next.js portfolio project"
   },

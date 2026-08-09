@@ -95,6 +95,18 @@ const Contact: React.FC<ContactProps> = ({
 }) => {
   const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const socialLinks = [
+    {
+      href: links.linkedin,
+      icon: "/icon/linkedin.png",
+      alt: "linkedin-link",
+    },
+    {
+      href: links.github,
+      icon: "/icon/github.png",
+      alt: "github-link",
+    },
+  ];
   const quickActions = [
     {
       href: `mailto:${contactDetails.email}`,
@@ -179,7 +191,6 @@ const Contact: React.FC<ContactProps> = ({
           </p>
         </Reveal>
 
-
         <div className="grid items-stretch gap-4 md:gap-5 xl:grid-cols-[0.9fr,1.1fr]">
           <Reveal delayMs={70} className="h-full">
             <div className="relative h-full overflow-hidden rounded-[24px] bg-slate-950 p-5 text-slate-100 shadow-[0_22px_60px_rgba(15,23,42,0.16)] sm:p-6">
@@ -222,7 +233,9 @@ const Contact: React.FC<ContactProps> = ({
                         key={action.label}
                         href={action.href}
                         target={
-                          action.href.startsWith("mailto:") ? undefined : "_blank"
+                          action.href.startsWith("mailto:")
+                            ? undefined
+                            : "_blank"
                         }
                         rel={
                           action.href.startsWith("mailto:")

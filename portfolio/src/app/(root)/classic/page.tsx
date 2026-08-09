@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar/Navbar";
 import PortfolioFooter from "@/components/PortfolioFooter";
 import Projects from "@/components/Projects";
 
-export default function Home() {
+export default function ClassicPortfolioPage() {
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-clip bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50">
       <Navbar />

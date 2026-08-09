@@ -8,8 +8,8 @@ import { createLogger } from "@/lib/logger";
 // Login handler
 export async function POST(req: NextRequest) {
   const log = createLogger({ context: "api/auth/login" });
-  const passSecret = process.env.PASS_SEC || process.env.NEXT_PUBLIC_PASS_SEC;
-  const jwtSecret = process.env.JWT_SEC || process.env.NEXT_PUBLIC_JWT_SEC;
+  const passSecret = process.env.PASS_SEC;
+  const jwtSecret = process.env.JWT_SEC;
 
   if (!passSecret || !jwtSecret) {
     return NextResponse.json(
@@ -66,10 +66,21 @@ export async function POST(req: NextRequest) {
 
     const { password: _, ...others } = (user as any)._doc;
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       { success: true, data: { ...others, accessToken } },
       { status: 200 }
     );
+
+    if (user.isAdmin === true) {
+      response.cookies.set("adminAccessToken", accessToken, {
+        path: "/admin",
+        maxAge: 60 * 60 * 24 * 3,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      });
+    }
+
+    return response;
   } catch (error) {
     log.error("Failed to create login session.", error);
     return NextResponse.json(

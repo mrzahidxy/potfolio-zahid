@@ -2,14 +2,14 @@ import "./globals.css";
 import type { Metadata } from "next";
 import ClientProvider from "./ClientProvider";
 import { readStaticProfileContent } from "@/lib/profile-content";
+import { getSiteUrl } from "@/lib/site-url";
 
 export async function generateMetadata(): Promise<Metadata> {
   const profile = await readStaticProfileContent();
   const profileName = profile.personal_details.name;
   const profileTitle = profile.personal_details.title;
   const profileBio = profile.personal_details.bio;
-  const profileSite = profile.metadata.site_url || "https://mrzahidxy.vercel.app";
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || profileSite;
+  const siteUrl = getSiteUrl();
 
   return {
     metadataBase: new URL(siteUrl),
@@ -31,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: `${profileName} Portfolio`,
       images: [
         {
-          url: "/image/hero-image.png",
+          url: new URL("/image/hero-image.png", siteUrl).toString(),
           width: 1200,
           height: 630,
           alt: `${profileName} Portfolio`,
@@ -44,10 +44,10 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: `${profileName} | ${profileTitle} & Full-Stack Developer`,
       description: profileBio,
-      images: ["/image/hero-image.png"],
+      images: [new URL("/image/hero-image.png", siteUrl).toString()],
     },
     alternates: {
-      canonical: "/",
+      canonical: siteUrl,
     },
     robots: {
       index: true,

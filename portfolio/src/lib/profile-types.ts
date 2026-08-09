@@ -144,15 +144,13 @@ export interface PublicProfileData {
   content: ProfileSectionContent;
 }
 
-export interface PublicProfileApiResponse {
-  success: boolean;
-  data: PublicProfileData;
-}
+export type PublicProfileApiResponse =
+  | { success: true; data: PublicProfileData }
+  | { success: false; message: string };
 
-export interface ProfileExperienceListResponse {
-  success: boolean;
-  data: ProfileExperience[];
-}
+export type ProfileExperienceListResponse =
+  | { success: true; data: ProfileExperience[] }
+  | { success: false; message: string };
 
 const defaultProfileContent = rawProfile as ProfileContent;
 

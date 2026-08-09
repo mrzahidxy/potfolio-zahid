@@ -11,6 +11,12 @@ export type RateLimitResult = {
   resetAt: number;
 };
 
+export class RateLimitConfigurationError extends Error {
+  constructor() {
+    super("Production rate limiting is not configured.");
+  }
+}
+
 type UpstashResponse<T> = {
   result?: T;
   error?: string;
@@ -96,11 +102,20 @@ export async function rateLimit(
   limit = DEFAULT_LIMIT,
   windowMs = DEFAULT_WINDOW_MS,
 ): Promise<RateLimitResult> {
+  const isProduction = process.env.NODE_ENV === "production";
+  const hasUpstash = Boolean(
+    process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN,
+  );
+
+  if (isProduction && !hasUpstash) {
+    throw new RateLimitConfigurationError();
+  }
+
   try {
     const redisResult = await redisRateLimit(key, limit, windowMs);
     if (redisResult) return redisResult;
   } catch {
-    // Fall back to in-memory limiting if Redis is unavailable.
+    if (isProduction) throw new RateLimitConfigurationError();
   }
 
   return memoryRateLimit(key, limit, windowMs);

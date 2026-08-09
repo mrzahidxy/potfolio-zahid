@@ -225,7 +225,7 @@ export const portfolioContext: PortfolioContext = {
   },
 
   portfolio: {
-    url: "https://zahidxy.vercel.app",
+    url: process.env.NEXT_PUBLIC_PORTFOLIO_URL || process.env.NEXT_PUBLIC_SITE_URL || "",
     sections: ["Intro", "About", "Experience", "Projects", "Contact"],
     primaryCta: "See selected work",
     secondaryCta: "Get in touch",

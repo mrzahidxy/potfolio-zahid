@@ -27,7 +27,12 @@ export const adminProfileSchema = z.object({
   location: requiredText("Location"),
   linkedin: z.string().trim().url("Valid LinkedIn URL is required"),
   github: z.string().trim().url("Valid GitHub URL is required"),
-  website: z.string().trim().url("Valid website URL is required"),
+  website: z
+    .string()
+    .trim()
+    .refine((value) => value === "" || z.string().url().safeParse(value).success, {
+      message: "Enter a valid website URL or leave it blank",
+    }),
   contactHeading: requiredText("Contact heading"),
   contactIntro: requiredText("Contact intro"),
   contactBannerHeading: requiredText("Contact banner heading"),

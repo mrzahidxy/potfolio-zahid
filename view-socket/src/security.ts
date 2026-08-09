@@ -11,44 +11,26 @@ export const parseAllowedOrigins = (value: string | undefined) =>
     .map(normalizeOrigin)
     .filter(Boolean);
 
+export const isOriginAllowed = (
+  origin: string | undefined,
+  allowedOrigins: string[],
+  nodeEnv: string | undefined,
+) => {
+  if (!origin) return nodeEnv !== "production";
+  if (nodeEnv !== "production" && allowedOrigins.includes("*")) return true;
+
+  const allowlist = new Set(allowedOrigins.filter((allowedOrigin) => allowedOrigin !== "*"));
+  return allowlist.has(normalizeOrigin(origin));
+};
+
 export const createOriginGuard = (allowedOrigins: string[], nodeEnv: string | undefined) => {
-  const allowWildcard = nodeEnv !== "production" && allowedOrigins.includes("*");
-  const allowlist = new Set(allowedOrigins.filter((origin) => origin !== "*"));
-
   return (req: Request, res: Response, next: NextFunction) => {
-    const origin = req.header("origin");
-
-    if (!origin) {
-      next();
-      return;
-    }
-
-    if (allowWildcard || allowlist.has(normalizeOrigin(origin))) {
+    if (isOriginAllowed(req.header("origin"), allowedOrigins, nodeEnv)) {
       next();
       return;
     }
 
     res.status(403).json({ error: "Origin not allowed" });
-  };
-};
-
-export const createCorsOriginValidator = (allowedOrigins: string[], nodeEnv: string | undefined) => {
-  const allowWildcard = nodeEnv !== "production" && allowedOrigins.includes("*");
-  const allowlist = new Set(allowedOrigins.filter((origin) => origin !== "*"));
-
-  return (origin: string | undefined, callback: (err: Error | null, allow?: boolean | string) => void) => {
-    if (!origin || allowWildcard) {
-      callback(null, true);
-      return;
-    }
-
-    const normalizedOrigin = normalizeOrigin(origin);
-    if (allowlist.has(normalizedOrigin)) {
-      callback(null, normalizedOrigin);
-      return;
-    }
-
-    callback(null, false);
   };
 };
 

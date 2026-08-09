@@ -1,8 +1,7 @@
 import mongoose from "mongoose";
 import { createLogger } from "@/lib/logger";
 
-const getMongoUri = () =>
-  process.env.MONGODB_URI || process.env.NEXT_PUBLIC_MONGODB_URI || "";
+export const getMongoUri = () => process.env.MONGODB_URI || "";
 const log = createLogger({ context: "lib/dbConnect" });
 
 type CachedMongoose = {
@@ -34,7 +33,9 @@ const resetCache = () => {
 
 const connectWithCache = async () => {
   if (!cached.promise) {
-    cached.promise = mongoose.connect(getMongoUri()).then((mongoose) => mongoose);
+    cached.promise = mongoose
+      .connect(getMongoUri(), { serverSelectionTimeoutMS: 5000 })
+      .then((mongoose) => mongoose);
   }
 
   try {
@@ -63,6 +64,10 @@ async function dbConnect() {
   }
 
   return connectWithCache();
+}
+
+export function isMongoReady() {
+  return mongoose.connection.readyState === 1;
 }
 
 export default dbConnect;

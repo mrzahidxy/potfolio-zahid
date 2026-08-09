@@ -4,19 +4,20 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { incrementVisitCount, readVisitCount } from "./helper";
 import mongoose from "mongoose";
-import {
-  createCorsOriginValidator,
-  createOriginGuard,
-  parseAllowedOrigins,
-  visitRateLimiter,
-} from "./security";
+import { createOriginGuard, isOriginAllowed, parseAllowedOrigins, visitRateLimiter } from "./security";
 
 dotenv.config({ path: ".env.local" });
 dotenv.config();
 
 mongoose.set("bufferCommands", false);
 
+const isProduction = process.env.NODE_ENV === "production";
 const mongoUri = process.env.MONGODB_URI;
+
+if (!mongoUri && isProduction) {
+  throw new Error("MONGODB_URI is required in production");
+}
+
 if (mongoUri) {
   mongoose
     .connect(mongoUri, { serverSelectionTimeoutMS: 5000 })
@@ -24,10 +25,10 @@ if (mongoUri) {
       console.log("MongoDB connected");
     })
     .catch(() => {
-      console.error("MongoDB connection failed; service will keep running");
+      console.error("MongoDB connection failed; readiness checks will fail");
     });
 } else {
-  console.error("MONGODB_URI is not configured; service will keep running without database readiness");
+  console.error("MONGODB_URI is not configured; database readiness will fail");
 }
 
 mongoose.connection.on("disconnected", () => {
@@ -43,25 +44,31 @@ const PORT = process.env.PORT ?? 8080;
 const HOST = process.env.HOST ?? "0.0.0.0";
 const allowedOrigins = parseAllowedOrigins(process.env.ALLOWED_ORIGINS);
 
-app.use(createOriginGuard(allowedOrigins, process.env.NODE_ENV));
-app.use(
-  cors({
-    origin: createCorsOriginValidator(allowedOrigins, process.env.NODE_ENV),
-  })
-);
+if (isProduction && allowedOrigins.length === 0) {
+  throw new Error("ALLOWED_ORIGINS is required in production");
+}
 
-app.get("/health", (_req: Request, res: Response) => {
-  res.json({ status: "ok" });
-});
-
-app.get("/ready", (_req: Request, res: Response) => {
+const sendReadiness = (_req: Request, res: Response) => {
   if (mongoose.connection.readyState === 1) {
-    res.json({ status: "ready", database: "connected" });
+    res.json({ status: "ok", database: "connected" });
     return;
   }
 
   res.status(503).json({ status: "not_ready", database: "disconnected" });
-});
+};
+
+app.get("/health", sendReadiness);
+app.get("/ready", sendReadiness);
+
+app.set("trust proxy", 1);
+app.use(createOriginGuard(allowedOrigins, process.env.NODE_ENV));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      callback(null, isOriginAllowed(origin, allowedOrigins, process.env.NODE_ENV));
+    },
+  })
+);
 
 app.post("/api/visit", visitRateLimiter, async (_req: Request, res: Response) => {
   try {

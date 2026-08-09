@@ -121,7 +121,7 @@ export function PublicProfileProvider({
       }
 
       try {
-        const response = await fetch("/api/profile", { cache: "no-store" });
+        const response = await fetch("/api/profile", { cache: "force-cache" });
         const payload = (await response.json()) as PublicProfileApiResponse;
 
         if (isActive && payload.success) {

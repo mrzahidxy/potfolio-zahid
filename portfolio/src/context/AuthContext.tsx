@@ -13,6 +13,21 @@ interface AuthUser {
   isAdmin?: boolean;
 }
 
+const ADMIN_SESSION_COOKIE = "adminAccessToken";
+
+const cookieSecurity = () =>
+  window.location.protocol === "https:" ? "; secure" : "";
+
+const setAdminSessionCookie = (user: AuthUser) => {
+  if (typeof document === "undefined" || user.isAdmin !== true) return;
+  document.cookie = `${ADMIN_SESSION_COOKIE}=${encodeURIComponent(user.accessToken)}; path=/admin; max-age=${60 * 60 * 24 * 3}; samesite=lax${cookieSecurity()}`;
+};
+
+const clearAdminSessionCookie = () => {
+  if (typeof document === "undefined") return;
+  document.cookie = `${ADMIN_SESSION_COOKIE}=; path=/admin; max-age=0; samesite=lax${cookieSecurity()}`;
+};
+
 // Define the type for the initial state
 interface State {
   currentUser: AuthUser | null;
@@ -82,8 +97,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (typeof window !== "undefined") {
       if (state.currentUser) {
         localStorage.setItem("currentUser", JSON.stringify(state.currentUser));
+        setAdminSessionCookie(state.currentUser);
       } else {
         localStorage.removeItem("currentUser");
+        clearAdminSessionCookie();
       }
     }
   }, [state.currentUser]);

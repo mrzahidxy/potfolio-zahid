@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-const getJwtSecret = () => process.env.JWT_SEC || process.env.NEXT_PUBLIC_JWT_SEC;
+const getJwtSecret = () => process.env.JWT_SEC;
 
 async function authorizeRequest(
   req: Request,

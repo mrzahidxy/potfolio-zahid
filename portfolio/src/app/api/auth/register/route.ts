@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    const passSecret = process.env.PASS_SEC || process.env.NEXT_PUBLIC_PASS_SEC;
+    const passSecret = process.env.PASS_SEC;
     if (!passSecret) {
       return NextResponse.json(
         { success: false, message: "Password secret is not configured." },

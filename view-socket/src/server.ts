@@ -95,7 +95,17 @@ const server = app.listen(Number(PORT), HOST, () => {
   console.log(`Server running on ${HOST}:${PORT}`);
 });
 
-const wss = new WebSocketServer({ server });
+const wss = new WebSocketServer({
+  server,
+  verifyClient: ({ origin }, done) => {
+    if (isOriginAllowed(origin, allowedOrigins, process.env.NODE_ENV)) {
+      done(true);
+      return;
+    }
+
+    done(false, 403, "Origin not allowed");
+  },
+});
 
 wss.on("connection", async (ws: WebSocket) => {
   console.log("New client connected");

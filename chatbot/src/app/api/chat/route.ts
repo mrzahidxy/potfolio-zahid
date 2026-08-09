@@ -5,7 +5,7 @@ import {
   type ChatMessage,
 } from "@/lib/groq";
 import { buildSystemPrompt } from "@/lib/prompt";
-import { rateLimit } from "@/lib/rate-limit";
+import { RateLimitConfigurationError, rateLimit } from "@/lib/rate-limit";
 
 const MAX_MESSAGES = 10;
 const MAX_MESSAGE_LENGTH = 1_000;
@@ -112,6 +112,13 @@ export async function POST(request: NextRequest) {
 
     return json({ reply });
   } catch (error) {
+    if (error instanceof RateLimitConfigurationError) {
+      return json(
+        { error: "Chat service is temporarily unavailable." },
+        { status: 503 },
+      );
+    }
+
     if (error instanceof GroqProviderError) {
       if (error.status === 429) {
         return json(

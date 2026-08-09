@@ -4,24 +4,31 @@ import dbConnect from "@/lib/dbConnect";
 import { createLogger } from "@/lib/logger";
 import { listPublicFallbackProjects } from "@/lib/profile-content";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 const log = createLogger({ context: "api/projects" });
+
+const withPublicCache = <T>(payload: T) =>
+  NextResponse.json(payload, {
+    headers: {
+      "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+    },
+  });
 
 export async function GET() {
   try {
     const connection = await dbConnect();
     if (!connection) {
       const projects = await listPublicFallbackProjects();
-      return NextResponse.json({ success: true, data: projects });
+      return withPublicCache({ success: true, data: projects });
     }
 
     const projects = await Project.find<IProject>({
       isArchived: { $ne: true },
     });
-    return NextResponse.json({ success: true, data: projects });
+    return withPublicCache({ success: true, data: projects });
   } catch (error) {
     log.error("Failed to fetch public projects.", error);
     const projects = await listPublicFallbackProjects();
-    return NextResponse.json({ success: true, data: projects });
+    return withPublicCache({ success: true, data: projects });
   }
 }

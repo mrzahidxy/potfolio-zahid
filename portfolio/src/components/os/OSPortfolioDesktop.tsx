@@ -30,8 +30,8 @@ export default function OSPortfolioDesktop() {
     const loadDesktopData = async () => {
       try {
         const [projectResponse, experienceResponse] = await Promise.all([
-          fetch("/api/projects", { cache: "no-store" }),
-          fetch("/api/experiences", { cache: "no-store" }),
+          fetch("/api/projects", { cache: "force-cache" }),
+          fetch("/api/experiences", { cache: "force-cache" }),
         ]);
         const [projectPayload, experiencePayload] = await Promise.all([
           projectResponse.json() as Promise<PublicProjectListResponse>,
